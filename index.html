@@ -1570,6 +1570,13 @@ html{scroll-behavior:auto!important}
                 </button>
 
 
+                <button type="button" onclick="switchTab('pengumuman')" id="navPengumuman"
+                        class="sidebar-item hidden" title="Buat Pengumuman" aria-label="Buat Pengumuman">
+                    <span class="sidebar-icon">📢</span>
+                    <span class="sidebar-text">Buat Pengumuman</span>
+                </button>
+
+
             </div>
         </nav>
 
@@ -1627,6 +1634,23 @@ html{scroll-behavior:auto!important}
                 </form>
                 <div class="mt-6 text-center text-sm">
                     Sudah punya akun? <button type="button" onclick="toggleAuthMode('login')" class="text-emerald-700 font-semibold">Login</button>
+                </div>
+            </div>
+
+            <!-- HALAMAN PENGUMUMAN SETELAH LOGIN -->
+            <div id="announcementPage" class="hidden">
+                <div class="announcement-shell">
+                    <div class="announcement-card">
+                        <div class="announcement-head">
+                            <div class="announcement-brand"><span class="announcement-brand-dot"></span>Castrol • PT Sukses Adi Surya</div>
+                            <div class="announcement-title">Pengumuman</div>
+                            <div class="announcement-subtitle">Informasi terbaru yang sedang berlaku untuk periode saat ini.</div>
+                        </div>
+                        <div id="announcementList" class="announcement-list"></div>
+                        <div class="announcement-footer">
+                            <button type="button" class="announcement-main-btn" onclick="goToMainMenu()">Ke Menu Utama</button>
+                        </div>
+                    </div>
                 </div>
             </div>
 
@@ -2087,6 +2111,56 @@ html{scroll-behavior:auto!important}
                     </div>
                 </div>
 
+                <!-- BUAT PENGUMUMAN -->
+                <div id="tabPengumuman" class="tab-content hidden space-y-3">
+                    <div class="flex justify-between items-center border-b border-slate-200 pb-2 gap-2">
+                        <div>
+                            <h2 class="text-base font-bold text-slate-800">Buat Pengumuman</h2>
+                            <p class="text-[10px] text-slate-400 mt-0.5">Tambah, edit, dan hapus pengumuman yang tampil setelah login.</p>
+                        </div>
+                        <button type="button" onclick="resetPengumumanForm()" class="px-3 py-2 rounded-xl bg-emerald-700 hover:bg-emerald-800 text-white text-[10px] font-bold">＋ Pengumuman Baru</button>
+                    </div>
+
+                    <div class="announcement-admin-grid">
+                        <div class="announcement-form-card">
+                            <div class="text-xs font-extrabold text-slate-800 mb-3" id="pengumumanFormTitle">Tambah Pengumuman</div>
+                            <input type="hidden" id="pengumumanRowNumber" value="">
+                            <div class="space-y-2.5">
+                                <div>
+                                    <label class="block text-[10px] font-bold text-slate-600 mb-1">URL Gambar <span class="text-slate-400 font-normal">(boleh kosong)</span></label>
+                                    <input type="url" id="pengumumanGambar" placeholder="https://..." class="w-full border border-slate-200 rounded-xl px-3 py-2.5 bg-white text-xs">
+                                </div>
+                                <div>
+                                    <label class="block text-[10px] font-bold text-slate-600 mb-1">Keterangan</label>
+                                    <textarea id="pengumumanKeterangan" rows="5" placeholder="Tulis keterangan pengumuman..." class="w-full border border-slate-200 rounded-xl px-3 py-2.5 bg-white text-xs resize-y"></textarea>
+                                </div>
+                                <div class="grid grid-cols-2 gap-2">
+                                    <div><label class="block text-[10px] font-bold text-slate-600 mb-1">Mulai (Kolom C)</label><input type="date" id="pengumumanMulai" class="w-full border border-slate-200 rounded-xl px-3 py-2.5 bg-white text-xs"></div>
+                                    <div><label class="block text-[10px] font-bold text-slate-600 mb-1">Selesai (Kolom D)</label><input type="date" id="pengumumanSelesai" class="w-full border border-slate-200 rounded-xl px-3 py-2.5 bg-white text-xs"></div>
+                                </div>
+                                <div id="pengumumanPreview" class="hidden rounded-xl border border-slate-200 bg-slate-50 p-2"></div>
+                                <div class="flex gap-2 pt-1">
+                                    <button type="button" onclick="savePengumumanForm()" id="pengumumanSaveBtn" class="flex-1 rounded-xl bg-emerald-700 hover:bg-emerald-800 text-white py-2.5 text-[10px] font-extrabold">Simpan Pengumuman</button>
+                                    <button type="button" onclick="resetPengumumanForm()" id="pengumumanCancelBtn" class="hidden px-4 rounded-xl border border-slate-200 bg-white hover:bg-slate-50 text-slate-600 py-2.5 text-[10px] font-extrabold">Batal</button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="announcement-list-card">
+                            <div class="px-4 py-3 border-b border-slate-100 flex items-center justify-between gap-2">
+                                <div class="text-xs font-extrabold text-slate-800">Daftar Pengumuman</div>
+                                <button type="button" onclick="loadPengumumanAdmin(true)" class="text-[10px] font-bold text-emerald-700">↻ Refresh</button>
+                            </div>
+                            <div class="overflow-x-auto">
+                                <table class="announcement-admin-table">
+                                    <thead><tr><th>Gambar</th><th>Keterangan</th><th>Periode</th><th>Status</th><th>Aksi</th></tr></thead>
+                                    <tbody id="pengumumanAdminBody"><tr><td colspan="5" class="text-center py-8 text-slate-400">Klik menu Buat Pengumuman untuk memuat data.</td></tr></tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
             </div>
 
         </div>
@@ -2097,6 +2171,8 @@ html{scroll-behavior:auto!important}
         let isSubmitting = false;
         let currentSatuanInput = "Pcs";
         let globalPricelistData = [];
+        let globalPengumumanAdminData = [];
+        let pengumumanEditingRow = 0;
 
         function refreshSelect2(selector) {
             try {
@@ -2283,10 +2359,14 @@ html{scroll-behavior:auto!important}
             const tabInput = document.getElementById('tabInput');
             const navOutletBWS = document.getElementById('navOutletBWS');
             const tabOutletBWS = document.getElementById('tabOutletBWS');
+            const navPengumuman = document.getElementById('navPengumuman');
+            const tabPengumuman = document.getElementById('tabPengumuman');
             if (navInput) navInput.classList.toggle('hidden', isAdminLogin);
             if (tabInput) tabInput.classList.toggle('hidden', isAdminLogin);
             if (navOutletBWS) navOutletBWS.classList.toggle('hidden', !isAdminLogin);
             if (tabOutletBWS) tabOutletBWS.classList.toggle('hidden', !isAdminLogin);
+            if (navPengumuman) navPengumuman.classList.toggle('hidden', !isAdminLogin);
+            if (tabPengumuman) tabPengumuman.classList.toggle('hidden', !isAdminLogin);
             const btnTambahOutletBWS = document.getElementById('btnTambahOutletBWS');
             if (btnTambahOutletBWS) btnTambahOutletBWS.classList.toggle('hidden', !isAdminLogin);
         }
@@ -2303,10 +2383,11 @@ html{scroll-behavior:auto!important}
 
                 document.getElementById('loginPage').classList.add('hidden');
                 document.getElementById('registerPage').classList.add('hidden');
-                document.getElementById('mainPage').classList.remove('hidden');
-                document.getElementById('mainHeader').classList.remove('hidden');
-                document.getElementById('leftNav').classList.remove('hidden');
-                setSidebarState(true);
+                document.getElementById('mainPage').classList.add('hidden');
+                document.getElementById('announcementPage').classList.add('hidden');
+                document.getElementById('mainHeader').classList.add('hidden');
+                document.getElementById('leftNav').classList.add('hidden');
+                setSidebarState(false);
 
                 const isAdminLogin = currentUsernameInput.toLowerCase() === 'admin';
                 applyRoleVisibility();
@@ -2320,7 +2401,7 @@ html{scroll-behavior:auto!important}
                 loadRiwayat(true, true);
                 if (!isAdminLogin) loadInputMasterData();
                 preloadAppDataInBackground();
-                if (isAdminLogin) switchTab('riwayat');
+                showPostLoginAnnouncementPage();
                 return true;
             } catch (e) {
                 console.warn("Sesi lokal tidak valid:", e);
@@ -2341,6 +2422,8 @@ html{scroll-behavior:auto!important}
             const tanggalInput = document.getElementById('inputTanggal');
             if (tanggalInput) tanggalInput.valueAsDate = new Date();
             loadSalesOptionsForRegister();
+            const announcementImageInput = document.getElementById('pengumumanGambar');
+            if (announcementImageInput) announcementImageInput.addEventListener('input', updatePengumumanPreview);
             const restored = restoreAuthState();
             showLoading(!restored);
             // Produk/Cashback tidak lagi dimuat saat halaman pertama dibuka.
@@ -2426,9 +2509,10 @@ startAutoRefresh();
                     currentUser = res.sales;
                     document.getElementById('loginPage').classList.add('hidden');
                     document.getElementById('registerPage').classList.add('hidden');
-                    document.getElementById('mainPage').classList.remove('hidden');
-                    document.getElementById('mainHeader').classList.remove('hidden');
-                    document.getElementById('leftNav').classList.remove('hidden');
+                    document.getElementById('mainPage').classList.add('hidden');
+                    document.getElementById('announcementPage').classList.add('hidden');
+                    document.getElementById('mainHeader').classList.add('hidden');
+                    document.getElementById('leftNav').classList.add('hidden');
                     setSidebarState(false);
                     const isAdminLogin = currentUsernameInput.toLowerCase() === 'admin';
                     applyRoleVisibility();
@@ -2442,7 +2526,7 @@ startAutoRefresh();
                     loadRiwayat(true, true);
                     if (!isAdminLogin) loadInputMasterData();
                     preloadAppDataInBackground();
-                    if (isAdminLogin) switchTab('riwayat');
+                    showPostLoginAnnouncementPage();
                 } else {
                     showModal("Login Gagal", res.message);
                 }
@@ -5656,11 +5740,209 @@ startAutoRefresh();
             }
         }
 
+
+        function normalizeAnnouncementImageUrl(url) {
+            let u = String(url || '').trim();
+            if (!u) return '';
+            const m = u.match(/drive\.google\.com\/file\/d\/([^\/]+)/i) || u.match(/[?&]id=([^&]+)/i);
+            if (m && m[1]) return 'https://drive.google.com/uc?export=view&id=' + encodeURIComponent(m[1]);
+            return u;
+        }
+
+        function escapeAnnouncementText(v) {
+            return escapeHtml(String(v == null ? '' : v));
+        }
+
+        function showPostLoginAnnouncementPage() {
+            google.script.run.withSuccessHandler(function(res) {
+                const list = res && res.success ? (res.data || []) : [];
+                if (list.length) {
+                    renderAnnouncementLanding(list);
+                    document.getElementById('announcementPage').classList.remove('hidden');
+                    document.getElementById('mainPage').classList.add('hidden');
+                    document.getElementById('mainHeader').classList.add('hidden');
+                    document.getElementById('leftNav').classList.add('hidden');
+                    setSidebarState(false);
+                } else {
+                    goToMainMenu();
+                }
+            }).withFailureHandler(function() {
+                goToMainMenu();
+            }).getPengumumanAktif();
+        }
+
+        function renderAnnouncementLanding(list) {
+            const container = document.getElementById('announcementList');
+            if (!container) return;
+            container.innerHTML = list.map(function(item) {
+                const caption = escapeAnnouncementText(item.keterangan || '');
+                const img = normalizeAnnouncementImageUrl(item.gambar);
+                if (img) {
+                    return '<article class="announcement-item">' +
+                        '<div class="announcement-image-wrap"><img class="announcement-image" src="' + escapeAnnouncementText(img) + '" alt="Pengumuman" loading="eager" onerror="this.parentElement.style.display=\'none\';this.closest(\'.announcement-item\').classList.add(\'announcement-image-failed\');">' +
+                        '</div><div class="announcement-caption">' + caption + '</div></article>';
+                }
+                return '<article class="announcement-item announcement-empty-image">' +
+                    '<div class="announcement-marquee-window"><div class="announcement-marquee-track">' +
+                    '<div class="announcement-marquee-text">' + caption + '</div><div class="announcement-marquee-text" aria-hidden="true">' + caption + '</div>' +
+                    '</div></div>' +
+                    '<div class="announcement-empty-caption">' + caption + '</div></article>';
+            }).join('');
+        }
+
+        function goToMainMenu() {
+            const announcementPage = document.getElementById('announcementPage');
+            const mainPage = document.getElementById('mainPage');
+            const header = document.getElementById('mainHeader');
+            const nav = document.getElementById('leftNav');
+            if (announcementPage) announcementPage.classList.add('hidden');
+            if (mainPage) mainPage.classList.remove('hidden');
+            if (header) header.classList.remove('hidden');
+            if (nav) nav.classList.remove('hidden');
+            applyRoleVisibility();
+            setSidebarState(false);
+            const isAdminLogin = String(currentUsernameInput || '').trim().toLowerCase() === 'admin';
+            switchTab(isAdminLogin ? 'riwayat' : 'input');
+        }
+
+        function announcementAdminStatus(item) {
+            const today = new Date(); today.setHours(0,0,0,0);
+            const start = item.mulai ? new Date(item.mulai + 'T00:00:00') : null;
+            const end = item.selesai ? new Date(item.selesai + 'T00:00:00') : null;
+            if (start && today < start) return ['upcoming', 'AKAN DATANG'];
+            if (end && today > end) return ['expired', 'SELESAI'];
+            return ['active', 'AKTIF'];
+        }
+
+        function loadPengumumanAdmin(forceReload) {
+            if (String(currentUsernameInput || '').trim().toLowerCase() !== 'admin') return;
+            google.script.run.withSuccessHandler(function(res) {
+                if (!res || !res.success) {
+                    showModal('Gagal', res && res.message ? res.message : 'Data pengumuman gagal dimuat.');
+                    return;
+                }
+                globalPengumumanAdminData = res.data || [];
+                renderPengumumanAdminTable();
+            }).withFailureHandler(function(err) {
+                showModal('Gagal', err && err.message ? err.message : 'Data pengumuman gagal dimuat.');
+            }).getPengumumanAdmin(currentUsernameInput);
+        }
+
+        function renderPengumumanAdminTable() {
+            const body = document.getElementById('pengumumanAdminBody');
+            if (!body) return;
+            if (!globalPengumumanAdminData.length) {
+                body.innerHTML = '<tr><td colspan="5" class="text-center py-8 text-slate-400">Belum ada pengumuman.</td></tr>';
+                return;
+            }
+            body.innerHTML = globalPengumumanAdminData.map(function(item) {
+                const status = announcementAdminStatus(item);
+                const img = normalizeAnnouncementImageUrl(item.gambar);
+                const thumb = img ? '<img src="' + escapeAnnouncementText(img) + '" class="announcement-thumb" alt="" onerror="this.style.visibility=\'hidden\'">' : '<div class="announcement-thumb flex items-center justify-center text-slate-300 text-[9px]">Tanpa gambar</div>';
+                return '<tr>' +
+                    '<td>' + thumb + '</td>' +
+                    '<td style="min-width:220px;max-width:420px;white-space:pre-wrap;word-break:break-word;font-weight:700;">' + escapeAnnouncementText(item.keterangan || '-') + '</td>' +
+                    '<td class="whitespace-nowrap">' + escapeAnnouncementText(item.mulai || '-') + ' s/d ' + escapeAnnouncementText(item.selesai || '-') + '</td>' +
+                    '<td><span class="announcement-status ' + status[0] + '">' + status[1] + '</span></td>' +
+                    '<td class="whitespace-nowrap"><button type="button" class="announcement-action edit" onclick="editPengumuman(' + Number(item.rowNumber) + ')">✏️ Edit</button><button type="button" class="announcement-action delete" onclick="deletePengumuman(' + Number(item.rowNumber) + ')">🗑️ Hapus</button></td>' +
+                    '</tr>';
+            }).join('');
+        }
+
+        function resetPengumumanForm() {
+            pengumumanEditingRow = 0;
+            document.getElementById('pengumumanRowNumber').value = '';
+            document.getElementById('pengumumanGambar').value = '';
+            document.getElementById('pengumumanKeterangan').value = '';
+            document.getElementById('pengumumanMulai').value = '';
+            document.getElementById('pengumumanSelesai').value = '';
+            document.getElementById('pengumumanFormTitle').textContent = 'Tambah Pengumuman';
+            document.getElementById('pengumumanSaveBtn').textContent = 'Simpan Pengumuman';
+            document.getElementById('pengumumanCancelBtn').classList.add('hidden');
+            const preview = document.getElementById('pengumumanPreview');
+            if (preview) { preview.classList.add('hidden'); preview.innerHTML = ''; }
+        }
+
+        function editPengumuman(rowNumber) {
+            const item = globalPengumumanAdminData.find(function(x) { return Number(x.rowNumber) === Number(rowNumber); });
+            if (!item) return;
+            pengumumanEditingRow = Number(item.rowNumber);
+            document.getElementById('pengumumanRowNumber').value = pengumumanEditingRow;
+            document.getElementById('pengumumanGambar').value = item.gambar || '';
+            document.getElementById('pengumumanKeterangan').value = item.keterangan || '';
+            document.getElementById('pengumumanMulai').value = item.mulai || '';
+            document.getElementById('pengumumanSelesai').value = item.selesai || '';
+            document.getElementById('pengumumanFormTitle').textContent = 'Edit Pengumuman';
+            document.getElementById('pengumumanSaveBtn').textContent = 'Simpan Perubahan';
+            document.getElementById('pengumumanCancelBtn').classList.remove('hidden');
+            updatePengumumanPreview();
+            document.getElementById('pengumumanGambar').scrollIntoView({behavior:'smooth', block:'center'});
+        }
+
+        function updatePengumumanPreview() {
+            const preview = document.getElementById('pengumumanPreview');
+            const img = normalizeAnnouncementImageUrl(document.getElementById('pengumumanGambar').value);
+            if (!preview) return;
+            if (!img) { preview.classList.add('hidden'); preview.innerHTML = ''; return; }
+            preview.classList.remove('hidden');
+            preview.innerHTML = '<img src="' + escapeAnnouncementText(img) + '" alt="Preview" style="display:block;width:100%;max-height:190px;object-fit:contain;border-radius:10px;background:#f4f8f5;">';
+        }
+
+        function savePengumumanForm() {
+            const payload = {
+                gambar: document.getElementById('pengumumanGambar').value.trim(),
+                keterangan: document.getElementById('pengumumanKeterangan').value.trim(),
+                mulai: document.getElementById('pengumumanMulai').value,
+                selesai: document.getElementById('pengumumanSelesai').value
+            };
+            if (!payload.keterangan || !payload.mulai || !payload.selesai) {
+                showModal('Data belum lengkap', 'Keterangan, Mulai, dan Selesai wajib diisi.');
+                return;
+            }
+            showLoading(true);
+            const done = function(res) {
+                showLoading(false);
+                if (res && res.success) {
+                    showModal('Berhasil', res.message || 'Pengumuman berhasil disimpan.');
+                    resetPengumumanForm();
+                    loadPengumumanAdmin(true);
+                } else {
+                    showModal('Gagal', res && res.message ? res.message : 'Pengumuman gagal disimpan.');
+                }
+            };
+            if (pengumumanEditingRow) {
+                google.script.run.withSuccessHandler(done).withFailureHandler(function(err){showLoading(false);showModal('Error Sistem',err&&err.message?err.message:'Terjadi kesalahan.');}).updatePengumumanAdmin(currentUsernameInput, pengumumanEditingRow, payload);
+            } else {
+                google.script.run.withSuccessHandler(done).withFailureHandler(function(err){showLoading(false);showModal('Error Sistem',err&&err.message?err.message:'Terjadi kesalahan.');}).savePengumumanAdmin(currentUsernameInput, payload);
+            }
+        }
+
+        function deletePengumuman(rowNumber) {
+            const item = globalPengumumanAdminData.find(function(x) { return Number(x.rowNumber) === Number(rowNumber); });
+            if (!item) return;
+            showModal('Konfirmasi', 'Hapus pengumuman ini?', true, function(ok) {
+                if (!ok) return;
+                showLoading(true);
+                google.script.run.withSuccessHandler(function(res) {
+                    showLoading(false);
+                    if (res && res.success) {
+                        if (pengumumanEditingRow === Number(rowNumber)) resetPengumumanForm();
+                        showModal('Berhasil', res.message || 'Pengumuman berhasil dihapus.');
+                        loadPengumumanAdmin(true);
+                    } else showModal('Gagal', res && res.message ? res.message : 'Pengumuman gagal dihapus.');
+                }).withFailureHandler(function(err) {
+                    showLoading(false);
+                    showModal('Error Sistem', err && err.message ? err.message : 'Terjadi kesalahan.');
+                }).deletePengumumanAdmin(currentUsernameInput, rowNumber);
+            });
+        }
+
         function switchTab(tab) {
             const isAdminLogin = String(currentUsernameInput || '').trim().toLowerCase() === 'admin';
             if (isAdminLogin && tab === 'input') { applyRoleVisibility(); return; }
-            const tabMap = {input:'tabInput',riwayat:'tabRiwayat',pencapaian:'tabPencapaian',monitoring:'tabMonitoring',outletkontrak:'tabOutletKontrak',outletbws:'tabOutletBWS',tambahcustomer:'tabTambahCustomer',pricelist:'tabPricelist',pesananoutlet:'tabPesananOutlet'};
-            const navMap = {input:'navInput',riwayat:'navRiwayat',pencapaian:'navPencapaian',monitoring:'navMonitoring',outletkontrak:'navOutletKontrak',outletbws:'navOutletBWS',tambahcustomer:'navTambahCustomer',pricelist:'navPricelist',pesananoutlet:'navPesananOutlet'};
+            if (!isAdminLogin && tab === 'pengumuman') { applyRoleVisibility(); return; }
+            const tabMap = {input:'tabInput',riwayat:'tabRiwayat',pencapaian:'tabPencapaian',monitoring:'tabMonitoring',outletkontrak:'tabOutletKontrak',outletbws:'tabOutletBWS',tambahcustomer:'tabTambahCustomer',pricelist:'tabPricelist',pesananoutlet:'tabPesananOutlet',pengumuman:'tabPengumuman'};
+            const navMap = {input:'navInput',riwayat:'navRiwayat',pencapaian:'navPencapaian',monitoring:'navMonitoring',outletkontrak:'navOutletKontrak',outletbws:'navOutletBWS',tambahcustomer:'navTambahCustomer',pricelist:'navPricelist',pesananoutlet:'navPesananOutlet',pengumuman:'navPengumuman'};
             Object.keys(tabMap).forEach(function(key){
                 const el=document.getElementById(tabMap[key]);
                 if(!el) return;
@@ -5690,6 +5972,7 @@ if(tab==='riwayat')loadRiwayat(false, true);
             if(tab==='tambahcustomer')loadTambahCustomer(false, true);
             if(tab==='pricelist')loadPricelist(false, true);
             if(tab==='pesananoutlet')loadPesananOutlet(false, true);
+            if(tab==='pengumuman')loadPengumumanAdmin(false);
         }
 
         function setSidebarState(collapsed) {
@@ -5801,6 +6084,7 @@ if(tab==='riwayat')loadRiwayat(false, true);
                     clearAuthState();
                     currentUser = ""; currentUsernameInput = ""; shoppingCart = []; globalRiwayatData = []; rawMonitoringDataObject = {}; globalOutletKontrakData = []; pencapaianCache = {}; pencapaianDetailCache = {}; globalPricelistData = []; globalTambahCustomerData = { headers: [], rows: [] }; globalTambahCustomerFormMaster = { headers: [], dayVisits: [], channels: [], dsrs: [], today: '', salesName: '', isAdmin: false, newCustCode: '' }; tambahCustomerLoaded = false;
                     document.getElementById('mainPage').classList.add('hidden');
+                    document.getElementById('announcementPage').classList.add('hidden');
                     document.getElementById('mainHeader').classList.add('hidden');
                     document.getElementById('leftNav').classList.add('hidden');
                     setSidebarState(false);
@@ -6447,6 +6731,57 @@ if(tab==='riwayat')loadRiwayat(false, true);
     height: 36px;
   }
 }
+</style>
+
+
+<style id="announcement-modern-ui">
+#announcementPage{
+  min-height:calc(100dvh - 32px);
+  display:flex;align-items:center;justify-content:center;
+  padding:22px 12px 40px;
+  background:
+    radial-gradient(circle at 10% 10%,rgba(0,113,68,.12),transparent 32%),
+    radial-gradient(circle at 90% 85%,rgba(183,212,51,.12),transparent 30%),
+    linear-gradient(135deg,#f8fbf9 0%,#eef6f0 48%,#f8fafc 100%);
+}
+.announcement-shell{width:min(1100px,100%);}
+.announcement-card{background:rgba(255,255,255,.94);border:1px solid rgba(15,118,110,.14);border-radius:28px;box-shadow:0 24px 70px rgba(15,46,32,.13);overflow:hidden;backdrop-filter:blur(14px);}
+.announcement-head{padding:22px 24px 16px;text-align:center;border-bottom:1px solid #edf3ef;background:linear-gradient(180deg,rgba(255,255,255,.98),rgba(247,252,248,.92));}
+.announcement-brand{display:inline-flex;align-items:center;gap:9px;padding:7px 12px;border-radius:999px;background:#eff9f1;color:#006b3f;border:1px solid #d5ecd9;font-size:10px;font-weight:900;letter-spacing:.08em;text-transform:uppercase;}
+.announcement-brand-dot{width:8px;height:8px;border-radius:50%;background:#00a651;box-shadow:0 0 0 5px rgba(0,166,81,.10);}
+.announcement-title{margin:12px 0 0;font-size:clamp(24px,4vw,38px);line-height:1.08;font-weight:950;letter-spacing:-.04em;color:#12251b;}
+.announcement-subtitle{margin:8px auto 0;max-width:680px;color:#718078;font-size:11px;line-height:1.7;}
+.announcement-list{padding:20px;display:grid;gap:16px;max-height:calc(100dvh - 245px);overflow-y:auto;}
+.announcement-item{border:1px solid #e5eee8;border-radius:22px;background:#fff;overflow:hidden;box-shadow:0 10px 28px rgba(16,54,35,.06);}
+.announcement-image-wrap{background:#f4f8f5;min-height:180px;display:flex;align-items:center;justify-content:center;overflow:hidden;}
+.announcement-image{display:block;width:100%;max-height:470px;object-fit:contain;background:#f4f8f5;}
+.announcement-caption{padding:17px 18px 19px;text-align:center;color:#24372d;font-size:clamp(14px,1.8vw,18px);font-weight:800;line-height:1.65;white-space:pre-wrap;word-break:break-word;}
+.announcement-empty-image{padding:0 0 8px;background:linear-gradient(180deg,#f7fbf8,#fff);overflow:hidden;}
+.announcement-marquee-window{position:relative;overflow:hidden;width:100%;padding:24px 0 20px;}
+.announcement-marquee-track{display:flex;width:max-content;min-width:200%;animation:announcementMarqueeLTR 22s linear infinite;will-change:transform;}
+.announcement-marquee-text{flex:0 0 50%;box-sizing:border-box;padding:0 8vw;font-size:clamp(18px,2.8vw,30px);line-height:1.35;font-weight:900;letter-spacing:-.02em;color:#123b28;white-space:nowrap;text-align:center;}
+.announcement-empty-caption{padding:2px 18px 22px;text-align:center;color:#3f5147;font-size:14px;font-weight:700;line-height:1.65;white-space:pre-wrap;}
+@keyframes announcementMarqueeLTR{0%{transform:translateX(-50%)}100%{transform:translateX(0)}}
+.announcement-footer{padding:15px 20px 21px;border-top:1px solid #edf3ef;background:#fbfdfb;display:flex;justify-content:center;}
+.announcement-main-btn{border:0;border-radius:14px;padding:12px 22px;background:linear-gradient(135deg,#006b3f,#008b4e);color:#fff;font-size:12px;font-weight:900;box-shadow:0 10px 24px rgba(0,107,63,.20);cursor:pointer;transition:.18s ease;}
+.announcement-main-btn:hover{transform:translateY(-1px);box-shadow:0 14px 28px rgba(0,107,63,.24);}
+.announcement-admin-grid{display:grid;grid-template-columns:minmax(0,360px) minmax(0,1fr);gap:14px;}
+.announcement-form-card,.announcement-list-card{background:#fff;border:1px solid #e6eee9;border-radius:18px;box-shadow:0 8px 24px rgba(15,46,32,.05);}
+.announcement-form-card{padding:16px;}
+.announcement-list-card{overflow:hidden;}
+.announcement-admin-table{width:100%;border-collapse:collapse;font-size:10px;}
+.announcement-admin-table th{background:#f4f8f5;color:#52645a;text-align:left;font-weight:900;padding:10px;border-bottom:1px solid #e3ece6;}
+.announcement-admin-table td{padding:10px;border-bottom:1px solid #eef3ef;vertical-align:top;color:#33453b;}
+.announcement-admin-table tr:last-child td{border-bottom:0;}
+.announcement-thumb{width:64px;height:44px;object-fit:cover;border-radius:8px;border:1px solid #e4ece7;background:#f5f8f6;}
+.announcement-status{display:inline-flex;padding:3px 7px;border-radius:999px;font-size:8px;font-weight:900;}
+.announcement-status.active{background:#e7f7ed;color:#087443;}
+.announcement-status.upcoming{background:#fff5dc;color:#9a6500;}
+.announcement-status.expired{background:#f2f4f3;color:#7b8780;}
+.announcement-action{border:1px solid #e0e9e3;background:#fff;border-radius:8px;padding:5px 8px;font-size:9px;font-weight:800;cursor:pointer;margin:2px;}
+.announcement-action.edit{color:#006b3f;}
+.announcement-action.delete{color:#b42318;border-color:#f0d5d2;}
+@media(max-width:800px){.announcement-admin-grid{grid-template-columns:1fr}.announcement-list{padding:12px;max-height:none}.announcement-card{border-radius:20px}.announcement-head{padding:18px 15px 14px}.announcement-footer{padding:13px 14px 17px}}
 </style>
 
 <style id="fixed-main-header-final">
