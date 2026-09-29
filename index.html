@@ -1648,7 +1648,7 @@ html{scroll-behavior:auto!important}
                         </div>
                         <div id="announcementList" class="announcement-list"></div>
                         <div class="announcement-footer">
-                            <button type="button" id="announcementMainMenuBtn" class="announcement-main-btn">Ke Menu Utama</button>
+                            <button type="button" id="announcementMainMenuBtn" class="announcement-main-btn" onclick="goToMainMenu(); return false;">Ke Menu Utama</button>
                         </div>
                     </div>
                 </div>
@@ -2173,6 +2173,10 @@ html{scroll-behavior:auto!important}
         let globalPricelistData = [];
         let globalPengumumanAdminData = [];
         let pengumumanEditingRow = 0;
+        // Status halaman pengumuman pasca-login. Dipakai agar request async
+        // yang terlambat tidak membuka/menutup halaman secara tidak sengaja.
+        let announcementLandingOpen = false;
+        let announcementLandingRequestSeq = 0;
 
         function refreshSelect2(selector) {
             try {
@@ -5753,20 +5757,71 @@ startAutoRefresh();
             return escapeHtml(String(v == null ? '' : v));
         }
 
+        function closeAnnouncementLanding() {
+            announcementLandingOpen = false;
+            announcementLandingRequestSeq++;
+
+            const announcementPage = document.getElementById('announcementPage');
+            const mainPage = document.getElementById('mainPage');
+            const header = document.getElementById('mainHeader');
+            const nav = document.getElementById('leftNav');
+
+            if (announcementPage) {
+                announcementPage.classList.add('hidden');
+                announcementPage.style.display = 'none';
+            }
+            if (mainPage) {
+                mainPage.classList.remove('hidden');
+                mainPage.style.removeProperty('display');
+            }
+            if (header) {
+                header.classList.remove('hidden');
+                header.style.removeProperty('display');
+            }
+            if (nav) {
+                nav.classList.remove('hidden');
+                nav.style.removeProperty('display');
+            }
+        }
+
         function showPostLoginAnnouncementPage() {
+            announcementLandingOpen = true;
+            const requestSeq = ++announcementLandingRequestSeq;
+
             google.script.run.withSuccessHandler(function(res) {
+                // Jika user sudah menekan Ke Menu Utama / membuka tab lain,
+                // hasil request lama tidak boleh mengubah tampilan lagi.
+                if (!announcementLandingOpen || requestSeq !== announcementLandingRequestSeq) return;
+
                 const list = res && res.success ? (res.data || []) : [];
                 if (list.length) {
                     renderAnnouncementLanding(list);
-                    document.getElementById('announcementPage').classList.remove('hidden');
-                    document.getElementById('mainPage').classList.add('hidden');
-                    document.getElementById('mainHeader').classList.add('hidden');
-                    document.getElementById('leftNav').classList.add('hidden');
+                    const announcementPage = document.getElementById('announcementPage');
+                    const mainPage = document.getElementById('mainPage');
+                    const mainHeader = document.getElementById('mainHeader');
+                    const leftNav = document.getElementById('leftNav');
+                    if (announcementPage) {
+                        announcementPage.classList.remove('hidden');
+                        announcementPage.style.removeProperty('display');
+                    }
+                    if (mainPage) {
+                        mainPage.classList.add('hidden');
+                        mainPage.style.removeProperty('display');
+                    }
+                    if (mainHeader) {
+                        mainHeader.classList.add('hidden');
+                        mainHeader.style.removeProperty('display');
+                    }
+                    if (leftNav) {
+                        leftNav.classList.add('hidden');
+                        leftNav.style.removeProperty('display');
+                    }
                     setSidebarState(false);
                 } else {
                     goToMainMenu();
                 }
             }).withFailureHandler(function() {
+                if (!announcementLandingOpen || requestSeq !== announcementLandingRequestSeq) return;
                 goToMainMenu();
             }).getPengumumanAktif();
         }
@@ -5791,54 +5846,37 @@ startAutoRefresh();
         }
 
         function goToMainMenu() {
-            // Tutup halaman pengumuman secara eksplisit dan tampilkan kembali aplikasi utama.
-            // Tidak bergantung pada inline onclick agar tetap bekerja pada Web App/GitHub.
+            closeAnnouncementLanding();
+            applyRoleVisibility();
+
+            const isAdminLogin = String(currentUsernameInput || '').trim().toLowerCase() === 'admin';
+            // switchTab hanya mengatur tab internal. Status halaman pengumuman
+            // sudah ditutup di atas dan request lama sudah dibatalkan dengan seq.
+            switchTab(isAdminLogin ? 'riwayat' : 'input');
+
+            // Guard terakhir agar tidak ada style/class dari halaman pengumuman
+            // yang tersisa setelah perpindahan tab.
             const announcementPage = document.getElementById('announcementPage');
             const mainPage = document.getElementById('mainPage');
-            const header = document.getElementById('mainHeader');
-            const nav = document.getElementById('leftNav');
-
             if (announcementPage) {
                 announcementPage.classList.add('hidden');
                 announcementPage.style.display = 'none';
             }
             if (mainPage) {
                 mainPage.classList.remove('hidden');
-                mainPage.style.display = '';
-            }
-            if (header) {
-                header.classList.remove('hidden');
-                header.style.display = '';
-            }
-            if (nav) {
-                nav.classList.remove('hidden');
-                nav.style.display = '';
-            }
-
-            applyRoleVisibility();
-            setSidebarState(false);
-            const isAdminLogin = String(currentUsernameInput || '').trim().toLowerCase() === 'admin';
-            switchTab(isAdminLogin ? 'riwayat' : 'input');
-
-            // Pastikan halaman pengumuman tetap tertutup setelah switchTab/render selesai.
-            if (announcementPage) {
-                announcementPage.classList.add('hidden');
-                announcementPage.style.display = 'none';
+                mainPage.style.removeProperty('display');
             }
         }
 
-        // Handler tombol dibuat dengan addEventListener supaya tidak bergantung pada
-        // inline onclick dan tetap berfungsi pada seluruh mode deployment Web App.
-        document.addEventListener('DOMContentLoaded', function() {
-            const btn = document.getElementById('announcementMainMenuBtn');
-            if (btn) {
-                btn.addEventListener('click', function(event) {
-                    event.preventDefault();
-                    event.stopPropagation();
-                    goToMainMenu();
-                });
-            }
-        });
+        // Event delegation: tombol tetap bekerja walaupun DOM halaman pengumuman
+        // dirender/diubah setelah halaman pertama selesai dimuat.
+        document.addEventListener('click', function(event) {
+            const btn = event.target && event.target.closest ? event.target.closest('#announcementMainMenuBtn') : null;
+            if (!btn) return;
+            event.preventDefault();
+            event.stopPropagation();
+            goToMainMenu();
+        }, true);
 
         function announcementAdminStatus(item) {
             const today = new Date(); today.setHours(0,0,0,0);
@@ -5977,62 +6015,56 @@ startAutoRefresh();
             if (isAdminLogin && tab === 'input') { applyRoleVisibility(); return; }
             if (!isAdminLogin && tab === 'pengumuman') { applyRoleVisibility(); return; }
 
-            // Pastikan saat membuka tab internal, halaman pengumuman pasca-login
-            // tidak menutupi mainPage. Khusus tab Buat Pengumuman, paksa seluruh
-            // container aplikasi utama terlihat sebelum mengaktifkan tab.
-            const announcementPage = document.getElementById('announcementPage');
+            // Membuka tab internal selalu menutup landing pengumuman.
+            // Ini juga membatalkan callback async pengumuman yang masih tertunda.
+            closeAnnouncementLanding();
+
             const mainPage = document.getElementById('mainPage');
             const mainHeader = document.getElementById('mainHeader');
             const leftNav = document.getElementById('leftNav');
-            if (tab === 'pengumuman') {
-                if (announcementPage) {
-                    announcementPage.classList.add('hidden');
-                    announcementPage.style.display = 'none';
-                }
-                if (mainPage) {
-                    mainPage.classList.remove('hidden');
-                    mainPage.style.display = '';
-                }
-                if (mainHeader) {
-                    mainHeader.classList.remove('hidden');
-                    mainHeader.style.display = '';
-                }
-                if (leftNav) {
-                    leftNav.classList.remove('hidden');
-                    leftNav.style.display = '';
-                }
+            if (mainPage) {
+                mainPage.classList.remove('hidden');
+                mainPage.style.removeProperty('display');
+            }
+            if (mainHeader) {
+                mainHeader.classList.remove('hidden');
+                mainHeader.style.removeProperty('display');
+            }
+            if (leftNav) {
+                leftNav.classList.remove('hidden');
+                leftNav.style.removeProperty('display');
             }
 
             const tabMap = {input:'tabInput',riwayat:'tabRiwayat',pencapaian:'tabPencapaian',monitoring:'tabMonitoring',outletkontrak:'tabOutletKontrak',outletbws:'tabOutletBWS',tambahcustomer:'tabTambahCustomer',pricelist:'tabPricelist',pesananoutlet:'tabPesananOutlet',pengumuman:'tabPengumuman'};
             const navMap = {input:'navInput',riwayat:'navRiwayat',pencapaian:'navPencapaian',monitoring:'navMonitoring',outletkontrak:'navOutletKontrak',outletbws:'navOutletBWS',tambahcustomer:'navTambahCustomer',pricelist:'navPricelist',pesananoutlet:'navPesananOutlet',pengumuman:'navPengumuman'};
+
             Object.keys(tabMap).forEach(function(key){
-                const el=document.getElementById(tabMap[key]);
-                if(!el) return;
-                // Outlet BWS hanya boleh terlihat untuk Admin.
-                if(key==='outletbws' && !isAdminLogin){
+                const el = document.getElementById(tabMap[key]);
+                if (!el) return;
+                if (key === 'outletbws' && !isAdminLogin) {
                     el.classList.add('hidden');
-                }else{
-                    const isTarget = key === tab;
-                    el.classList.toggle('hidden', !isTarget);
-                    if (isTarget && tab === 'pengumuman') {
-                        el.style.display = '';
-                    } else if (!isTarget) {
-                        el.style.display = '';
-                    }
+                    el.style.removeProperty('display');
+                    return;
                 }
+                const isTarget = key === tab;
+                el.classList.toggle('hidden', !isTarget);
+                el.style.removeProperty('display');
             });
+
             Object.keys(navMap).forEach(function(key){
-                const el=document.getElementById(navMap[key]);
-                if(!el) return;
-                // Jangan menimpa class "hidden" Outlet BWS saat switch tab.
-                if(key==='outletbws' && !isAdminLogin){
-                    el.className='sidebar-item hidden';
-                }else{
-                    el.className=key===tab?'sidebar-item sidebar-item-active':'sidebar-item';
+                const el = document.getElementById(navMap[key]);
+                if (!el) return;
+                if (key === 'outletbws' && !isAdminLogin) {
+                    el.className = 'sidebar-item hidden';
+                } else if (key === 'pengumuman' && !isAdminLogin) {
+                    el.className = 'sidebar-item hidden';
+                } else {
+                    el.className = key === tab ? 'sidebar-item sidebar-item-active' : 'sidebar-item';
                 }
             });
+
             setSidebarState(true);
-if(tab==='riwayat')loadRiwayat(false, true);
+            if(tab==='riwayat')loadRiwayat(false, true);
             if(tab==='pencapaian')loadPencapaianSales(false, true);
             if(tab==='monitoring')loadMonitoring(false, true);
             if(tab==='outletkontrak')loadOutletKontrak(false, true);
