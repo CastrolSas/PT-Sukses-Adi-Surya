@@ -1446,26 +1446,28 @@ html{scroll-behavior:auto!important}
 
 
 <style id="pengumuman-minimal-css">
+/* PENGUMUMAN: hanya gambar masuk carousel, teks tanpa gambar masuk header berjalan. */
 #announcementPage.pengumuman-page{position:fixed;inset:0;z-index:9998;overflow:auto;background:radial-gradient(circle at 15% 10%,rgba(16,185,129,.13),transparent 35%),radial-gradient(circle at 85% 85%,rgba(132,204,22,.10),transparent 35%),#f6faf8;padding:28px;box-sizing:border-box}
 .pengumuman-shell{width:min(1120px,100%);min-height:calc(100dvh - 56px);margin:auto;display:flex;align-items:center;justify-content:center}
 .pengumuman-panel{width:100%;background:rgba(255,255,255,.94);border:1px solid rgba(16,185,129,.16);border-radius:32px;box-shadow:0 28px 80px rgba(15,23,42,.14);overflow:hidden;backdrop-filter:blur(12px)}
-.pengumuman-hero{padding:34px 28px 26px;text-align:center;background:linear-gradient(135deg,#ecfdf5,#fff 55%,#f7fee7);border-bottom:1px solid #e2e8f0}
-.pengumuman-pill{display:inline-flex;align-items:center;gap:8px;padding:8px 14px;border:1px solid #bbf7d0;border-radius:999px;background:#fff;color:#047857;font-size:11px;font-weight:900;letter-spacing:.08em}
-.pengumuman-dot{width:9px;height:9px;border-radius:50%;background:#10b981;box-shadow:0 0 0 5px #d1fae5}
-#announcementContent{padding:26px}
-.pengumuman-card{overflow:hidden;border:1px solid #e2e8f0;border-radius:24px;background:#fff;box-shadow:0 14px 38px rgba(15,23,42,.08);margin-bottom:20px}
-.pengumuman-card:last-child{margin-bottom:0}
-.pengumuman-card img{display:block;width:100%;max-height:62vh;object-fit:contain;background:#f8fafc}
-.pengumuman-caption{padding:18px 22px 22px;text-align:center;color:#334155;font-size:14px;line-height:1.75;font-weight:700;white-space:pre-wrap}
-.pengumuman-header-marquee{margin-top:22px;overflow:hidden;border:1px solid #bbf7d0;border-radius:22px;background:linear-gradient(90deg,#ecfdf5,#fff,#f7fee7);padding:20px 0;white-space:nowrap;box-shadow:0 12px 32px rgba(16,185,129,.08)}
-.pengumuman-marquee-track{display:flex;width:max-content;animation:pengumumanMarqueeLTR 24s linear infinite;will-change:transform}
-.pengumuman-marquee-text{flex:0 0 auto;padding:0 7vw;font-size:clamp(18px,3vw,30px);font-weight:900;color:#047857;letter-spacing:.01em}
+.pengumuman-hero{padding:20px 22px;background:linear-gradient(135deg,#ecfdf5,#fff 55%,#f7fee7);border-bottom:1px solid #e2e8f0}
+.pengumuman-text-header{overflow:hidden;width:100%;border:1px solid #bbf7d0;border-radius:18px;background:linear-gradient(90deg,#ecfdf5,#fff,#f7fee7);padding:15px 0;white-space:nowrap;box-shadow:0 8px 24px rgba(16,185,129,.08)}
+.pengumuman-text-track{display:flex;width:max-content;animation:pengumumanMarqueeLTR 18s linear infinite;will-change:transform}
+.pengumuman-text-item{flex:0 0 auto;padding:0 70px;font-size:clamp(17px,2.5vw,28px);font-weight:900;color:#047857;letter-spacing:.01em}
 @keyframes pengumumanMarqueeLTR{from{transform:translateX(-50%)}to{transform:translateX(0)}}
+#announcementContent{padding:26px}
+.pengumuman-image-carousel{display:flex;gap:18px;overflow-x:auto;overflow-y:hidden;scroll-snap-type:x mandatory;scroll-behavior:smooth;-webkit-overflow-scrolling:touch;touch-action:pan-x;overscroll-behavior-x:contain;padding:2px 2px 12px;scrollbar-width:thin}
+.pengumuman-image-slide{flex:0 0 min(86%,920px);scroll-snap-align:center;scroll-snap-stop:always}
+.pengumuman-card{overflow:hidden;border:1px solid #e2e8f0;border-radius:24px;background:#fff;box-shadow:0 14px 38px rgba(15,23,42,.08)}
+.pengumuman-card img{display:block;width:100%;height:min(62vh,620px);object-fit:contain;background:#f8fafc}
+.pengumuman-caption{padding:18px 22px 22px;text-align:center;color:#334155;font-size:14px;line-height:1.75;font-weight:700;white-space:pre-wrap}
+.pengumuman-carousel-hint{text-align:center;color:#94a3b8;font-size:10px;font-weight:700;margin-top:10px}
+.pengumuman-empty{padding:42px 20px;text-align:center;color:#64748b}
 .pengumuman-footer{padding:20px 26px 26px;text-align:center;border-top:1px solid #eef2f7;background:#f8fafc}
 .pengumuman-main-btn{border:0;border-radius:15px;padding:13px 28px;background:#008a4c;color:#fff;font-weight:900;box-shadow:0 10px 24px rgba(0,138,76,.22);cursor:pointer}
 .pengumuman-main-btn:hover{background:#00733f}
 #tabPengumumanAdmin .pengumuman-thumb{width:72px;height:48px;object-fit:cover;border-radius:10px;border:1px solid #e2e8f0;background:#f8fafc}
-@media(max-width:767px){#announcementPage.pengumuman-page{padding:12px}.pengumuman-shell{min-height:calc(100dvh - 24px)}.pengumuman-panel{border-radius:22px}.pengumuman-hero{padding:26px 18px 22px}#announcementContent{padding:16px}.pengumuman-footer{padding:16px}.pengumuman-marquee-text{padding:0 18vw}}
+@media(max-width:767px){#announcementPage.pengumuman-page{padding:12px}.pengumuman-shell{min-height:calc(100dvh - 24px)}.pengumuman-panel{border-radius:22px}.pengumuman-hero{padding:14px}.pengumuman-text-item{padding:0 42px}#announcementContent{padding:16px}.pengumuman-image-slide{flex-basis:88%}.pengumuman-card img{height:min(58vh,520px)}.pengumuman-footer{padding:16px}}
 </style>
 
 </head>
@@ -1522,8 +1524,7 @@ html{scroll-behavior:auto!important}
   <div class="pengumuman-shell">
     <section class="pengumuman-panel">
       <div class="pengumuman-hero">
-        <div class="pengumuman-pill"><span class="pengumuman-dot"></span>CASTROL • PT SUKSES ADI SURYA</div>
-        <div id="announcementHeaderMarquee" class="pengumuman-header-marquee hidden" aria-label="Pengumuman berjalan"></div>
+        <div id="announcementTextHeader" class="pengumuman-text-header hidden"></div>
       </div>
       <div id="announcementContent"></div>
       <div class="pengumuman-footer">
@@ -6509,50 +6510,56 @@ function isAdminPengumuman() {
 
 function renderAnnouncementPage(data) {
     var box = document.getElementById('announcementContent');
-    var headerMarquee = document.getElementById('announcementHeaderMarquee');
-    if (!box) return;
+    var header = document.getElementById('announcementTextHeader');
+    if (!box || !header) return {hasImage:false, hasText:false};
 
     var list = Array.isArray(data) ? data : [];
-    var imageItems = list.filter(function(item) {
-        return item && String(item.gambar || '').trim() !== '';
-    });
-    var textItems = list.filter(function(item) {
-        return item && String(item.gambar || '').trim() === '' && String(item.keterangan || '').trim() !== '';
+    var imageItems = list.filter(function(item){ return String(item && item.gambar || '').trim() !== ''; });
+    var textItems = list.filter(function(item){
+        return String(item && item.gambar || '').trim() === '' && String(item && item.keterangan || '').trim() !== '';
     });
 
-    /* Hanya pengumuman yang benar-benar mempunyai gambar yang ditampilkan sebagai kartu. */
-    box.innerHTML = imageItems.map(function(item) {
-        var imageUrl = String(item.gambar || '').trim();
-        var text = escapeHtml(item.keterangan || '');
-        return '<div class="pengumuman-card"><img src="' + escapeHtml(imageUrl) + '" alt="Pengumuman">' +
-               (text ? '<div class="pengumuman-caption">' + text + '</div>' : '') +
-               '</div>';
-    }).join('');
-
-    /* Pengumuman tanpa gambar masuk ke HEADER dan berjalan dari kiri ke kanan. */
-    if (headerMarquee) {
-        if (textItems.length) {
-            var messages = textItems.map(function(item) {
-                return escapeHtml(String(item.keterangan || '').trim());
-            }).filter(Boolean);
-            var combined = messages.join(' &nbsp;&nbsp; • &nbsp;&nbsp; ');
-            var repeated = combined + ' &nbsp;&nbsp; • &nbsp;&nbsp; ' + combined;
-            headerMarquee.innerHTML =
-                '<div class="pengumuman-marquee-track">' +
-                '<span class="pengumuman-marquee-text">' + repeated + '</span>' +
-                '</div>';
-            headerMarquee.classList.remove('hidden');
-        } else {
-            headerMarquee.innerHTML = '';
-            headerMarquee.classList.add('hidden');
-        }
+    /* Pengumuman tanpa gambar: hanya masuk ke header berjalan. */
+    if (textItems.length) {
+        var messages = textItems.map(function(item){
+            return escapeHtml(String(item.keterangan || '').trim());
+        }).filter(Boolean);
+        var sequence = messages.map(function(msg){
+            return '<span class="pengumuman-text-item">' + msg + ' &nbsp; • &nbsp; </span>';
+        }).join('');
+        header.innerHTML = '<div class="pengumuman-text-track">' + sequence + sequence + '</div>';
+        header.classList.remove('hidden');
+    } else {
+        header.innerHTML = '';
+        header.classList.add('hidden');
     }
+
+    /* Pengumuman dengan gambar: hanya gambar yang masuk carousel swipe kiri/kanan. */
+    if (imageItems.length) {
+        var slides = imageItems.map(function(item){
+            var text = escapeHtml(item.keterangan || '');
+            return '<div class="pengumuman-image-slide"><div class="pengumuman-card">' +
+                '<img src="' + escapeHtml(item.gambar) + '" alt="Pengumuman" loading="eager">' +
+                (text ? '<div class="pengumuman-caption">' + text + '</div>' : '') +
+                '</div></div>';
+        }).join('');
+        box.innerHTML = '<div class="pengumuman-image-carousel" aria-label="Daftar pengumuman bergambar">' + slides + '</div>' +
+            (imageItems.length > 1 ? '<div class="pengumuman-carousel-hint">Geser ke kiri / kanan untuk melihat pengumuman lainnya</div>' : '');
+    } else {
+        box.innerHTML = '';
+    }
+
+    return {hasImage:imageItems.length > 0, hasText:textItems.length > 0};
 }
 
 function showAnnouncementPage(data) {
     if (announcementDismissedThisSession) return;
     if (!Array.isArray(data) || !data.length) return;
-    renderAnnouncementPage(data);
+
+    var rendered = renderAnnouncementPage(data);
+    /* Jangan tampilkan halaman kosong. Teks tanpa gambar tetap tampil di header. */
+    if (!rendered.hasImage && !rendered.hasText) return;
+
     var page = document.getElementById('announcementPage');
     var app = document.getElementById('app');
     if (page) { page.classList.remove('hidden'); page.setAttribute('aria-hidden','false'); }
