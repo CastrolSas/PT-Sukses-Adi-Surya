@@ -5976,6 +5976,33 @@ startAutoRefresh();
             const isAdminLogin = String(currentUsernameInput || '').trim().toLowerCase() === 'admin';
             if (isAdminLogin && tab === 'input') { applyRoleVisibility(); return; }
             if (!isAdminLogin && tab === 'pengumuman') { applyRoleVisibility(); return; }
+
+            // Pastikan saat membuka tab internal, halaman pengumuman pasca-login
+            // tidak menutupi mainPage. Khusus tab Buat Pengumuman, paksa seluruh
+            // container aplikasi utama terlihat sebelum mengaktifkan tab.
+            const announcementPage = document.getElementById('announcementPage');
+            const mainPage = document.getElementById('mainPage');
+            const mainHeader = document.getElementById('mainHeader');
+            const leftNav = document.getElementById('leftNav');
+            if (tab === 'pengumuman') {
+                if (announcementPage) {
+                    announcementPage.classList.add('hidden');
+                    announcementPage.style.display = 'none';
+                }
+                if (mainPage) {
+                    mainPage.classList.remove('hidden');
+                    mainPage.style.display = '';
+                }
+                if (mainHeader) {
+                    mainHeader.classList.remove('hidden');
+                    mainHeader.style.display = '';
+                }
+                if (leftNav) {
+                    leftNav.classList.remove('hidden');
+                    leftNav.style.display = '';
+                }
+            }
+
             const tabMap = {input:'tabInput',riwayat:'tabRiwayat',pencapaian:'tabPencapaian',monitoring:'tabMonitoring',outletkontrak:'tabOutletKontrak',outletbws:'tabOutletBWS',tambahcustomer:'tabTambahCustomer',pricelist:'tabPricelist',pesananoutlet:'tabPesananOutlet',pengumuman:'tabPengumuman'};
             const navMap = {input:'navInput',riwayat:'navRiwayat',pencapaian:'navPencapaian',monitoring:'navMonitoring',outletkontrak:'navOutletKontrak',outletbws:'navOutletBWS',tambahcustomer:'navTambahCustomer',pricelist:'navPricelist',pesananoutlet:'navPesananOutlet',pengumuman:'navPengumuman'};
             Object.keys(tabMap).forEach(function(key){
@@ -5985,7 +6012,13 @@ startAutoRefresh();
                 if(key==='outletbws' && !isAdminLogin){
                     el.classList.add('hidden');
                 }else{
-                    el.classList.toggle('hidden',key!==tab);
+                    const isTarget = key === tab;
+                    el.classList.toggle('hidden', !isTarget);
+                    if (isTarget && tab === 'pengumuman') {
+                        el.style.display = '';
+                    } else if (!isTarget) {
+                        el.style.display = '';
+                    }
                 }
             });
             Object.keys(navMap).forEach(function(key){
