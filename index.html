@@ -2461,7 +2461,7 @@ html{scroll-behavior:auto!important}
 
                 const isAdminLogin = currentUsernameInput.toLowerCase() === 'admin';
                 applyRoleVisibility();
-                document.getElementById('userBadge').textContent = isAdminLogin ? "Role: Admin" : ("Sales: " + currentUser);
+                document.getElementById('userBadge').textContent = isAdminLogin ? "Admin" : currentUser;
                 document.getElementById('userBadge').classList.remove('hidden');
                 const adminTools = document.getElementById('riwayatAdminTools');
                 if (adminTools) adminTools.classList.toggle('hidden', !isAdminLogin);
@@ -2578,7 +2578,7 @@ startAutoRefresh();
                     setSidebarState(false);
                     const isAdminLogin = currentUsernameInput.toLowerCase() === 'admin';
                     applyRoleVisibility();
-                    document.getElementById('userBadge').textContent = isAdminLogin ? "Role: Admin" : ("Sales: " + currentUser);
+                    document.getElementById('userBadge').textContent = isAdminLogin ? "Admin" : currentUser;
                     document.getElementById('userBadge').classList.remove('hidden');
                     const adminTools = document.getElementById('riwayatAdminTools');
                     if (adminTools) adminTools.classList.toggle('hidden', !isAdminLogin);
@@ -5930,7 +5930,7 @@ if(tab==='riwayat')loadRiwayat(false, true);
                     if (res && res.success) {
                         currentUsernameInput = res.username || newUsername.toLowerCase();
                         localStorage.setItem(AUTH_STORAGE_KEY, JSON.stringify({username: currentUsernameInput, sales: currentUser}));
-                        document.getElementById('userBadge').textContent = (currentUsernameInput.toLowerCase() === 'admin') ? 'Role: Admin' : ('Sales: ' + currentUser);
+                        document.getElementById('userBadge').textContent = (currentUsernameInput.toLowerCase() === 'admin') ? 'Admin' : currentUser;
                         loadOutletForSales(currentUser, currentUsernameInput);
                         loadRiwayat();
                         showModal('Berhasil', res.message || 'Account berhasil diperbarui.');
