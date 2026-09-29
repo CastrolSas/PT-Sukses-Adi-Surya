@@ -1648,7 +1648,7 @@ html{scroll-behavior:auto!important}
                         </div>
                         <div id="announcementList" class="announcement-list"></div>
                         <div class="announcement-footer">
-                            <button type="button" class="announcement-main-btn" onclick="goToMainMenu()">Ke Menu Utama</button>
+                            <button type="button" id="announcementMainMenuBtn" class="announcement-main-btn">Ke Menu Utama</button>
                         </div>
                     </div>
                 </div>
@@ -5791,19 +5791,54 @@ startAutoRefresh();
         }
 
         function goToMainMenu() {
+            // Tutup halaman pengumuman secara eksplisit dan tampilkan kembali aplikasi utama.
+            // Tidak bergantung pada inline onclick agar tetap bekerja pada Web App/GitHub.
             const announcementPage = document.getElementById('announcementPage');
             const mainPage = document.getElementById('mainPage');
             const header = document.getElementById('mainHeader');
             const nav = document.getElementById('leftNav');
-            if (announcementPage) announcementPage.classList.add('hidden');
-            if (mainPage) mainPage.classList.remove('hidden');
-            if (header) header.classList.remove('hidden');
-            if (nav) nav.classList.remove('hidden');
+
+            if (announcementPage) {
+                announcementPage.classList.add('hidden');
+                announcementPage.style.display = 'none';
+            }
+            if (mainPage) {
+                mainPage.classList.remove('hidden');
+                mainPage.style.display = '';
+            }
+            if (header) {
+                header.classList.remove('hidden');
+                header.style.display = '';
+            }
+            if (nav) {
+                nav.classList.remove('hidden');
+                nav.style.display = '';
+            }
+
             applyRoleVisibility();
             setSidebarState(false);
             const isAdminLogin = String(currentUsernameInput || '').trim().toLowerCase() === 'admin';
             switchTab(isAdminLogin ? 'riwayat' : 'input');
+
+            // Pastikan halaman pengumuman tetap tertutup setelah switchTab/render selesai.
+            if (announcementPage) {
+                announcementPage.classList.add('hidden');
+                announcementPage.style.display = 'none';
+            }
         }
+
+        // Handler tombol dibuat dengan addEventListener supaya tidak bergantung pada
+        // inline onclick dan tetap berfungsi pada seluruh mode deployment Web App.
+        document.addEventListener('DOMContentLoaded', function() {
+            const btn = document.getElementById('announcementMainMenuBtn');
+            if (btn) {
+                btn.addEventListener('click', function(event) {
+                    event.preventDefault();
+                    event.stopPropagation();
+                    goToMainMenu();
+                });
+            }
+        });
 
         function announcementAdminStatus(item) {
             const today = new Date(); today.setHours(0,0,0,0);
