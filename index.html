@@ -1446,7 +1446,14 @@ html{scroll-behavior:auto!important}
 
 
 <style id="pengumuman-minimal-css">
-/* PENGUMUMAN: hanya gambar masuk carousel, teks tanpa gambar masuk header berjalan. */
+/* PENGUMUMAN: hanya gambar masuk carousel. Teks tanpa gambar berjalan di HEADER UTAMA. */
+.main-header-announcement{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);width:min(46vw,620px);height:34px;overflow:hidden;display:flex;align-items:center;border:1px solid rgba(52,211,153,.24);border-radius:999px;background:rgba(2,44,34,.58);box-shadow:inset 0 0 0 1px rgba(255,255,255,.03)}
+.main-header-announcement-track{display:flex;width:max-content;white-space:nowrap;animation:mainHeaderAnnouncementMarquee 20s linear infinite;will-change:transform}
+.main-header-announcement-item{flex:0 0 auto;padding:0 42px;color:#d1fae5;font-size:12px;font-weight:800;letter-spacing:.01em}
+@keyframes mainHeaderAnnouncementMarquee{from{transform:translateX(-50%)}to{transform:translateX(0)}}
+@media(max-width:900px){.main-header-announcement{left:42%;width:34vw}.main-header-announcement-item{padding:0 28px;font-size:10px}}
+@media(max-width:640px){.main-header-announcement{position:static;transform:none;order:2;flex:1;min-width:0;width:auto;margin:0 8px;height:32px}.main-header-announcement-item{padding:0 22px;font-size:9px}}
+
 #announcementPage.pengumuman-page{position:fixed;inset:0;z-index:9998;overflow:auto;background:radial-gradient(circle at 15% 10%,rgba(16,185,129,.13),transparent 35%),radial-gradient(circle at 85% 85%,rgba(132,204,22,.10),transparent 35%),#f6faf8;padding:28px;box-sizing:border-box}
 .pengumuman-shell{width:min(1120px,100%);min-height:calc(100dvh - 56px);margin:auto;display:flex;align-items:center;justify-content:center}
 .pengumuman-panel{width:100%;background:rgba(255,255,255,.94);border:1px solid rgba(16,185,129,.16);border-radius:32px;box-shadow:0 28px 80px rgba(15,23,42,.14);overflow:hidden;backdrop-filter:blur(12px)}
@@ -1545,6 +1552,9 @@ html{scroll-behavior:auto!important}
                 </button>
                 <div class="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse"></div>
                 <h1 class="font-bold text-sm tracking-wide text-slate-100 truncate">Castrol</h1>
+            </div>
+            <div id="mainHeaderAnnouncement" class="main-header-announcement hidden" aria-live="polite">
+                <div id="mainHeaderAnnouncementTrack" class="main-header-announcement-track"></div>
             </div>
             <div class="flex items-center space-x-1.5 sm:space-x-2">
                 <span id="userBadge" class="text-xs bg-slate-800/80 backdrop-blur-md text-emerald-300 border border-emerald-500/30 px-2.5 py-1 rounded-full font-medium shadow-inner hidden"></span>
@@ -6511,7 +6521,9 @@ function isAdminPengumuman() {
 function renderAnnouncementPage(data) {
     var box = document.getElementById('announcementContent');
     var header = document.getElementById('announcementTextHeader');
-    if (!box || !header) return {hasImage:false, hasText:false};
+    var mainHeader = document.getElementById('mainHeaderAnnouncement');
+    var mainHeaderTrack = document.getElementById('mainHeaderAnnouncementTrack');
+    if (!box) return {hasImage:false, hasText:false};
 
     var list = Array.isArray(data) ? data : [];
     var imageItems = list.filter(function(item){ return String(item && item.gambar || '').trim() !== ''; });
@@ -6519,17 +6531,23 @@ function renderAnnouncementPage(data) {
         return String(item && item.gambar || '').trim() === '' && String(item && item.keterangan || '').trim() !== '';
     });
 
-    /* Pengumuman tanpa gambar: hanya masuk ke header berjalan. */
-    if (textItems.length) {
+    /* Pengumuman tanpa gambar: hanya masuk ke HEADER UTAMA yang berjalan. */
+    if (textItems.length && mainHeader && mainHeaderTrack) {
         var messages = textItems.map(function(item){
             return escapeHtml(String(item.keterangan || '').trim());
         }).filter(Boolean);
         var sequence = messages.map(function(msg){
-            return '<span class="pengumuman-text-item">' + msg + ' &nbsp; • &nbsp; </span>';
+            return '<span class="main-header-announcement-item">' + msg + ' &nbsp; • &nbsp; </span>';
         }).join('');
-        header.innerHTML = '<div class="pengumuman-text-track">' + sequence + sequence + '</div>';
-        header.classList.remove('hidden');
-    } else {
+        mainHeaderTrack.innerHTML = sequence + sequence;
+        mainHeader.classList.remove('hidden');
+    } else if (mainHeader && mainHeaderTrack) {
+        mainHeaderTrack.innerHTML = '';
+        mainHeader.classList.add('hidden');
+    }
+
+    /* Jangan tampilkan ticker di halaman pengumuman. */
+    if (header) {
         header.innerHTML = '';
         header.classList.add('hidden');
     }
@@ -6557,8 +6575,9 @@ function showAnnouncementPage(data) {
     if (!Array.isArray(data) || !data.length) return;
 
     var rendered = renderAnnouncementPage(data);
-    /* Jangan tampilkan halaman kosong. Teks tanpa gambar tetap tampil di header. */
-    if (!rendered.hasImage && !rendered.hasText) return;
+    /* Halaman pengumuman hanya untuk pengumuman yang memiliki gambar.
+       Pengumuman tanpa gambar hanya berjalan di header utama. */
+    if (!rendered.hasImage) return;
 
     var page = document.getElementById('announcementPage');
     var app = document.getElementById('app');
