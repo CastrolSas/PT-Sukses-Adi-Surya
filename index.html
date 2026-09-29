@@ -2450,6 +2450,8 @@ html{scroll-behavior:auto!important}
                 if (!state || !state.username || !state.sales) return false;
 
                 currentUsernameInput = String(state.username).trim();
+                if (typeof pengumumanDismissed !== 'undefined') pengumumanDismissed = false;
+                if (typeof pengumumanSessionShown !== 'undefined') pengumumanSessionShown = false;
                 currentUser = String(state.sales).trim();
 
                 document.getElementById('loginPage').classList.add('hidden');
@@ -2574,6 +2576,8 @@ startAutoRefresh();
             google.script.run.withSuccessHandler(function(res) {
                 showLoading(false);
                 if (res.success) {
+                    pengumumanDismissed = false;
+                    pengumumanSessionShown = false;
                     currentUser = res.sales;
                     document.getElementById('loginPage').classList.add('hidden');
                     document.getElementById('registerPage').classList.add('hidden');
@@ -5949,6 +5953,8 @@ if(tab==='riwayat')loadRiwayat(false, true);
         function logout() {
             showModal("Konfirmasi", "Keluar aplikasi?", true, function(isOk) {
                 if (isOk) {
+                    if (typeof pengumumanDismissed !== 'undefined') pengumumanDismissed = false;
+                    if (typeof pengumumanSessionShown !== 'undefined') pengumumanSessionShown = false;
                     clearAuthState();
                     currentUser = ""; currentUsernameInput = ""; shoppingCart = []; globalRiwayatData = []; rawMonitoringDataObject = {}; globalOutletKontrakData = []; pencapaianCache = {}; pencapaianDetailCache = {}; globalPricelistData = []; globalTambahCustomerData = { headers: [], rows: [] }; globalTambahCustomerFormMaster = { headers: [], dayVisits: [], channels: [], dsrs: [], today: '', salesName: '', isAdmin: false, newCustCode: '' }; tambahCustomerLoaded = false;
                     document.getElementById('mainPage').classList.add('hidden');
@@ -6564,6 +6570,7 @@ if(tab==='riwayat')loadRiwayat(false, true);
     let pengumumanLandingBusy = false;
     let pengumumanLandingOpen = false;
     let pengumumanSessionShown = false;
+    let pengumumanDismissed = false;
     let pengumumanAdminData = [];
     let pengumumanEditRow = 0;
 
@@ -6621,7 +6628,7 @@ if(tab==='riwayat')loadRiwayat(false, true);
         }).join('');
     }
     function loadAnnouncementLanding(){
-        if(pengumumanLandingBusy || pengumumanSessionShown) return;
+        if(pengumumanLandingBusy || pengumumanSessionShown || pengumumanDismissed) return;
         pengumumanLandingBusy=true;
         pengumumanSessionShown=true;
         google.script.run.withSuccessHandler(function(res){
@@ -6634,6 +6641,9 @@ if(tab==='riwayat')loadRiwayat(false, true);
         }).getPengumumanAktif();
     }
     window.closeAnnouncementLanding=function(){
+        // Setelah user memilih Ke Menu Utama, jangan tampilkan lagi sampai login berikutnya.
+        pengumumanDismissed=true;
+        pengumumanSessionShown=true;
         setAnnouncementPage(false);
         const isAdmin=String(currentUsernameInput||'').trim().toLowerCase()==='admin';
         if(typeof switchTab==='function') switchTab(isAdmin?'riwayat':'input');
