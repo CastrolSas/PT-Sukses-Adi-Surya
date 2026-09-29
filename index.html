@@ -6676,29 +6676,9 @@ function handlePengumumanImageFile(input) {
                     dataUrl = canvas.toDataURL(outputMime, quality);
                 }
 
-                // Hanya turunkan kualitas secara bertahap. Jangan mengecilkan resolusi
-                // Full HD kecuali benar-benar diperlukan untuk batas ukuran sel Sheet.
-                var minQuality = 0.55;
-                for (var attempt = 0; attempt < 8 && dataUrl.length > 49000; attempt++) {
-                    quality -= 0.05;
-                    if (quality < minQuality) quality = minQuality;
-                    dataUrl = canvas.toDataURL(outputMime, quality);
-                    if (dataUrl.length <= 49000) break;
-                }
-
-                // Jika masih terlalu besar, pertahankan rasio dan turunkan resolusi
-                // secara minimal setelah kualitas mencapai batas aman.
-                for (var resizeAttempt = 0; resizeAttempt < 4 && dataUrl.length > 49000; resizeAttempt++) {
-                    w = Math.max(960, Math.round(w * 0.90));
-                    h = Math.max(540, Math.round(h * 0.90));
-                    canvas.width = w;
-                    canvas.height = h;
-                    ctx = canvas.getContext('2d', {alpha:false});
-                    ctx.imageSmoothingEnabled = true;
-                    ctx.imageSmoothingQuality = 'high';
-                    ctx.drawImage(img, 0, 0, w, h);
-                    dataUrl = canvas.toDataURL(outputMime, quality);
-                }
+                // Tidak ada lagi batas ukuran file di sisi browser.
+                // Resolusi tetap mengikuti standar Full HD maksimum, tetapi kualitas
+                // tidak diturunkan hanya karena hasil encode lebih besar.
 
                 var comma = dataUrl.indexOf(',');
                 if (comma < 0) throw new Error('Gagal memproses gambar.');
