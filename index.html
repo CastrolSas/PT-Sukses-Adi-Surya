@@ -1570,7 +1570,7 @@ html{scroll-behavior:auto!important}
                 </button>
 
 
-                <button type="button" onclick="switchTab('pengumuman')" id="navPengumuman"
+                <button type="button" onclick="openPengumumanAdminTab(); return false;" id="navPengumuman"
                         class="sidebar-item hidden" title="Buat Pengumuman" aria-label="Buat Pengumuman">
                     <span class="sidebar-icon">📢</span>
                     <span class="sidebar-text">Buat Pengumuman</span>
@@ -6010,18 +6010,25 @@ startAutoRefresh();
             });
         }
 
-        function switchTab(tab) {
+        function openPengumumanAdminTab() {
             const isAdminLogin = String(currentUsernameInput || '').trim().toLowerCase() === 'admin';
-            if (isAdminLogin && tab === 'input') { applyRoleVisibility(); return; }
-            if (!isAdminLogin && tab === 'pengumuman') { applyRoleVisibility(); return; }
+            if (!isAdminLogin) { applyRoleVisibility(); return; }
 
-            // Membuka tab internal selalu menutup landing pengumuman.
-            // Ini juga membatalkan callback async pengumuman yang masih tertunda.
-            closeAnnouncementLanding();
+            // Tutup landing pengumuman pasca-login dan batalkan callback lama.
+            announcementLandingOpen = false;
+            announcementLandingRequestSeq++;
 
+            const announcementPage = document.getElementById('announcementPage');
             const mainPage = document.getElementById('mainPage');
             const mainHeader = document.getElementById('mainHeader');
             const leftNav = document.getElementById('leftNav');
+            const tabPengumuman = document.getElementById('tabPengumuman');
+            const navPengumuman = document.getElementById('navPengumuman');
+
+            if (announcementPage) {
+                announcementPage.classList.add('hidden');
+                announcementPage.style.display = 'none';
+            }
             if (mainPage) {
                 mainPage.classList.remove('hidden');
                 mainPage.style.removeProperty('display');
@@ -6035,32 +6042,70 @@ startAutoRefresh();
                 leftNav.style.removeProperty('display');
             }
 
-            const tabMap = {input:'tabInput',riwayat:'tabRiwayat',pencapaian:'tabPencapaian',monitoring:'tabMonitoring',outletkontrak:'tabOutletKontrak',outletbws:'tabOutletBWS',tambahcustomer:'tabTambahCustomer',pricelist:'tabPricelist',pesananoutlet:'tabPesananOutlet',pengumuman:'tabPengumuman'};
-            const navMap = {input:'navInput',riwayat:'navRiwayat',pencapaian:'navPencapaian',monitoring:'navMonitoring',outletkontrak:'navOutletKontrak',outletbws:'navOutletBWS',tambahcustomer:'navTambahCustomer',pricelist:'navPricelist',pesananoutlet:'navPesananOutlet',pengumuman:'navPengumuman'};
+            // Sembunyikan tab lain, tetapi jangan mengubah className tombol navigasi
+            // secara total karena dapat menghapus class penting dari layout.
+            const tabIds = ['tabInput','tabRiwayat','tabPencapaian','tabMonitoring','tabOutletKontrak','tabOutletBWS','tabTambahCustomer','tabPricelist','tabPesananOutlet','tabPengumuman'];
+            tabIds.forEach(function(id) {
+                const el = document.getElementById(id);
+                if (!el) return;
+                if (id === 'tabPengumuman') {
+                    el.classList.remove('hidden');
+                    el.style.removeProperty('display');
+                } else {
+                    el.classList.add('hidden');
+                    el.style.removeProperty('display');
+                }
+            });
+
+            const navIds = ['navInput','navRiwayat','navPencapaian','navMonitoring','navOutletKontrak','navOutletBWS','navTambahCustomer','navPricelist','navPesananOutlet'];
+            navIds.forEach(function(id) {
+                const el = document.getElementById(id);
+                if (!el) return;
+                el.classList.remove('sidebar-item-active');
+                if (id === 'navOutletBWS') el.classList.remove('hidden');
+            });
+            if (navPengumuman) {
+                navPengumuman.classList.remove('hidden');
+                navPengumuman.classList.add('sidebar-item-active');
+            }
+
+            setSidebarState(true);
+            loadPengumumanAdmin(false);
+        }
+
+        function switchTab(tab) {
+            const isAdminLogin = String(currentUsernameInput || '').trim().toLowerCase() === 'admin';
+            if (isAdminLogin && tab === 'input') { applyRoleVisibility(); return; }
+            if (!isAdminLogin && tab === 'pengumuman') { applyRoleVisibility(); return; }
+
+            if (tab === 'pengumuman') {
+                openPengumumanAdminTab();
+                return;
+            }
+
+            closeAnnouncementLanding();
+
+            const mainPage = document.getElementById('mainPage');
+            const mainHeader = document.getElementById('mainHeader');
+            const leftNav = document.getElementById('leftNav');
+            if (mainPage) { mainPage.classList.remove('hidden'); mainPage.style.removeProperty('display'); }
+            if (mainHeader) { mainHeader.classList.remove('hidden'); mainHeader.style.removeProperty('display'); }
+            if (leftNav) { leftNav.classList.remove('hidden'); leftNav.style.removeProperty('display'); }
+
+            const tabMap = {input:'tabInput',riwayat:'tabRiwayat',pencapaian:'tabPencapaian',monitoring:'tabMonitoring',outletkontrak:'tabOutletKontrak',outletbws:'tabOutletBWS',tambahcustomer:'tabTambahCustomer',pricelist:'tabPricelist',pesananoutlet:'tabPesananOutlet'};
+            const navMap = {input:'navInput',riwayat:'navRiwayat',pencapaian:'navPencapaian',monitoring:'navMonitoring',outletkontrak:'navOutletKontrak',outletbws:'navOutletBWS',tambahcustomer:'navTambahCustomer',pricelist:'navPricelist',pesananoutlet:'navPesananOutlet'};
 
             Object.keys(tabMap).forEach(function(key){
                 const el = document.getElementById(tabMap[key]);
                 if (!el) return;
-                if (key === 'outletbws' && !isAdminLogin) {
-                    el.classList.add('hidden');
-                    el.style.removeProperty('display');
-                    return;
-                }
-                const isTarget = key === tab;
-                el.classList.toggle('hidden', !isTarget);
-                el.style.removeProperty('display');
+                if (key === 'outletbws' && !isAdminLogin) { el.classList.add('hidden'); return; }
+                el.classList.toggle('hidden', key !== tab);
             });
-
             Object.keys(navMap).forEach(function(key){
                 const el = document.getElementById(navMap[key]);
                 if (!el) return;
-                if (key === 'outletbws' && !isAdminLogin) {
-                    el.className = 'sidebar-item hidden';
-                } else if (key === 'pengumuman' && !isAdminLogin) {
-                    el.className = 'sidebar-item hidden';
-                } else {
-                    el.className = key === tab ? 'sidebar-item sidebar-item-active' : 'sidebar-item';
-                }
+                if (key === 'outletbws' && !isAdminLogin) { el.classList.add('hidden'); return; }
+                el.classList.toggle('sidebar-item-active', key === tab);
             });
 
             setSidebarState(true);
@@ -6072,7 +6117,6 @@ startAutoRefresh();
             if(tab==='tambahcustomer')loadTambahCustomer(false, true);
             if(tab==='pricelist')loadPricelist(false, true);
             if(tab==='pesananoutlet')loadPesananOutlet(false, true);
-            if(tab==='pengumuman')loadPengumumanAdmin(false);
         }
 
         function setSidebarState(collapsed) {
