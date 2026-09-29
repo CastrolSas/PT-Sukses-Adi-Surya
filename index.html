@@ -6031,7 +6031,9 @@ startAutoRefresh();
             }
             if (mainPage) {
                 mainPage.classList.remove('hidden');
-                mainPage.style.removeProperty('display');
+                mainPage.style.setProperty('display', 'block', 'important');
+                mainPage.style.setProperty('visibility', 'visible', 'important');
+                mainPage.style.setProperty('opacity', '1', 'important');
             }
             if (mainHeader) {
                 mainHeader.classList.remove('hidden');
@@ -6050,10 +6052,13 @@ startAutoRefresh();
                 if (!el) return;
                 if (id === 'tabPengumuman') {
                     el.classList.remove('hidden');
-                    el.style.removeProperty('display');
+                    el.style.setProperty('display', 'block', 'important');
+                    el.style.setProperty('visibility', 'visible', 'important');
+                    el.style.setProperty('opacity', '1', 'important');
+                    el.removeAttribute('aria-hidden');
                 } else {
                     el.classList.add('hidden');
-                    el.style.removeProperty('display');
+                    el.style.setProperty('display', 'none', 'important');
                 }
             });
 
@@ -6067,6 +6072,14 @@ startAutoRefresh();
             if (navPengumuman) {
                 navPengumuman.classList.remove('hidden');
                 navPengumuman.classList.add('sidebar-item-active');
+            }
+
+            // Guard terakhir: tab pengumuman harus benar-benar terlihat.
+            if (tabPengumuman) {
+                tabPengumuman.classList.remove('hidden');
+                tabPengumuman.style.setProperty('display', 'block', 'important');
+                tabPengumuman.style.setProperty('visibility', 'visible', 'important');
+                tabPengumuman.style.setProperty('opacity', '1', 'important');
             }
 
             setSidebarState(true);
