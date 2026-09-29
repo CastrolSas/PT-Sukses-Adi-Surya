@@ -6649,28 +6649,55 @@ function handlePengumumanImageFile(input) {
         var img = new Image();
         img.onload = function() {
             try {
-                var maxSide = 700;
-                var scale = Math.min(1, maxSide / Math.max(img.naturalWidth || img.width, img.naturalHeight || img.height));
-                var w = Math.max(1, Math.round((img.naturalWidth || img.width) * scale));
-                var h = Math.max(1, Math.round((img.naturalHeight || img.height) * scale));
+                // Standar upload: pertahankan kualitas visual setinggi mungkin dengan
+                // ukuran maksimum Full HD (1920x1080), tanpa memperbesar gambar kecil.
+                var srcW = img.naturalWidth || img.width;
+                var srcH = img.naturalHeight || img.height;
+                var maxW = 1920;
+                var maxH = 1080;
+                var scale = Math.min(1, maxW / srcW, maxH / srcH);
+                var w = Math.max(1, Math.round(srcW * scale));
+                var h = Math.max(1, Math.round(srcH * scale));
                 var canvas = document.createElement('canvas');
-                var ctx = canvas.getContext('2d');
+                var ctx = canvas.getContext('2d', {alpha:false});
                 canvas.width = w;
                 canvas.height = h;
+                ctx.imageSmoothingEnabled = true;
+                ctx.imageSmoothingQuality = 'high';
                 ctx.drawImage(img, 0, 0, w, h);
 
-                var quality = 0.72;
-                var dataUrl = canvas.toDataURL('image/jpeg', quality);
-                // Turunkan ukuran bertahap sampai aman untuk satu sel Google Sheets.
-                for (var attempt = 0; attempt < 6 && dataUrl.length > 49000; attempt++) {
-                    quality -= 0.08;
-                    if (quality < 0.30) quality = 0.30;
-                    dataUrl = canvas.toDataURL('image/jpeg', quality);
+                // Gunakan WebP bila browser mendukung karena lebih efisien daripada JPEG,
+                // sehingga resolusi Full HD dapat dipertahankan dengan kualitas lebih baik.
+                var outputMime = 'image/webp';
+                var quality = 0.92;
+                var dataUrl = canvas.toDataURL(outputMime, quality);
+                if (dataUrl.indexOf('data:image/webp') !== 0) {
+                    outputMime = 'image/jpeg';
+                    dataUrl = canvas.toDataURL(outputMime, quality);
+                }
+
+                // Hanya turunkan kualitas secara bertahap. Jangan mengecilkan resolusi
+                // Full HD kecuali benar-benar diperlukan untuk batas ukuran sel Sheet.
+                var minQuality = 0.55;
+                for (var attempt = 0; attempt < 8 && dataUrl.length > 49000; attempt++) {
+                    quality -= 0.05;
+                    if (quality < minQuality) quality = minQuality;
+                    dataUrl = canvas.toDataURL(outputMime, quality);
                     if (dataUrl.length <= 49000) break;
-                    canvas.width = Math.max(320, Math.round(canvas.width * 0.85));
-                    canvas.height = Math.max(320, Math.round(canvas.height * 0.85));
-                    ctx = canvas.getContext('2d');
-                    ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+                }
+
+                // Jika masih terlalu besar, pertahankan rasio dan turunkan resolusi
+                // secara minimal setelah kualitas mencapai batas aman.
+                for (var resizeAttempt = 0; resizeAttempt < 4 && dataUrl.length > 49000; resizeAttempt++) {
+                    w = Math.max(960, Math.round(w * 0.90));
+                    h = Math.max(540, Math.round(h * 0.90));
+                    canvas.width = w;
+                    canvas.height = h;
+                    ctx = canvas.getContext('2d', {alpha:false});
+                    ctx.imageSmoothingEnabled = true;
+                    ctx.imageSmoothingQuality = 'high';
+                    ctx.drawImage(img, 0, 0, w, h);
+                    dataUrl = canvas.toDataURL(outputMime, quality);
                 }
 
                 var comma = dataUrl.indexOf(',');
@@ -6690,7 +6717,7 @@ function handlePengumumanImageFile(input) {
                     showLoading(false);
                     if (status) status.textContent = 'Gagal mengunggah gambar.';
                     showModal('Error Sistem', err && err.message ? err.message : 'Gagal mengunggah gambar.');
-                }).uploadPengumumanImage(currentUsernameInput, base64, 'image/jpeg', file.name);
+                }).uploadPengumumanImage(currentUsernameInput, base64, outputMime, file.name);
             } catch (err) {
                 showLoading(false);
                 if (status) status.textContent = 'Gagal memproses gambar.';
