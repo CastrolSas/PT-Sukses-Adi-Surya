@@ -1443,6 +1443,87 @@ html{scroll-behavior:auto!important}
 }
 #loadingOverlay{pointer-events:none!important;user-select:none!important}
 </style>
+
+<style id="pengumuman-addon-only">
+/* =========================================================
+   PENGUMUMAN ADD-ON
+   Hanya tambahan fitur; tidak mengubah style tab lama.
+   ========================================================= */
+#navPengumumanAdmin { display:none; }
+#announcementPage { display:none; }
+#announcementPage.announcement-page-visible { display:block !important; }
+.announcement-shell{
+  max-width:1100px;margin:18px auto 28px;
+  border:1px solid #dce9e1;border-radius:28px;
+  background:rgba(255,255,255,.96);
+  box-shadow:0 20px 60px rgba(15,55,32,.10);
+  overflow:hidden;
+}
+.announcement-hero{
+  padding:34px 24px 26px;text-align:center;
+  background:linear-gradient(135deg,#f5fff8 0%,#fff 55%,#f8fbef 100%);
+  border-bottom:1px solid #e7efe9;
+}
+.announcement-pill{
+  display:inline-flex;align-items:center;gap:8px;
+  padding:7px 12px;border-radius:999px;
+  background:#ecfdf3;border:1px solid #ccebd7;
+  color:#087443;font-size:10px;font-weight:800;letter-spacing:.05em;
+}
+.announcement-dot{width:8px;height:8px;border-radius:50%;background:#00a859;box-shadow:0 0 0 5px rgba(0,168,89,.10)}
+.announcement-title{margin:16px 0 7px;font-size:clamp(28px,5vw,48px);font-weight:900;color:#10291c;letter-spacing:-.04em}
+.announcement-subtitle{margin:0;color:#718178;font-size:13px}
+.announcement-list{padding:22px;display:grid;gap:18px}
+.announcement-card{border:1px solid #e2ebe5;border-radius:22px;background:#fff;overflow:hidden;box-shadow:0 8px 28px rgba(15,55,32,.06)}
+.announcement-image-box{padding:14px 14px 0;background:#f7faf8}
+.announcement-image-box img{display:block;width:100%;max-height:560px;object-fit:contain;border-radius:16px;background:#eef5f0}
+.announcement-caption{padding:18px 20px 21px;color:#193426;font-size:15px;line-height:1.7;font-weight:700;text-align:center;white-space:pre-wrap;word-break:break-word}
+.announcement-marquee-wrap{overflow:hidden;width:100%;padding:18px 0 20px;background:#f7fbf8;border-top:1px solid #e6eee9;border-bottom:1px solid #e6eee9}
+.announcement-marquee-track{display:flex;width:max-content;animation:announcementMarqueeLTR 18s linear infinite;will-change:transform}
+.announcement-marquee-text{flex:0 0 auto;white-space:nowrap;padding-right:90px;color:#087443;font-size:18px;font-weight:900;line-height:1.6}
+@keyframes announcementMarqueeLTR{
+  from{transform:translateX(-50%)} to{transform:translateX(0)}
+}
+.announcement-menu-wrap{padding:22px;text-align:center;border-top:1px solid #e7efe9;background:#fff}
+.announcement-main-btn{
+  border:0;border-radius:15px;padding:13px 24px;
+  background:#008c4a;color:#fff;font-weight:900;font-size:13px;
+  box-shadow:0 10px 24px rgba(0,140,74,.20);cursor:pointer;
+}
+.announcement-main-btn:hover{background:#007d42;transform:translateY(-1px)}
+.announcement-admin-wrap{padding:18px}
+.announcement-admin-card{border:1px solid #e1ebe4;border-radius:20px;background:#fff;overflow:hidden;box-shadow:0 8px 26px rgba(15,55,32,.05)}
+.announcement-admin-head{display:flex;justify-content:space-between;align-items:center;gap:12px;padding:16px 18px;border-bottom:1px solid #e8eee9}
+.announcement-admin-head h2{margin:0;color:#10291c;font-size:18px;font-weight:900}
+.announcement-add-btn{border:0;border-radius:12px;padding:10px 14px;background:#008c4a;color:#fff;font-size:11px;font-weight:900;cursor:pointer}
+.announcement-admin-table-wrap{overflow:auto}
+.announcement-admin-table{width:100%;min-width:760px;border-collapse:collapse;font-size:11px}
+.announcement-admin-table th{padding:11px 10px;background:#f3f7f4;color:#50645a;text-align:left;font-weight:900;white-space:nowrap}
+.announcement-admin-table td{padding:10px;border-top:1px solid #edf1ee;vertical-align:middle;color:#25382e}
+.announcement-thumb{width:72px;height:48px;object-fit:cover;border-radius:8px;border:1px solid #e1e9e3;background:#f6f8f6}
+.announcement-status{display:inline-flex;padding:5px 8px;border-radius:999px;font-size:9px;font-weight:900}
+.announcement-status.active{background:#e9f9ef;color:#087443}.announcement-status.upcoming{background:#fff7df;color:#9a6500}.announcement-status.expired{background:#f1f3f4;color:#6b7280}
+.announcement-action{border:0;border-radius:8px;padding:6px 8px;margin-right:5px;font-size:10px;font-weight:800;cursor:pointer}
+.announcement-action.edit{background:#eef6ff;color:#1d5f9e}.announcement-action.delete{background:#fff0f0;color:#b42318}
+.announcement-form{display:none;padding:18px;border-top:1px solid #e8eee9;background:#fbfdfb}
+.announcement-form.open{display:block}
+.announcement-form-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.announcement-field label{display:block;margin-bottom:5px;font-size:10px;font-weight:900;color:#5a6b62}
+.announcement-field input,.announcement-field textarea{width:100%;box-sizing:border-box;border:1px solid #d9e4dc;border-radius:11px;padding:10px;font-size:12px;background:#fff;outline:none}
+.announcement-field textarea{min-height:100px;resize:vertical}
+.announcement-form-actions{display:flex;justify-content:flex-end;gap:8px;margin-top:14px}
+.announcement-cancel-btn{border:1px solid #d5e0d8;background:#fff;color:#50645a;border-radius:10px;padding:9px 13px;font-size:10px;font-weight:900;cursor:pointer}
+.announcement-save-btn{border:0;background:#008c4a;color:#fff;border-radius:10px;padding:9px 14px;font-size:10px;font-weight:900;cursor:pointer}
+@media(max-width:700px){
+ .announcement-shell{margin:10px auto 20px;border-radius:20px}
+ .announcement-hero{padding:28px 16px 22px}
+ .announcement-list,.announcement-admin-wrap{padding:12px}
+ .announcement-form-grid{grid-template-columns:1fr}
+ .announcement-admin-head{align-items:flex-start;flex-direction:column}
+ .announcement-main-btn{width:100%}
+}
+</style>
+
 </head>
 <body class="bg-slate-50 font-sans">
 
@@ -1567,6 +1648,11 @@ html{scroll-behavior:auto!important}
                         class="sidebar-item" title="Pesanan Outlet" aria-label="Pesanan Outlet">
                     <span class="sidebar-icon">📦</span>
                     <span class="sidebar-text">Pesanan Outlet</span>
+                </button>
+                <button type="button" onclick="openPengumumanAdmin()" id="navPengumumanAdmin"
+                        class="sidebar-item" title="Buat Pengumuman" aria-label="Buat Pengumuman">
+                    <span class="sidebar-icon">📣</span>
+                    <span class="sidebar-text">Buat Pengumuman</span>
                 </button>
 
 
@@ -2087,6 +2173,70 @@ html{scroll-behavior:auto!important}
                     </div>
                 </div>
 
+
+                <!-- TAB BUAT PENGUMUMAN : ADD-ON ONLY -->
+                <div id="tabPengumumanAdmin" class="tab-content hidden space-y-4">
+                    <div class="announcement-admin-wrap">
+                        <div class="announcement-admin-card">
+                            <div class="announcement-admin-head">
+                                <div>
+                                    <h2>Buat Pengumuman</h2>
+                                    <div class="text-[10px] text-slate-400 mt-1">Data diambil langsung dari sheet PENGUMUMAN.</div>
+                                </div>
+                                <button type="button" class="announcement-add-btn" onclick="openPengumumanForm()">＋ Tambah Pengumuman</button>
+                            </div>
+                            <div id="pengumumanAdminForm" class="announcement-form">
+                                <input type="hidden" id="pengumumanEditRow">
+                                <div class="announcement-form-grid">
+                                    <div class="announcement-field" style="grid-column:1/-1">
+                                        <label>URL Gambar (boleh kosong)</label>
+                                        <input type="url" id="pengumumanGambar" placeholder="https://...">
+                                    </div>
+                                    <div class="announcement-field" style="grid-column:1/-1">
+                                        <label>Keterangan</label>
+                                        <textarea id="pengumumanKeterangan" placeholder="Tulis keterangan pengumuman..."></textarea>
+                                    </div>
+                                    <div class="announcement-field">
+                                        <label>Mulai</label>
+                                        <input type="date" id="pengumumanMulai">
+                                    </div>
+                                    <div class="announcement-field">
+                                        <label>Selesai</label>
+                                        <input type="date" id="pengumumanSelesai">
+                                    </div>
+                                </div>
+                                <div id="pengumumanPreview" class="mt-3"></div>
+                                <div class="announcement-form-actions">
+                                    <button type="button" class="announcement-cancel-btn" onclick="closePengumumanForm()">Batal</button>
+                                    <button type="button" class="announcement-save-btn" onclick="savePengumumanForm()">Simpan Pengumuman</button>
+                                </div>
+                            </div>
+                            <div class="announcement-admin-table-wrap">
+                                <table class="announcement-admin-table">
+                                    <thead><tr><th>Gambar</th><th>Keterangan</th><th>Periode</th><th>Status</th><th>Aksi</th></tr></thead>
+                                    <tbody id="pengumumanAdminBody"><tr><td colspan="5" style="text-align:center;padding:30px;color:#94a3b8">Memuat data...</td></tr></tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+
+            <!-- HALAMAN PENGUMUMAN SETELAH LOGIN : ADD-ON ONLY -->
+            <div id="announcementPage">
+                <div class="announcement-shell">
+                    <div class="announcement-hero">
+                        <div class="announcement-pill"><span class="announcement-dot"></span> CASTROL • PT SUKSES ADI SURYA</div>
+                        <div class="announcement-title">Pengumuman</div>
+                        <p class="announcement-subtitle">Informasi terbaru yang sedang berlaku untuk periode saat ini.</p>
+                    </div>
+                    <div id="announcementList" class="announcement-list"></div>
+                    <div class="announcement-menu-wrap">
+                        <button type="button" id="announcementMainMenuBtn" class="announcement-main-btn" onclick="closeAnnouncementLanding()">Ke Menu Utama</button>
+                    </div>
+                </div>
             </div>
 
         </div>
@@ -6404,6 +6554,242 @@ if(tab==='riwayat')loadRiwayat(false, true);
         }
 
 </script>
+<script id="pengumuman-addon-js">
+/* =========================================================
+   PENGUMUMAN ADD-ON ONLY
+   Tidak mengubah function/tab lama.
+   ========================================================= */
+(function(){
+    let pengumumanLandingBusy = false;
+    let pengumumanLandingOpen = false;
+    let pengumumanSessionShown = false;
+    let pengumumanAdminData = [];
+    let pengumumanEditRow = 0;
+
+    function escP(v){
+        const d=document.createElement('div');
+        d.textContent=v==null?'':String(v);
+        return d.innerHTML;
+    }
+    function imgP(v){
+        let s=String(v||'').trim();
+        if(!s) return '';
+        const m=s.match(/(?:id=|\/d\/)([-\w]{20,})/);
+        if(m && /drive\.google\.com/i.test(s)) return 'https://drive.google.com/thumbnail?id='+m[1]+'&sz=w1600';
+        return s;
+    }
+    function dateP(v){
+        if(!v) return null;
+        const d=new Date(String(v)+'T00:00:00');
+        return isNaN(d.getTime())?null:d;
+    }
+    function setAnnouncementPage(show){
+        const page=document.getElementById('announcementPage');
+        const main=document.getElementById('mainPage');
+        const nav=document.getElementById('leftNav');
+        if(!page||!main) return;
+        if(show){
+            main.classList.add('hidden');
+            page.classList.add('announcement-page-visible');
+            pengumumanLandingOpen=true;
+            if(nav) nav.classList.add('hidden');
+        }else{
+            page.classList.remove('announcement-page-visible');
+            page.style.display='none';
+            main.classList.remove('hidden');
+            pengumumanLandingOpen=false;
+            if(nav) nav.classList.remove('hidden');
+        }
+    }
+    function renderAnnouncement(items){
+        const box=document.getElementById('announcementList');
+        if(!box) return;
+        box.innerHTML=(items||[]).map(function(item){
+            const caption=escP(item.keterangan||'');
+            const image=imgP(item.gambar);
+            if(image){
+                return '<article class="announcement-card">'+
+                    '<div class="announcement-image-box"><img src="'+escP(image)+'" alt="Pengumuman" onerror="this.parentElement.style.display=\'none\'"></div>'+
+                    '<div class="announcement-caption">'+caption+'</div>'+
+                '</article>';
+            }
+            return '<article class="announcement-card">'+
+                '<div class="announcement-marquee-wrap" aria-label="'+caption+'"><div class="announcement-marquee-track">'+
+                '<div class="announcement-marquee-text">'+caption+'</div><div class="announcement-marquee-text" aria-hidden="true">'+caption+'</div>'+
+                '</div></div></article>';
+        }).join('');
+    }
+    function loadAnnouncementLanding(){
+        if(pengumumanLandingBusy || pengumumanSessionShown) return;
+        pengumumanLandingBusy=true;
+        pengumumanSessionShown=true;
+        google.script.run.withSuccessHandler(function(res){
+            pengumumanLandingBusy=false;
+            if(!res || !res.success || !(res.data||[]).length) return;
+            renderAnnouncement(res.data);
+            setAnnouncementPage(true);
+        }).withFailureHandler(function(){
+            pengumumanLandingBusy=false;
+        }).getPengumumanAktif();
+    }
+    window.closeAnnouncementLanding=function(){
+        setAnnouncementPage(false);
+        const isAdmin=String(currentUsernameInput||'').trim().toLowerCase()==='admin';
+        if(typeof switchTab==='function') switchTab(isAdmin?'riwayat':'input');
+    };
+
+    window.openPengumumanAdmin=function(){
+        if(String(currentUsernameInput||'').trim().toLowerCase()!=='admin') return;
+        setAnnouncementPage(false);
+        const tabs=document.querySelectorAll('#mainPage .tab-content');
+        tabs.forEach(function(el){el.classList.add('hidden');});
+        const tab=document.getElementById('tabPengumumanAdmin');
+        if(tab) tab.classList.remove('hidden');
+        document.querySelectorAll('#leftNav .sidebar-item').forEach(function(el){el.classList.remove('sidebar-item-active');});
+        const nav=document.getElementById('navPengumumanAdmin');
+        if(nav) nav.classList.add('sidebar-item-active');
+        loadPengumumanAdmin();
+        setSidebarState(true);
+    };
+
+    function statusP(item){
+        const now=new Date(); now.setHours(0,0,0,0);
+        const s=dateP(item.mulai), e=dateP(item.selesai);
+        if(s && now<s) return ['upcoming','AKAN DATANG'];
+        if(e && now>e) return ['expired','SELESAI'];
+        return ['active','AKTIF'];
+    }
+    window.loadPengumumanAdmin=function(){
+        if(String(currentUsernameInput||'').trim().toLowerCase()!=='admin') return;
+        google.script.run.withSuccessHandler(function(res){
+            if(!res||!res.success){showModal('Gagal',res&&res.message?res.message:'Data pengumuman gagal dimuat.');return;}
+            pengumumanAdminData=res.data||[];
+            renderAdminTable();
+        }).withFailureHandler(function(err){
+            showModal('Gagal',err&&err.message?err.message:'Data pengumuman gagal dimuat.');
+        }).getPengumumanAdmin(currentUsernameInput);
+    };
+    function renderAdminTable(){
+        const body=document.getElementById('pengumumanAdminBody');
+        if(!body)return;
+        if(!pengumumanAdminData.length){
+            body.innerHTML='<tr><td colspan="5" style="text-align:center;padding:30px;color:#94a3b8">Belum ada pengumuman.</td></tr>';
+            return;
+        }
+        body.innerHTML=pengumumanAdminData.map(function(item){
+            const st=statusP(item), im=imgP(item.gambar);
+            const thumb=im?'<img class="announcement-thumb" src="'+escP(im)+'" alt="" onerror="this.style.visibility=\'hidden\'">':'<div class="announcement-thumb" style="display:flex;align-items:center;justify-content:center;font-size:9px;color:#94a3b8">Tanpa gambar</div>';
+            return '<tr><td>'+thumb+'</td>'+
+                '<td style="min-width:240px;max-width:440px;white-space:pre-wrap;word-break:break-word;font-weight:700">'+escP(item.keterangan||'-')+'</td>'+
+                '<td style="white-space:nowrap">'+escP(item.mulai||'-')+' s/d '+escP(item.selesai||'-')+'</td>'+
+                '<td><span class="announcement-status '+st[0]+'">'+st[1]+'</span></td>'+
+                '<td style="white-space:nowrap"><button type="button" class="announcement-action edit" onclick="editPengumumanAdmin('+Number(item.rowNumber)+')">✏️ Edit</button><button type="button" class="announcement-action delete" onclick="deletePengumumanAdmin('+Number(item.rowNumber)+')">🗑️ Hapus</button></td></tr>';
+        }).join('');
+    }
+    window.openPengumumanForm=function(){
+        pengumumanEditRow=0;
+        document.getElementById('pengumumanEditRow').value='';
+        document.getElementById('pengumumanGambar').value='';
+        document.getElementById('pengumumanKeterangan').value='';
+        document.getElementById('pengumumanMulai').value='';
+        document.getElementById('pengumumanSelesai').value='';
+        document.getElementById('pengumumanPreview').innerHTML='';
+        document.getElementById('pengumumanAdminForm').classList.add('open');
+        document.getElementById('pengumumanKeterangan').focus();
+    };
+    window.closePengumumanForm=function(){
+        document.getElementById('pengumumanAdminForm').classList.remove('open');
+        pengumumanEditRow=0;
+    };
+    window.editPengumumanAdmin=function(row){
+        const item=pengumumanAdminData.find(x=>Number(x.rowNumber)===Number(row));
+        if(!item)return;
+        pengumumanEditRow=Number(row);
+        document.getElementById('pengumumanEditRow').value=pengumumanEditRow;
+        document.getElementById('pengumumanGambar').value=item.gambar||'';
+        document.getElementById('pengumumanKeterangan').value=item.keterangan||'';
+        document.getElementById('pengumumanMulai').value=item.mulai||'';
+        document.getElementById('pengumumanSelesai').value=item.selesai||'';
+        const p=document.getElementById('pengumumanPreview');
+        const im=imgP(item.gambar);
+        p.innerHTML=im?'<img src="'+escP(im)+'" style="display:block;width:100%;max-height:190px;object-fit:contain;border-radius:10px;background:#f4f8f5">':'';
+        document.getElementById('pengumumanAdminForm').classList.add('open');
+        document.getElementById('pengumumanKeterangan').focus();
+    };
+    window.savePengumumanForm=function(){
+        const payload={
+            gambar:document.getElementById('pengumumanGambar').value.trim(),
+            keterangan:document.getElementById('pengumumanKeterangan').value.trim(),
+            mulai:document.getElementById('pengumumanMulai').value,
+            selesai:document.getElementById('pengumumanSelesai').value
+        };
+        if(!payload.keterangan||!payload.mulai||!payload.selesai){
+            showModal('Data belum lengkap','Keterangan, Mulai, dan Selesai wajib diisi.');
+            return;
+        }
+        showLoading(true);
+        const done=function(res){
+            showLoading(false);
+            if(res&&res.success){
+                closePengumumanForm();
+                showModal('Berhasil',res.message||'Pengumuman berhasil disimpan.');
+                loadPengumumanAdmin();
+            }else showModal('Gagal',res&&res.message?res.message:'Pengumuman gagal disimpan.');
+        };
+        if(pengumumanEditRow){
+            google.script.run.withSuccessHandler(done).withFailureHandler(function(err){showLoading(false);showModal('Error Sistem',err&&err.message?err.message:'Terjadi kesalahan.');}).updatePengumumanAdmin(currentUsernameInput,pengumumanEditRow,payload);
+        }else{
+            google.script.run.withSuccessHandler(done).withFailureHandler(function(err){showLoading(false);showModal('Error Sistem',err&&err.message?err.message:'Terjadi kesalahan.');}).savePengumumanAdmin(currentUsernameInput,payload);
+        }
+    };
+    window.deletePengumumanAdmin=function(row){
+        showModal('Konfirmasi','Hapus pengumuman ini?',true,function(ok){
+            if(!ok)return;
+            showLoading(true);
+            google.script.run.withSuccessHandler(function(res){
+                showLoading(false);
+                if(res&&res.success){showModal('Berhasil',res.message||'Pengumuman berhasil dihapus.');loadPengumumanAdmin();}
+                else showModal('Gagal',res&&res.message?res.message:'Pengumuman gagal dihapus.');
+            }).withFailureHandler(function(err){showLoading(false);showModal('Error Sistem',err&&err.message?err.message:'Terjadi kesalahan.');}).deletePengumumanAdmin(currentUsernameInput,row);
+        });
+    };
+
+    function syncAdminButton(){
+        const nav=document.getElementById('navPengumumanAdmin');
+        if(nav) nav.style.display=String(currentUsernameInput||'').trim().toLowerCase()==='admin'?'flex':'none';
+    }
+
+    const observer=new MutationObserver(function(){
+        syncAdminButton();
+        const login=document.getElementById('loginPage');
+        const main=document.getElementById('mainPage');
+        if(!login||!main)return;
+        const loggedIn=login.classList.contains('hidden')&&!main.classList.contains('hidden');
+        if(loggedIn && !pengumumanSessionShown) loadAnnouncementLanding();
+        if(!loggedIn){
+            pengumumanSessionShown=false;
+            pengumumanLandingBusy=false;
+        }
+    });
+    observer.observe(document.body,{subtree:true,attributes:true,attributeFilter:['class']});
+
+    document.addEventListener('click',function(e){
+        const target=e.target&&e.target.closest?e.target.closest('button'):null;
+        if(!target)return;
+        if(target.id==='navPengumumanAdmin')return;
+        if(target.closest('#leftNav')){
+            const tab=document.getElementById('tabPengumumanAdmin');
+            if(tab && !tab.classList.contains('hidden')){
+                tab.classList.add('hidden');
+                document.querySelectorAll('#leftNav .sidebar-item').forEach(function(el){el.classList.remove('sidebar-item-active');});
+            }
+        }
+    },true);
+
+    setTimeout(syncAdminButton,0);
+})();
+</script>
+
 </body>
 </html>
 <style id="mobile-monitoring-pricelist-bottom-fix">
