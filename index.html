@@ -1446,35 +1446,26 @@ html{scroll-behavior:auto!important}
 
 
 <style id="pengumuman-minimal-css">
-/* PENGUMUMAN: hanya gambar masuk carousel. Teks tanpa gambar berjalan di HEADER UTAMA. */
-.main-header-announcement{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);width:min(46vw,620px);height:34px;overflow:hidden;display:flex;align-items:center;border:1px solid rgba(52,211,153,.24);border-radius:999px;background:rgba(2,44,34,.58);box-shadow:inset 0 0 0 1px rgba(255,255,255,.03)}
-.main-header-announcement-track{display:flex;width:max-content;white-space:nowrap;animation:mainHeaderAnnouncementMarquee 20s linear infinite;will-change:transform}
-.main-header-announcement-item{flex:0 0 auto;padding:0 42px;color:#d1fae5;font-size:12px;font-weight:800;letter-spacing:.01em}
-@keyframes mainHeaderAnnouncementMarquee{from{transform:translateX(-50%)}to{transform:translateX(0)}}
-@media(max-width:900px){.main-header-announcement{left:42%;width:34vw}.main-header-announcement-item{padding:0 28px;font-size:10px}}
-@media(max-width:640px){.main-header-announcement{position:static;transform:none;order:2;flex:1;min-width:0;width:auto;margin:0 8px;height:32px}.main-header-announcement-item{padding:0 22px;font-size:9px}}
-
 #announcementPage.pengumuman-page{position:fixed;inset:0;z-index:9998;overflow:auto;background:radial-gradient(circle at 15% 10%,rgba(16,185,129,.13),transparent 35%),radial-gradient(circle at 85% 85%,rgba(132,204,22,.10),transparent 35%),#f6faf8;padding:28px;box-sizing:border-box}
 .pengumuman-shell{width:min(1120px,100%);min-height:calc(100dvh - 56px);margin:auto;display:flex;align-items:center;justify-content:center}
 .pengumuman-panel{width:100%;background:rgba(255,255,255,.94);border:1px solid rgba(16,185,129,.16);border-radius:32px;box-shadow:0 28px 80px rgba(15,23,42,.14);overflow:hidden;backdrop-filter:blur(12px)}
-.pengumuman-hero{padding:20px 22px;background:linear-gradient(135deg,#ecfdf5,#fff 55%,#f7fee7);border-bottom:1px solid #e2e8f0}
-.pengumuman-text-header{overflow:hidden;width:100%;border:1px solid #bbf7d0;border-radius:18px;background:linear-gradient(90deg,#ecfdf5,#fff,#f7fee7);padding:15px 0;white-space:nowrap;box-shadow:0 8px 24px rgba(16,185,129,.08)}
-.pengumuman-text-track{display:flex;width:max-content;animation:pengumumanMarqueeLTR 18s linear infinite;will-change:transform}
-.pengumuman-text-item{flex:0 0 auto;padding:0 70px;font-size:clamp(17px,2.5vw,28px);font-weight:900;color:#047857;letter-spacing:.01em}
-@keyframes pengumumanMarqueeLTR{from{transform:translateX(-50%)}to{transform:translateX(0)}}
+.pengumuman-hero{padding:34px 28px 26px;text-align:center;background:linear-gradient(135deg,#ecfdf5,#fff 55%,#f7fee7);border-bottom:1px solid #e2e8f0}
+.pengumuman-pill{display:inline-flex;align-items:center;gap:8px;padding:8px 14px;border:1px solid #bbf7d0;border-radius:999px;background:#fff;color:#047857;font-size:11px;font-weight:900;letter-spacing:.08em}
+.pengumuman-dot{width:9px;height:9px;border-radius:50%;background:#10b981;box-shadow:0 0 0 5px #d1fae5}
 #announcementContent{padding:26px}
-.pengumuman-image-carousel{display:flex;gap:18px;overflow-x:auto;overflow-y:hidden;scroll-snap-type:x mandatory;scroll-behavior:smooth;-webkit-overflow-scrolling:touch;touch-action:pan-x;overscroll-behavior-x:contain;padding:2px 2px 12px;scrollbar-width:thin}
-.pengumuman-image-slide{flex:0 0 min(86%,920px);scroll-snap-align:center;scroll-snap-stop:always}
-.pengumuman-card{overflow:hidden;border:1px solid #e2e8f0;border-radius:24px;background:#fff;box-shadow:0 14px 38px rgba(15,23,42,.08)}
-.pengumuman-card img{display:block;width:100%;height:min(62vh,620px);object-fit:contain;background:#f8fafc}
+.pengumuman-card{overflow:hidden;border:1px solid #e2e8f0;border-radius:24px;background:#fff;box-shadow:0 14px 38px rgba(15,23,42,.08);margin-bottom:20px}
+.pengumuman-card:last-child{margin-bottom:0}
+.pengumuman-card img{display:block;width:100%;max-height:62vh;object-fit:contain;background:#f8fafc}
 .pengumuman-caption{padding:18px 22px 22px;text-align:center;color:#334155;font-size:14px;line-height:1.75;font-weight:700;white-space:pre-wrap}
-.pengumuman-carousel-hint{text-align:center;color:#94a3b8;font-size:10px;font-weight:700;margin-top:10px}
-.pengumuman-empty{padding:42px 20px;text-align:center;color:#64748b}
+.pengumuman-header-marquee{margin-top:22px;overflow:hidden;border:1px solid #bbf7d0;border-radius:22px;background:linear-gradient(90deg,#ecfdf5,#fff,#f7fee7);padding:20px 0;white-space:nowrap;box-shadow:0 12px 32px rgba(16,185,129,.08)}
+.pengumuman-marquee-track{display:flex;width:max-content;animation:pengumumanMarqueeLTR 24s linear infinite;will-change:transform}
+.pengumuman-marquee-text{flex:0 0 auto;padding:0 7vw;font-size:clamp(18px,3vw,30px);font-weight:900;color:#047857;letter-spacing:.01em}
+@keyframes pengumumanMarqueeLTR{from{transform:translateX(-50%)}to{transform:translateX(0)}}
 .pengumuman-footer{padding:20px 26px 26px;text-align:center;border-top:1px solid #eef2f7;background:#f8fafc}
 .pengumuman-main-btn{border:0;border-radius:15px;padding:13px 28px;background:#008a4c;color:#fff;font-weight:900;box-shadow:0 10px 24px rgba(0,138,76,.22);cursor:pointer}
 .pengumuman-main-btn:hover{background:#00733f}
 #tabPengumumanAdmin .pengumuman-thumb{width:72px;height:48px;object-fit:cover;border-radius:10px;border:1px solid #e2e8f0;background:#f8fafc}
-@media(max-width:767px){#announcementPage.pengumuman-page{padding:12px}.pengumuman-shell{min-height:calc(100dvh - 24px)}.pengumuman-panel{border-radius:22px}.pengumuman-hero{padding:14px}.pengumuman-text-item{padding:0 42px}#announcementContent{padding:16px}.pengumuman-image-slide{flex-basis:88%}.pengumuman-card img{height:min(58vh,520px)}.pengumuman-footer{padding:16px}}
+@media(max-width:767px){#announcementPage.pengumuman-page{padding:12px}.pengumuman-shell{min-height:calc(100dvh - 24px)}.pengumuman-panel{border-radius:22px}.pengumuman-hero{padding:26px 18px 22px}#announcementContent{padding:16px}.pengumuman-footer{padding:16px}.pengumuman-marquee-text{padding:0 18vw}}
 </style>
 
 </head>
@@ -1531,7 +1522,8 @@ html{scroll-behavior:auto!important}
   <div class="pengumuman-shell">
     <section class="pengumuman-panel">
       <div class="pengumuman-hero">
-        <div id="announcementTextHeader" class="pengumuman-text-header hidden"></div>
+        <div class="pengumuman-pill"><span class="pengumuman-dot"></span>CASTROL • PT SUKSES ADI SURYA</div>
+        <div id="announcementHeaderMarquee" class="pengumuman-header-marquee hidden" aria-label="Pengumuman berjalan"></div>
       </div>
       <div id="announcementContent"></div>
       <div class="pengumuman-footer">
@@ -1552,9 +1544,6 @@ html{scroll-behavior:auto!important}
                 </button>
                 <div class="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse"></div>
                 <h1 class="font-bold text-sm tracking-wide text-slate-100 truncate">Castrol</h1>
-            </div>
-            <div id="mainHeaderAnnouncement" class="main-header-announcement hidden" aria-live="polite">
-                <div id="mainHeaderAnnouncementTrack" class="main-header-announcement-track"></div>
             </div>
             <div class="flex items-center space-x-1.5 sm:space-x-2">
                 <span id="userBadge" class="text-xs bg-slate-800/80 backdrop-blur-md text-emerald-300 border border-emerald-500/30 px-2.5 py-1 rounded-full font-medium shadow-inner hidden"></span>
@@ -2140,7 +2129,18 @@ html{scroll-behavior:auto!important}
                         </div>
                         <input type="hidden" id="pengumumanRowNumber" value="">
                         <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                            <div class="sm:col-span-2"><label class="block text-[10px] font-bold text-slate-600 mb-1">URL Gambar <span class="font-normal text-slate-400">(boleh kosong)</span></label><input id="pengumumanImage" type="url" class="w-full border border-slate-200 rounded-xl px-3 py-2.5 text-xs" placeholder="https://..."></div>
+                            <div class="sm:col-span-2">
+  <label class="block text-[10px] font-bold text-slate-600 mb-1">Gambar Pengumuman <span class="font-normal text-slate-400">(opsional)</span></label>
+  <input id="pengumumanImage" type="hidden" value="">
+  <div class="flex flex-wrap gap-2">
+    <button type="button" onclick="document.getElementById('pengumumanGalleryInput').click()" class="px-3 py-2 rounded-xl border border-slate-200 bg-white text-slate-700 text-[10px] font-extrabold">🖼️ Pilih dari Galeri</button>
+    <button type="button" onclick="document.getElementById('pengumumanCameraInput').click()" class="px-3 py-2 rounded-xl border border-slate-200 bg-white text-slate-700 text-[10px] font-extrabold">📷 Kamera</button>
+    <input id="pengumumanGalleryInput" type="file" accept="image/*" class="hidden" onchange="handlePengumumanImageFile(this)">
+    <input id="pengumumanCameraInput" type="file" accept="image/*" capture="environment" class="hidden" onchange="handlePengumumanImageFile(this)">
+  </div>
+  <div id="pengumumanImageStatus" class="mt-2 text-[9px] text-slate-400">Belum ada gambar dipilih.</div>
+  <img id="pengumumanImagePreview" class="hidden mt-2 max-h-40 rounded-xl border border-slate-200 object-contain" alt="Preview gambar pengumuman">
+</div>
                             <div class="sm:col-span-2"><label class="block text-[10px] font-bold text-slate-600 mb-1">Keterangan</label><textarea id="pengumumanText" rows="4" class="w-full border border-slate-200 rounded-xl px-3 py-2.5 text-xs" placeholder="Tulis keterangan pengumuman..."></textarea></div>
                             <div><label class="block text-[10px] font-bold text-slate-600 mb-1">Mulai</label><input id="pengumumanStart" type="date" class="w-full border border-slate-200 rounded-xl px-3 py-2.5 text-xs"></div>
                             <div><label class="block text-[10px] font-bold text-slate-600 mb-1">Selesai</label><input id="pengumumanEnd" type="date" class="w-full border border-slate-200 rounded-xl px-3 py-2.5 text-xs"></div>
@@ -6520,65 +6520,50 @@ function isAdminPengumuman() {
 
 function renderAnnouncementPage(data) {
     var box = document.getElementById('announcementContent');
-    var header = document.getElementById('announcementTextHeader');
-    var mainHeader = document.getElementById('mainHeaderAnnouncement');
-    var mainHeaderTrack = document.getElementById('mainHeaderAnnouncementTrack');
-    if (!box) return {hasImage:false, hasText:false};
+    var headerMarquee = document.getElementById('announcementHeaderMarquee');
+    if (!box) return;
 
     var list = Array.isArray(data) ? data : [];
-    var imageItems = list.filter(function(item){ return String(item && item.gambar || '').trim() !== ''; });
-    var textItems = list.filter(function(item){
-        return String(item && item.gambar || '').trim() === '' && String(item && item.keterangan || '').trim() !== '';
+    var imageItems = list.filter(function(item) {
+        return item && String(item.gambar || '').trim() !== '';
+    });
+    var textItems = list.filter(function(item) {
+        return item && String(item.gambar || '').trim() === '' && String(item.keterangan || '').trim() !== '';
     });
 
-    /* Pengumuman tanpa gambar: hanya masuk ke HEADER UTAMA yang berjalan. */
-    if (textItems.length && mainHeader && mainHeaderTrack) {
-        var messages = textItems.map(function(item){
-            return escapeHtml(String(item.keterangan || '').trim());
-        }).filter(Boolean);
-        var sequence = messages.map(function(msg){
-            return '<span class="main-header-announcement-item">' + msg + ' &nbsp; • &nbsp; </span>';
-        }).join('');
-        mainHeaderTrack.innerHTML = sequence + sequence;
-        mainHeader.classList.remove('hidden');
-    } else if (mainHeader && mainHeaderTrack) {
-        mainHeaderTrack.innerHTML = '';
-        mainHeader.classList.add('hidden');
-    }
+    /* Hanya pengumuman yang benar-benar mempunyai gambar yang ditampilkan sebagai kartu. */
+    box.innerHTML = imageItems.map(function(item) {
+        var imageUrl = String(item.gambar || '').trim();
+        var text = escapeHtml(item.keterangan || '');
+        return '<div class="pengumuman-card"><img src="' + escapeHtml(imageUrl) + '" alt="Pengumuman">' +
+               (text ? '<div class="pengumuman-caption">' + text + '</div>' : '') +
+               '</div>';
+    }).join('');
 
-    /* Jangan tampilkan ticker di halaman pengumuman. */
-    if (header) {
-        header.innerHTML = '';
-        header.classList.add('hidden');
+    /* Pengumuman tanpa gambar masuk ke HEADER dan berjalan dari kiri ke kanan. */
+    if (headerMarquee) {
+        if (textItems.length) {
+            var messages = textItems.map(function(item) {
+                return escapeHtml(String(item.keterangan || '').trim());
+            }).filter(Boolean);
+            var combined = messages.join(' &nbsp;&nbsp; • &nbsp;&nbsp; ');
+            var repeated = combined + ' &nbsp;&nbsp; • &nbsp;&nbsp; ' + combined;
+            headerMarquee.innerHTML =
+                '<div class="pengumuman-marquee-track">' +
+                '<span class="pengumuman-marquee-text">' + repeated + '</span>' +
+                '</div>';
+            headerMarquee.classList.remove('hidden');
+        } else {
+            headerMarquee.innerHTML = '';
+            headerMarquee.classList.add('hidden');
+        }
     }
-
-    /* Pengumuman dengan gambar: hanya gambar yang masuk carousel swipe kiri/kanan. */
-    if (imageItems.length) {
-        var slides = imageItems.map(function(item){
-            var text = escapeHtml(item.keterangan || '');
-            return '<div class="pengumuman-image-slide"><div class="pengumuman-card">' +
-                '<img src="' + escapeHtml(item.gambar) + '" alt="Pengumuman" loading="eager">' +
-                (text ? '<div class="pengumuman-caption">' + text + '</div>' : '') +
-                '</div></div>';
-        }).join('');
-        box.innerHTML = '<div class="pengumuman-image-carousel" aria-label="Daftar pengumuman bergambar">' + slides + '</div>' +
-            (imageItems.length > 1 ? '<div class="pengumuman-carousel-hint">Geser ke kiri / kanan untuk melihat pengumuman lainnya</div>' : '');
-    } else {
-        box.innerHTML = '';
-    }
-
-    return {hasImage:imageItems.length > 0, hasText:textItems.length > 0};
 }
 
 function showAnnouncementPage(data) {
     if (announcementDismissedThisSession) return;
     if (!Array.isArray(data) || !data.length) return;
-
-    var rendered = renderAnnouncementPage(data);
-    /* Halaman pengumuman hanya untuk pengumuman yang memiliki gambar.
-       Pengumuman tanpa gambar hanya berjalan di header utama. */
-    if (!rendered.hasImage) return;
-
+    renderAnnouncementPage(data);
     var page = document.getElementById('announcementPage');
     var app = document.getElementById('app');
     if (page) { page.classList.remove('hidden'); page.setAttribute('aria-hidden','false'); }
@@ -6639,6 +6624,53 @@ function renderPengumumanAdminTable() {
             '<td class="p-3"><div class="flex justify-center gap-1.5"><button type="button" onclick="editPengumuman(' + Number(item.rowNumber) + ')" class="px-2.5 py-1.5 rounded-lg bg-blue-50 text-blue-700 text-[9px] font-extrabold">Edit</button><button type="button" onclick="deletePengumuman(' + Number(item.rowNumber) + ')" class="px-2.5 py-1.5 rounded-lg bg-red-50 text-red-700 text-[9px] font-extrabold">Hapus</button></div></td>' +
             '</tr>';
     }).join('');
+}
+
+function handlePengumumanImageFile(input) {
+    var file = input && input.files && input.files[0];
+    if (!file) return;
+    if (!String(file.type || '').startsWith('image/')) {
+        showModal('Gagal', 'File yang dipilih harus berupa gambar.');
+        input.value = '';
+        return;
+    }
+    var status = document.getElementById('pengumumanImageStatus');
+    var preview = document.getElementById('pengumumanImagePreview');
+    if (status) status.textContent = 'Mengunggah gambar...';
+    if (preview) {
+        preview.src = URL.createObjectURL(file);
+        preview.classList.remove('hidden');
+    }
+    var reader = new FileReader();
+    reader.onload = function(e) {
+        var dataUrl = String(e.target.result || '');
+        var comma = dataUrl.indexOf(',');
+        if (comma < 0) {
+            if (status) status.textContent = 'Gagal membaca gambar.';
+            return;
+        }
+        var base64 = dataUrl.substring(comma + 1);
+        showLoading(true);
+        google.script.run.withSuccessHandler(function(res) {
+            showLoading(false);
+            if (res && res.success && res.url) {
+                document.getElementById('pengumumanImage').value = res.url;
+                if (status) status.textContent = 'Gambar berhasil dipilih.';
+            } else {
+                if (status) status.textContent = 'Gagal mengunggah gambar.';
+                showModal('Gagal', res && res.message ? res.message : 'Gagal mengunggah gambar.');
+            }
+        }).withFailureHandler(function(err) {
+            showLoading(false);
+            if (status) status.textContent = 'Gagal mengunggah gambar.';
+            showModal('Error Sistem', err && err.message ? err.message : 'Gagal mengunggah gambar.');
+        }).uploadPengumumanImage(currentUsernameInput, base64, file.type, file.name);
+    };
+    reader.onerror = function() {
+        showModal('Gagal', 'Gambar tidak dapat dibaca.');
+        if (status) status.textContent = 'Gagal membaca gambar.';
+    };
+    reader.readAsDataURL(file);
 }
 
 function openPengumumanForm(item) {
