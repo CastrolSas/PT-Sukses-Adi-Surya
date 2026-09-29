@@ -2439,7 +2439,7 @@ html{scroll-behavior:auto!important}
             const navPengumumanAdmin = document.getElementById('navPengumumanAdmin');
             const tabPengumumanAdmin = document.getElementById('tabPengumumanAdmin');
             if (navPengumumanAdmin) navPengumumanAdmin.classList.toggle('hidden', !isAdminLogin);
-            if (!isAdminLogin && tabPengumumanAdmin) tabPengumumanAdmin.classList.add('hidden');
+            if (tabPengumumanAdmin) tabPengumumanAdmin.classList.toggle('hidden', !isAdminLogin);
         }
 
         function restoreAuthState() {
