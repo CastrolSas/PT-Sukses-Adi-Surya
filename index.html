@@ -1469,6 +1469,74 @@ html{scroll-behavior:auto!important}
 @media(max-width:767px){#announcementPage.pengumuman-page{padding:12px}.pengumuman-shell{min-height:calc(100dvh - 24px)}.pengumuman-panel{border-radius:22px}.pengumuman-hero{padding:26px 18px 22px}#announcementContent{padding:16px}.pengumuman-footer{padding:16px}.pengumuman-main-header-marquee{max-width:none;flex:1;margin:0 7px}.pengumuman-marquee-text{padding:0 14vw;font-size:11px}}
 </style>
 
+
+<style id="mobile-sidebar-bottom-actions">
+/* Mobile: Account + Logout dipindahkan ke bagian bawah sidebar, icon-only. Nama login paling bawah. */
+.sidebar-bottom-actions{
+  margin-top:auto!important;
+  padding-top:10px!important;
+  border-top:1px solid #e2e8f0!important;
+  display:flex!important;
+  flex-direction:column!important;
+  gap:6px!important;
+}
+.sidebar-bottom-actions .sidebar-bottom-btn{
+  min-height:58px!important;
+  border:0!important;
+  background:transparent!important;
+  display:flex!important;
+  align-items:center!important;
+  justify-content:center!important;
+  flex-direction:column!important;
+  gap:3px!important;
+  padding:6px 4px!important;
+  border-radius:14px!important;
+  color:#66766d!important;
+  cursor:pointer!important;
+}
+.sidebar-bottom-actions .sidebar-bottom-btn:hover{background:#eef8f1!important;color:var(--castrol-green)!important}
+.sidebar-bottom-actions .sidebar-bottom-icon{
+  width:34px!important;height:34px!important;border-radius:11px!important;
+  display:flex!important;align-items:center!important;justify-content:center!important;
+  background:#fff!important;border:1px solid #e8f0ea!important;
+  box-shadow:0 4px 12px rgba(17,56,32,.07)!important;font-size:19px!important;
+}
+.sidebar-bottom-actions .sidebar-bottom-name{
+  min-height:48px!important;
+  display:flex!important;align-items:center!important;justify-content:center!important;
+  flex-direction:column!important;gap:2px!important;
+  color:#51645a!important;font-size:11px!important;font-weight:800!important;
+  text-align:center!important;word-break:break-word!important;
+}
+/* Jangan tampilkan versi lama Account/Logout/User di bagian atas. */
+#leftNav #sidebarUserBadge,
+#leftNav #headerAccountBtn,
+#leftNav #headerLogoutBtn{display:none!important}
+@media (max-width:767px){
+  #leftNav .sidebar-inner{
+    height:100%!important;
+    min-height:100%!important;
+    display:flex!important;
+    flex-direction:column!important;
+    overflow-y:auto!important;
+    overflow-x:hidden!important;
+    padding-bottom:156px!important;
+    position:relative!important;
+  }
+  #leftNav .sidebar-bottom-actions{
+    position:absolute!important;
+    left:7px!important;
+    right:7px!important;
+    bottom:7px!important;
+    z-index:20!important;
+    background:linear-gradient(180deg,rgba(255,255,255,.94),#fff 28%)!important;
+  }
+  #leftNav .sidebar-bottom-btn .sidebar-bottom-label{display:none!important}
+  #leftNav .sidebar-bottom-actions .sidebar-bottom-btn{min-height:48px!important}
+  #leftNav .sidebar-bottom-actions .sidebar-bottom-icon{width:34px!important;height:34px!important;font-size:18px!important}
+  #leftNav .sidebar-bottom-actions .sidebar-bottom-name{min-height:42px!important;font-size:10px!important;line-height:1.15!important;padding:0 2px!important}
+}
+</style>
 </head>
 <body class="bg-slate-50 font-sans">
 
@@ -1629,6 +1697,20 @@ html{scroll-behavior:auto!important}
                     <span class="sidebar-text">Buat Pengumuman</span>
                 </button>
 
+                <div class="sidebar-bottom-actions" aria-label="Akun pengguna">
+                    <button type="button" onclick="openEditAccount()" class="sidebar-bottom-btn" title="Account" aria-label="Account">
+                        <span class="sidebar-bottom-icon">⚙️</span>
+                        <span class="sidebar-bottom-label">Account</span>
+                    </button>
+                    <button type="button" onclick="logout()" class="sidebar-bottom-btn" title="Logout" aria-label="Logout">
+                        <span class="sidebar-bottom-icon">↪️</span>
+                        <span class="sidebar-bottom-label">Logout</span>
+                    </button>
+                    <div class="sidebar-bottom-name" title="Pengguna yang login">
+                        <span style="font-size:18px;line-height:1">👤</span>
+                        <span id="mobileLoginName">-</span>
+                    </div>
+                </div>
 
             </div>
         </nav>
@@ -6797,6 +6879,26 @@ function deletePengumuman(row) {
 }
 </script>
 
+
+<script id="mobile-login-name-sync">
+(function(){
+  function syncMobileLoginName(){
+    var src=document.getElementById('userBadge');
+    var dst=document.getElementById('mobileLoginName');
+    if(!src||!dst) return;
+    var t=(src.textContent||'').trim();
+    if(t.indexOf('Sales:')===0) t=t.replace(/^Sales:\s*/i,'');
+    if(t.indexOf('Role:')===0) t=t.replace(/^Role:\s*/i,'');
+    dst.textContent=t||'-';
+  }
+  document.addEventListener('DOMContentLoaded',function(){
+    syncMobileLoginName();
+    var src=document.getElementById('userBadge');
+    if(src){ new MutationObserver(syncMobileLoginName).observe(src,{childList:true,subtree:true,characterData:true}); }
+  });
+  window.addEventListener('load',syncMobileLoginName);
+})();
+</script>
 </body>
 </html>
 <style id="mobile-monitoring-pricelist-bottom-fix">
