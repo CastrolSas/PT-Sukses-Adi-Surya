@@ -1458,7 +1458,7 @@ html{scroll-behavior:auto!important}
 .pengumuman-card{flex:0 0 100%;width:100%;box-sizing:border-box;overflow:hidden;border:1px solid #e2e8f0;border-radius:24px;background:#fff;box-shadow:0 14px 38px rgba(15,23,42,.08);margin:0;scroll-snap-align:start;scroll-snap-stop:always}
 .pengumuman-card img{display:block;width:100%;max-height:62vh;object-fit:contain;background:#f8fafc}
 .pengumuman-caption{padding:18px 22px 22px;text-align:center;color:#334155;font-size:14px;line-height:1.75;font-weight:700;white-space:pre-wrap}
-.pengumuman-main-header-marquee{display:block;flex:1;min-width:0;max-width:none;margin:0 14px;overflow:hidden;white-space:nowrap;border:1px solid rgba(183,212,51,.28);border-radius:999px;background:rgba(255,255,255,.08);padding:7px 0;box-shadow:inset 0 0 0 1px rgba(255,255,255,.03)}
+.pengumuman-main-header-marquee{display:block;flex:1;min-width:0;max-width:52vw;margin:0 14px;overflow:hidden;white-space:nowrap;border:1px solid rgba(183,212,51,.28);border-radius:999px;background:rgba(255,255,255,.08);padding:7px 0;box-shadow:inset 0 0 0 1px rgba(255,255,255,.03)}
 .pengumuman-marquee-track{display:flex;width:max-content;animation:pengumumanMarqueeRTL 16s linear infinite;will-change:transform}
 .pengumuman-marquee-text{flex:0 0 auto;display:block;padding:0 6vw;font-size:13px;font-weight:800;color:#e8f7ef;letter-spacing:.01em;white-space:nowrap}
 @keyframes pengumumanMarqueeRTL{from{transform:translate3d(0,0,0)}to{transform:translate3d(-50%,0,0)}}
@@ -1466,77 +1466,9 @@ html{scroll-behavior:auto!important}
 .pengumuman-main-btn{border:0;border-radius:15px;padding:13px 28px;background:#008a4c;color:#fff;font-weight:900;box-shadow:0 10px 24px rgba(0,138,76,.22);cursor:pointer}
 .pengumuman-main-btn:hover{background:#00733f}
 #tabPengumumanAdmin .pengumuman-thumb{width:72px;height:48px;object-fit:cover;border-radius:10px;border:1px solid #e2e8f0;background:#f8fafc}
-@media(max-width:767px){#announcementPage.pengumuman-page{padding:12px}.pengumuman-shell{min-height:calc(100dvh - 24px)}.pengumuman-panel{border-radius:22px}.pengumuman-hero{padding:26px 18px 22px}#announcementContent{padding:16px}.pengumuman-footer{padding:16px}.pengumuman-main-header-marquee{max-width:none;flex:1;margin:0 7px}.pengumuman-marquee-text{padding:0 14vw;font-size:11px}}
+@media(max-width:767px){#announcementPage.pengumuman-page{padding:12px}.pengumuman-shell{min-height:calc(100dvh - 24px)}.pengumuman-panel{border-radius:22px}.pengumuman-hero{padding:26px 18px 22px}#announcementContent{padding:16px}.pengumuman-footer{padding:16px}.pengumuman-main-header-marquee{max-width:42vw;margin:0 7px}.pengumuman-marquee-text{padding:0 14vw;font-size:11px}}
 </style>
 
-
-<style id="mobile-sidebar-bottom-actions">
-/* Mobile: Account + Logout dipindahkan ke bagian bawah sidebar, icon-only. Nama login paling bawah. */
-.sidebar-bottom-actions{
-  margin-top:auto!important;
-  padding-top:10px!important;
-  border-top:1px solid #e2e8f0!important;
-  display:flex!important;
-  flex-direction:column!important;
-  gap:6px!important;
-}
-.sidebar-bottom-actions .sidebar-bottom-btn{
-  min-height:58px!important;
-  border:0!important;
-  background:transparent!important;
-  display:flex!important;
-  align-items:center!important;
-  justify-content:center!important;
-  flex-direction:column!important;
-  gap:3px!important;
-  padding:6px 4px!important;
-  border-radius:14px!important;
-  color:#66766d!important;
-  cursor:pointer!important;
-}
-.sidebar-bottom-actions .sidebar-bottom-btn:hover{background:#eef8f1!important;color:var(--castrol-green)!important}
-.sidebar-bottom-actions .sidebar-bottom-icon{
-  width:34px!important;height:34px!important;border-radius:11px!important;
-  display:flex!important;align-items:center!important;justify-content:center!important;
-  background:#fff!important;border:1px solid #e8f0ea!important;
-  box-shadow:0 4px 12px rgba(17,56,32,.07)!important;font-size:19px!important;
-}
-.sidebar-bottom-actions .sidebar-bottom-name{
-  min-height:48px!important;
-  display:flex!important;align-items:center!important;justify-content:center!important;
-  flex-direction:column!important;gap:2px!important;
-  color:#51645a!important;font-size:11px!important;font-weight:800!important;
-  text-align:center!important;word-break:break-word!important;
-}
-/* Jangan tampilkan versi lama Account/Logout/User di bagian atas. */
-#leftNav #sidebarUserBadge,
-#leftNav #headerAccountBtn,
-#leftNav #headerLogoutBtn{display:none!important}
-@media (max-width:767px){
-  #leftNav .sidebar-inner{
-    height:100%!important;
-    min-height:100%!important;
-    display:flex!important;
-    flex-direction:column!important;
-    overflow-y:auto!important;
-    overflow-x:hidden!important;
-    padding-bottom:156px!important;
-    position:relative!important;
-  }
-  #leftNav .sidebar-bottom-actions{
-    position:absolute!important;
-    left:7px!important;
-    right:7px!important;
-    bottom:7px!important;
-    z-index:20!important;
-    background:linear-gradient(180deg,rgba(255,255,255,.94),#fff 28%)!important;
-  }
-  #leftNav .sidebar-bottom-btn .sidebar-bottom-label{display:none!important}
-  #leftNav .sidebar-bottom-actions .sidebar-bottom-btn{min-height:48px!important}
-  #leftNav .sidebar-bottom-actions .sidebar-bottom-icon{width:34px!important;height:34px!important;font-size:18px!important}
-  #leftNav .sidebar-bottom-actions .sidebar-bottom-name{min-height:42px!important;font-size:10px!important;line-height:1.15!important;padding:0 2px!important}
-}
-</style>
 </head>
 <body class="bg-slate-50 font-sans">
 
@@ -1603,7 +1535,7 @@ html{scroll-behavior:auto!important}
 
 <div id="app" class="app-shell min-h-screen bg-slate-50 flex flex-col">
         
-        <header id="mainHeader" class="bg-gradient-to-r from-slate-900 via-slate-800 to-emerald-950 text-white px-4 py-3.5 flex justify-start items-center shadow-lg border-b border-emerald-500/20 hidden">
+        <header id="mainHeader" class="bg-gradient-to-r from-slate-900 via-slate-800 to-emerald-950 text-white px-4 py-3.5 flex justify-between items-center shadow-lg border-b border-emerald-500/20 hidden">
             <div class="flex items-center space-x-2.5 min-w-0">
                 <button type="button" id="sidebarToggle" onclick="toggleSidebar()" class="sidebar-toggle" title="Tutup menu" aria-label="Tutup menu" aria-expanded="true">
                     <svg id="sidebarToggleIcon" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
@@ -1614,12 +1546,21 @@ html{scroll-behavior:auto!important}
                 <h1 class="font-bold text-sm tracking-wide text-slate-100 truncate">Castrol</h1>
                 <div id="announcementHeaderMarquee" class="pengumuman-main-header-marquee hidden" aria-label="Pengumuman berjalan"></div>
             </div>
-            <!-- Sales / Account / Logout dipindahkan ke dalam menu sidebar agar area teks berjalan lebih panjang. -->
+            <div class="flex items-center space-x-1.5 sm:space-x-2">
+                <span id="userBadge" class="text-xs bg-slate-800/80 backdrop-blur-md text-emerald-300 border border-emerald-500/30 px-2.5 py-1 rounded-full font-medium shadow-inner hidden"></span>
+                <button type="button" onclick="openEditAccount()" id="headerAccountBtn" class="header-action-btn" title="Edit Account" aria-label="Edit Account">
+                    <span class="header-action-icon">⚙️</span><span class="header-action-text">Account</span>
+                </button>
+                <button type="button" onclick="logout()" id="headerLogoutBtn" class="header-action-btn header-action-danger" title="Logout" aria-label="Logout">
+                    <span class="header-action-icon">↪️</span><span class="header-action-text">Logout</span>
+                </button>
+            </div>
         </header>
 
         <!-- Navigasi Menu Sidebar Kiri -->
         <nav id="leftNav" class="app-sidebar hidden" aria-label="Navigasi utama">
             <div class="sidebar-inner">
+                <div class="sidebar-label">MENU</div>
                 <button type="button" onclick="switchTab('input')" id="navInput"
                         class="sidebar-item sidebar-item-active" title="Input Order" aria-label="Input Order">
                     <span class="sidebar-icon">🛒</span>
@@ -1679,20 +1620,6 @@ html{scroll-behavior:auto!important}
                     <span class="sidebar-text">Buat Pengumuman</span>
                 </button>
 
-                <div class="sidebar-bottom-actions" aria-label="Akun pengguna">
-                    <button type="button" onclick="openEditAccount()" class="sidebar-bottom-btn" title="Account" aria-label="Account">
-                        <span class="sidebar-bottom-icon">⚙️</span>
-                        <span class="sidebar-bottom-label">Account</span>
-                    </button>
-                    <button type="button" onclick="logout()" class="sidebar-bottom-btn" title="Logout" aria-label="Logout">
-                        <span class="sidebar-bottom-icon">↪️</span>
-                        <span class="sidebar-bottom-label">Logout</span>
-                    </button>
-                    <div class="sidebar-bottom-name" title="Pengguna yang login">
-                        <span style="font-size:18px;line-height:1">👤</span>
-                        <span id="mobileLoginName">-</span>
-                    </div>
-                </div>
 
             </div>
         </nav>
@@ -6659,11 +6586,32 @@ function closeAnnouncementPage(fromLogout) {
     if (app && document.getElementById('mainPage') && !document.getElementById('mainPage').classList.contains('hidden')) app.classList.remove('hidden');
 }
 
+function _resolvePengumumanImages(items, done) {
+    var list = Array.isArray(items) ? items.slice() : [];
+    var pending = list.filter(function(item){ return item && String(item.gambar || '').indexOf('sheetimg:') === 0; }).length;
+    if (!pending) { done(list); return; }
+    var finished = 0;
+    list.forEach(function(item){
+        if (!item || String(item.gambar || '').indexOf('sheetimg:') !== 0) return;
+        var ref = String(item.gambar || '');
+        google.script.run.withSuccessHandler(function(res){
+            if (res && res.success && res.data) item.gambar = String(res.data);
+            finished++;
+            if (finished >= pending) done(list);
+        }).withFailureHandler(function(){
+            finished++;
+            if (finished >= pending) done(list);
+        }).getPengumumanImage(ref);
+    });
+}
+
 function checkActivePengumuman() {
     if (announcementDismissedThisSession) return;
     google.script.run.withSuccessHandler(function(res) {
-        var data = res && res.success ? res.data : [];
-        showAnnouncementPage(Array.isArray(data) ? data : []);
+        var data = res && res.success && Array.isArray(res.data) ? res.data : [];
+        _resolvePengumumanImages(data, function(resolved){
+            showAnnouncementPage(resolved);
+        });
     }).withFailureHandler(function(err) {
         console.warn('Gagal memuat pengumuman:', err && err.message ? err.message : err);
     }).getPengumumanAktif();
@@ -6679,7 +6627,10 @@ function loadPengumumanAdmin() {
             return;
         }
         pengumumanAdminData = Array.isArray(res.data) ? res.data : [];
-        renderPengumumanAdminTable();
+        _resolvePengumumanImages(pengumumanAdminData, function(resolved){
+            pengumumanAdminData = resolved;
+            renderPengumumanAdminTable();
+        });
     }).withFailureHandler(function(err) {
         if (body) body.innerHTML = '<tr><td colspan="6" class="text-red-500 text-center py-8">' + escapeHtml(err && err.message ? err.message : 'Terjadi kesalahan.') + '</td></tr>';
     }).getPengumumanAdmin(currentUsernameInput);
@@ -6861,26 +6812,6 @@ function deletePengumuman(row) {
 }
 </script>
 
-
-<script id="mobile-login-name-sync">
-(function(){
-  function syncMobileLoginName(){
-    var src=document.getElementById('userBadge');
-    var dst=document.getElementById('mobileLoginName');
-    if(!src||!dst) return;
-    var t=(src.textContent||'').trim();
-    if(t.indexOf('Sales:')===0) t=t.replace(/^Sales:\s*/i,'');
-    if(t.indexOf('Role:')===0) t=t.replace(/^Role:\s*/i,'');
-    dst.textContent=t||'-';
-  }
-  document.addEventListener('DOMContentLoaded',function(){
-    syncMobileLoginName();
-    var src=document.getElementById('userBadge');
-    if(src){ new MutationObserver(syncMobileLoginName).observe(src,{childList:true,subtree:true,characterData:true}); }
-  });
-  window.addEventListener('load',syncMobileLoginName);
-})();
-</script>
 </body>
 </html>
 <style id="mobile-monitoring-pricelist-bottom-fix">
