@@ -2576,6 +2576,8 @@ startAutoRefresh();
                     document.getElementById('mainHeader').classList.remove('hidden');
                     document.getElementById('leftNav').classList.remove('hidden');
                     setSidebarState(false);
+                    // Cek pengumuman segera setelah login berhasil, sebelum request data lain.
+                    checkActivePengumuman();
                     const isAdminLogin = currentUsernameInput.toLowerCase() === 'admin';
                     applyRoleVisibility();
                     document.getElementById('userBadge').textContent = isAdminLogin ? "Admin" : currentUser;
@@ -2589,7 +2591,6 @@ startAutoRefresh();
                     if (!isAdminLogin) loadInputMasterData();
                     preloadAppDataInBackground();
                     if (isAdminLogin) switchTab('riwayat');
-                    checkActivePengumuman();
                 } else {
                     showModal("Login Gagal", res.message);
                 }
