@@ -1458,9 +1458,9 @@ html{scroll-behavior:auto!important}
 .pengumuman-card img{display:block;width:100%;max-height:62vh;object-fit:contain;background:#f8fafc}
 .pengumuman-caption{padding:18px 22px 22px;text-align:center;color:#334155;font-size:14px;line-height:1.75;font-weight:700;white-space:pre-wrap}
 .pengumuman-main-header-marquee{display:block;flex:1;min-width:0;max-width:52vw;margin:0 14px;overflow:hidden;white-space:nowrap;border:1px solid rgba(183,212,51,.28);border-radius:999px;background:rgba(255,255,255,.08);padding:7px 0;box-shadow:inset 0 0 0 1px rgba(255,255,255,.03)}
-.pengumuman-marquee-track{display:flex;width:max-content;animation:pengumumanMarqueeLTR 24s linear infinite;will-change:transform}
-.pengumuman-marquee-text{flex:0 0 auto;padding:0 6vw;font-size:13px;font-weight:800;color:#e8f7ef;letter-spacing:.01em}
-@keyframes pengumumanMarqueeLTR{from{transform:translateX(-50%)}to{transform:translateX(0)}}
+.pengumuman-marquee-track{display:flex;width:max-content;animation:pengumumanMarqueeLTR 16s linear infinite;will-change:transform}
+.pengumuman-marquee-text{flex:0 0 auto;display:block;padding:0 6vw;font-size:13px;font-weight:800;color:#e8f7ef;letter-spacing:.01em;white-space:nowrap}
+@keyframes pengumumanMarqueeLTR{from{transform:translate3d(-50%,0,0)}to{transform:translate3d(0,0,0)}}
 .pengumuman-footer{padding:20px 26px 26px;text-align:center;border-top:1px solid #eef2f7;background:#f8fafc}
 .pengumuman-main-btn{border:0;border-radius:15px;padding:13px 28px;background:#008a4c;color:#fff;font-weight:900;box-shadow:0 10px 24px rgba(0,138,76,.22);cursor:pointer}
 .pengumuman-main-btn:hover{background:#00733f}
@@ -6551,6 +6551,7 @@ function renderAnnouncementPage(data) {
             headerMarquee.innerHTML =
                 '<div class="pengumuman-marquee-track">' +
                 '<span class="pengumuman-marquee-text">' + repeated + '</span>' +
+                '<span class="pengumuman-marquee-text" aria-hidden="true">' + repeated + '</span>' +
                 '</div>';
             headerMarquee.classList.remove('hidden');
         } else {
@@ -6641,30 +6642,66 @@ function handlePengumumanImageFile(input) {
         preview.src = URL.createObjectURL(file);
         preview.classList.remove('hidden');
     }
+    // Kompres gambar di browser supaya bisa disimpan langsung di Sheet tanpa DriveApp.
     var reader = new FileReader();
     reader.onload = function(e) {
-        var dataUrl = String(e.target.result || '');
-        var comma = dataUrl.indexOf(',');
-        if (comma < 0) {
-            if (status) status.textContent = 'Gagal membaca gambar.';
-            return;
-        }
-        var base64 = dataUrl.substring(comma + 1);
-        showLoading(true);
-        google.script.run.withSuccessHandler(function(res) {
-            showLoading(false);
-            if (res && res.success && res.url) {
-                document.getElementById('pengumumanImage').value = res.url;
-                if (status) status.textContent = 'Gambar berhasil dipilih.';
-            } else {
-                if (status) status.textContent = 'Gagal mengunggah gambar.';
-                showModal('Gagal', res && res.message ? res.message : 'Gagal mengunggah gambar.');
+        var sourceUrl = String(e.target.result || '');
+        var img = new Image();
+        img.onload = function() {
+            try {
+                var maxSide = 700;
+                var scale = Math.min(1, maxSide / Math.max(img.naturalWidth || img.width, img.naturalHeight || img.height));
+                var w = Math.max(1, Math.round((img.naturalWidth || img.width) * scale));
+                var h = Math.max(1, Math.round((img.naturalHeight || img.height) * scale));
+                var canvas = document.createElement('canvas');
+                var ctx = canvas.getContext('2d');
+                canvas.width = w;
+                canvas.height = h;
+                ctx.drawImage(img, 0, 0, w, h);
+
+                var quality = 0.72;
+                var dataUrl = canvas.toDataURL('image/jpeg', quality);
+                // Turunkan ukuran bertahap sampai aman untuk satu sel Google Sheets.
+                for (var attempt = 0; attempt < 6 && dataUrl.length > 49000; attempt++) {
+                    quality -= 0.08;
+                    if (quality < 0.30) quality = 0.30;
+                    dataUrl = canvas.toDataURL('image/jpeg', quality);
+                    if (dataUrl.length <= 49000) break;
+                    canvas.width = Math.max(320, Math.round(canvas.width * 0.85));
+                    canvas.height = Math.max(320, Math.round(canvas.height * 0.85));
+                    ctx = canvas.getContext('2d');
+                    ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+                }
+
+                var comma = dataUrl.indexOf(',');
+                if (comma < 0) throw new Error('Gagal memproses gambar.');
+                var base64 = dataUrl.substring(comma + 1);
+                showLoading(true);
+                google.script.run.withSuccessHandler(function(res) {
+                    showLoading(false);
+                    if (res && res.success && res.url) {
+                        document.getElementById('pengumumanImage').value = res.url;
+                        if (status) status.textContent = 'Gambar berhasil dipilih.';
+                    } else {
+                        if (status) status.textContent = 'Gagal mengunggah gambar.';
+                        showModal('Gagal', res && res.message ? res.message : 'Gagal mengunggah gambar.');
+                    }
+                }).withFailureHandler(function(err) {
+                    showLoading(false);
+                    if (status) status.textContent = 'Gagal mengunggah gambar.';
+                    showModal('Error Sistem', err && err.message ? err.message : 'Gagal mengunggah gambar.');
+                }).uploadPengumumanImage(currentUsernameInput, base64, 'image/jpeg', file.name);
+            } catch (err) {
+                showLoading(false);
+                if (status) status.textContent = 'Gagal memproses gambar.';
+                showModal('Gagal', err && err.message ? err.message : 'Gambar tidak dapat diproses.');
             }
-        }).withFailureHandler(function(err) {
-            showLoading(false);
-            if (status) status.textContent = 'Gagal mengunggah gambar.';
-            showModal('Error Sistem', err && err.message ? err.message : 'Gagal mengunggah gambar.');
-        }).uploadPengumumanImage(currentUsernameInput, base64, file.type, file.name);
+        };
+        img.onerror = function() {
+            showModal('Gagal', 'Gambar tidak dapat dibaca.');
+            if (status) status.textContent = 'Gagal membaca gambar.';
+        };
+        img.src = sourceUrl;
     };
     reader.onerror = function() {
         showModal('Gagal', 'Gambar tidak dapat dibaca.');
