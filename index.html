@@ -1453,9 +1453,8 @@ html{scroll-behavior:auto!important}
 .pengumuman-pill{display:inline-flex;align-items:center;gap:8px;padding:8px 14px;border:1px solid #bbf7d0;border-radius:999px;background:#fff;color:#047857;font-size:11px;font-weight:900;letter-spacing:.08em}
 .pengumuman-dot{width:9px;height:9px;border-radius:50%;background:#10b981;box-shadow:0 0 0 5px #d1fae5}
 #announcementContent{padding:26px}
-.pengumuman-carousel{display:flex;flex-direction:row;gap:16px;width:100%;overflow-x:auto;overflow-y:hidden;scroll-snap-type:x mandatory;scroll-behavior:smooth;-webkit-overflow-scrolling:touch;overscroll-behavior-x:contain;touch-action:pan-x;scrollbar-width:none}
-.pengumuman-carousel::-webkit-scrollbar{display:none}
-.pengumuman-card{flex:0 0 100%;width:100%;box-sizing:border-box;overflow:hidden;border:1px solid #e2e8f0;border-radius:24px;background:#fff;box-shadow:0 14px 38px rgba(15,23,42,.08);margin:0;scroll-snap-align:start;scroll-snap-stop:always}
+.pengumuman-card{overflow:hidden;border:1px solid #e2e8f0;border-radius:24px;background:#fff;box-shadow:0 14px 38px rgba(15,23,42,.08);margin-bottom:20px}
+.pengumuman-card:last-child{margin-bottom:0}
 .pengumuman-card img{display:block;width:100%;max-height:62vh;object-fit:contain;background:#f8fafc}
 .pengumuman-caption{padding:18px 22px 22px;text-align:center;color:#334155;font-size:14px;line-height:1.75;font-weight:700;white-space:pre-wrap}
 .pengumuman-main-header-marquee{display:block;flex:1;min-width:0;max-width:52vw;margin:0 14px;overflow:hidden;white-space:nowrap;border:1px solid rgba(183,212,51,.28);border-radius:999px;background:rgba(255,255,255,.08);padding:7px 0;box-shadow:inset 0 0 0 1px rgba(255,255,255,.03)}
@@ -6532,20 +6531,14 @@ function renderAnnouncementPage(data) {
         return item && String(item.gambar || '').trim() === '' && String(item.keterangan || '').trim() !== '';
     });
 
-    /* Pengumuman bergambar ditampilkan sebagai kartu horizontal yang bisa di-swipe kiri/kanan. */
-    if (imageItems.length) {
-        box.innerHTML = '<div class="pengumuman-carousel" aria-label="Pengumuman bergambar">' +
-            imageItems.map(function(item) {
-                var imageUrl = String(item.gambar || '').trim();
-                var text = escapeHtml(item.keterangan || '');
-                return '<div class="pengumuman-card"><img src="' + escapeHtml(imageUrl) + '" alt="Pengumuman">' +
-                       (text ? '<div class="pengumuman-caption">' + text + '</div>' : '') +
-                       '</div>';
-            }).join('') +
-            '</div>';
-    } else {
-        box.innerHTML = '';
-    }
+    /* Hanya pengumuman yang benar-benar mempunyai gambar yang ditampilkan sebagai kartu. */
+    box.innerHTML = imageItems.length ? ('<div class="pengumuman-carousel" aria-label="Pengumuman bergambar">' + imageItems.map(function(item) {
+        var imageUrl = String(item.gambar || '').trim();
+        var text = escapeHtml(item.keterangan || '');
+        return '<div class="pengumuman-card"><img src="' + escapeHtml(imageUrl) + '" alt="Pengumuman">' +
+               (text ? '<div class="pengumuman-caption">' + text + '</div>' : '') +
+               '</div>';
+    }).join('') + '</div>') : '';
 
     /* Pengumuman tanpa gambar masuk ke HEADER dan berjalan dari kanan ke kiri. */
     if (headerMarquee) {
@@ -6586,32 +6579,11 @@ function closeAnnouncementPage(fromLogout) {
     if (app && document.getElementById('mainPage') && !document.getElementById('mainPage').classList.contains('hidden')) app.classList.remove('hidden');
 }
 
-function _resolvePengumumanImages(items, done) {
-    var list = Array.isArray(items) ? items.slice() : [];
-    var pending = list.filter(function(item){ return item && String(item.gambar || '').indexOf('sheetimg:') === 0; }).length;
-    if (!pending) { done(list); return; }
-    var finished = 0;
-    list.forEach(function(item){
-        if (!item || String(item.gambar || '').indexOf('sheetimg:') !== 0) return;
-        var ref = String(item.gambar || '');
-        google.script.run.withSuccessHandler(function(res){
-            if (res && res.success && res.data) item.gambar = String(res.data);
-            finished++;
-            if (finished >= pending) done(list);
-        }).withFailureHandler(function(){
-            finished++;
-            if (finished >= pending) done(list);
-        }).getPengumumanImage(ref);
-    });
-}
-
 function checkActivePengumuman() {
     if (announcementDismissedThisSession) return;
     google.script.run.withSuccessHandler(function(res) {
-        var data = res && res.success && Array.isArray(res.data) ? res.data : [];
-        _resolvePengumumanImages(data, function(resolved){
-            showAnnouncementPage(resolved);
-        });
+        var data = res && res.success ? res.data : [];
+        showAnnouncementPage(Array.isArray(data) ? data : []);
     }).withFailureHandler(function(err) {
         console.warn('Gagal memuat pengumuman:', err && err.message ? err.message : err);
     }).getPengumumanAktif();
@@ -6627,10 +6599,7 @@ function loadPengumumanAdmin() {
             return;
         }
         pengumumanAdminData = Array.isArray(res.data) ? res.data : [];
-        _resolvePengumumanImages(pengumumanAdminData, function(resolved){
-            pengumumanAdminData = resolved;
-            renderPengumumanAdminTable();
-        });
+        renderPengumumanAdminTable();
     }).withFailureHandler(function(err) {
         if (body) body.innerHTML = '<tr><td colspan="6" class="text-red-500 text-center py-8">' + escapeHtml(err && err.message ? err.message : 'Terjadi kesalahan.') + '</td></tr>';
     }).getPengumumanAdmin(currentUsernameInput);
