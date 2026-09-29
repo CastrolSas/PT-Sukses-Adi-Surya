@@ -1449,6 +1449,12 @@ html{scroll-behavior:auto!important}
 #adminPengumumanPage #tabPengumuman{width:100%;display:block;}
 #adminPengumumanPage .announcement-admin-grid{width:100%;}
 </style>
+
+<style id="view-state-guard">
+/* Login dan halaman aplikasi adalah view terpisah. Inline state dipakai agar utility Tailwind tidak saling menimpa. */
+#loginPage[aria-hidden="true"], #registerPage[aria-hidden="true"], #mainPage[aria-hidden="true"], #announcementPage[aria-hidden="true"], #adminPengumumanPage[aria-hidden="true"], #mainHeader[aria-hidden="true"], #leftNav[aria-hidden="true"] { display:none !important; }
+#loginPage[aria-hidden="false"], #registerPage[aria-hidden="false"] { display:block !important; }
+</style>
 </head>
 <body class="bg-slate-50 font-sans">
 
@@ -2393,6 +2399,34 @@ html{scroll-behavior:auto!important}
             if (btnTambahOutletBWS) btnTambahOutletBWS.classList.toggle('hidden', !isAdminLogin);
         }
 
+        function setViewHidden(id, hidden) {
+            const el = document.getElementById(id);
+            if (!el) return;
+            if (hidden) {
+                el.classList.add('hidden');
+                el.style.setProperty('display', 'none', 'important');
+                el.setAttribute('aria-hidden', 'true');
+            } else {
+                el.classList.remove('hidden');
+                el.style.removeProperty('display');
+                el.setAttribute('aria-hidden', 'false');
+            }
+        }
+
+        function setTabVisible(id, visible) {
+            const el = document.getElementById(id);
+            if (!el) return;
+            if (visible) {
+                el.classList.remove('hidden');
+                el.style.setProperty('display', 'block', 'important');
+                el.style.setProperty('visibility', 'visible', 'important');
+                el.style.setProperty('opacity', '1', 'important');
+            } else {
+                el.classList.add('hidden');
+                el.style.setProperty('display', 'none', 'important');
+            }
+        }
+
         function restoreAuthState() {
             try {
                 const raw = localStorage.getItem(AUTH_STORAGE_KEY);
@@ -2403,12 +2437,13 @@ html{scroll-behavior:auto!important}
                 currentUsernameInput = String(state.username).trim();
                 currentUser = String(state.sales).trim();
 
-                document.getElementById('loginPage').classList.add('hidden');
-                document.getElementById('registerPage').classList.add('hidden');
-                document.getElementById('mainPage').classList.add('hidden');
-                document.getElementById('announcementPage').classList.add('hidden');
-                document.getElementById('mainHeader').classList.add('hidden');
-                document.getElementById('leftNav').classList.add('hidden');
+                setViewHidden('loginPage', true);
+                setViewHidden('registerPage', true);
+                setViewHidden('mainPage', true);
+                setViewHidden('announcementPage', true);
+                setViewHidden('adminPengumumanPage', true);
+                setViewHidden('mainHeader', true);
+                setViewHidden('leftNav', true);
                 setSidebarState(false);
 
                 const isAdminLogin = currentUsernameInput.toLowerCase() === 'admin';
@@ -2529,10 +2564,10 @@ startAutoRefresh();
                 showLoading(false);
                 if (res.success) {
                     currentUser = res.sales;
-                    document.getElementById('loginPage').classList.add('hidden');
-                    document.getElementById('registerPage').classList.add('hidden');
-                    document.getElementById('mainPage').classList.add('hidden');
-                    document.getElementById('announcementPage').classList.add('hidden');
+                    setViewHidden('loginPage', true);
+                    setViewHidden('registerPage', true);
+                    setViewHidden('mainPage', true);
+                    setViewHidden('announcementPage', true);
                     const adminPengumumanPage = document.getElementById('adminPengumumanPage');
                     if (adminPengumumanPage) { adminPengumumanPage.classList.add('hidden'); adminPengumumanPage.style.display = 'none'; }
                     document.getElementById('mainHeader').classList.add('hidden');
@@ -5817,6 +5852,8 @@ startAutoRefresh();
                 if (!announcementLandingOpen || requestSeq !== announcementLandingRequestSeq) return;
 
                 const list = res && res.success ? (res.data || []) : [];
+                setViewHidden('loginPage', true);
+                setViewHidden('registerPage', true);
                 if (list.length) {
                     renderAnnouncementLanding(list);
                     const announcementPage = document.getElementById('announcementPage');
@@ -5870,6 +5907,8 @@ startAutoRefresh();
 
         function goToMainMenu() {
             closeAnnouncementLanding();
+            setViewHidden('loginPage', true);
+            setViewHidden('registerPage', true);
             applyRoleVisibility();
 
             const isAdminLogin = String(currentUsernameInput || '').trim().toLowerCase() === 'admin';
@@ -6104,8 +6143,10 @@ startAutoRefresh();
 
         function switchTab(tab) {
             const isAdminLogin = String(currentUsernameInput || '').trim().toLowerCase() === 'admin';
-            if (isAdminLogin && tab === 'input') { applyRoleVisibility(); return; }
+            if (isAdminLogin && tab === 'input') tab = 'riwayat';
             if (!isAdminLogin && tab === 'pengumuman') { applyRoleVisibility(); return; }
+            setViewHidden('loginPage', true);
+            setViewHidden('registerPage', true);
 
             if (tab === 'pengumuman') {
                 openPengumumanAdminTab();
@@ -6130,10 +6171,8 @@ startAutoRefresh();
             const navMap = {input:'navInput',riwayat:'navRiwayat',pencapaian:'navPencapaian',monitoring:'navMonitoring',outletkontrak:'navOutletKontrak',outletbws:'navOutletBWS',tambahcustomer:'navTambahCustomer',pricelist:'navPricelist',pesananoutlet:'navPesananOutlet'};
 
             Object.keys(tabMap).forEach(function(key){
-                const el = document.getElementById(tabMap[key]);
-                if (!el) return;
-                if (key === 'outletbws' && !isAdminLogin) { el.classList.add('hidden'); return; }
-                el.classList.toggle('hidden', key !== tab);
+                if (key === 'outletbws' && !isAdminLogin) { setTabVisible(tabMap[key], false); return; }
+                setTabVisible(tabMap[key], key === tab);
             });
             Object.keys(navMap).forEach(function(key){
                 const el = document.getElementById(navMap[key]);
@@ -6261,14 +6300,14 @@ startAutoRefresh();
                 if (isOk) {
                     clearAuthState();
                     currentUser = ""; currentUsernameInput = ""; shoppingCart = []; globalRiwayatData = []; rawMonitoringDataObject = {}; globalOutletKontrakData = []; pencapaianCache = {}; pencapaianDetailCache = {}; globalPricelistData = []; globalTambahCustomerData = { headers: [], rows: [] }; globalTambahCustomerFormMaster = { headers: [], dayVisits: [], channels: [], dsrs: [], today: '', salesName: '', isAdmin: false, newCustCode: '' }; tambahCustomerLoaded = false;
-                    document.getElementById('mainPage').classList.add('hidden');
-                    document.getElementById('announcementPage').classList.add('hidden');
-                    const adminPengumumanPage = document.getElementById('adminPengumumanPage');
-                    if (adminPengumumanPage) { adminPengumumanPage.classList.add('hidden'); adminPengumumanPage.style.display = 'none'; }
-                    document.getElementById('mainHeader').classList.add('hidden');
-                    document.getElementById('leftNav').classList.add('hidden');
+                    setViewHidden('mainPage', true);
+                    setViewHidden('announcementPage', true);
+                    setViewHidden('adminPengumumanPage', true);
+                    setViewHidden('mainHeader', true);
+                    setViewHidden('leftNav', true);
                     setSidebarState(false);
-                    document.getElementById('loginPage').classList.remove('hidden');
+                    setViewHidden('loginPage', false);
+                    setViewHidden('registerPage', true);
                     document.getElementById('userBadge').classList.add('hidden');
                 }
             });
