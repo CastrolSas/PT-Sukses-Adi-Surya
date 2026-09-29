@@ -1443,6 +1443,12 @@ html{scroll-behavior:auto!important}
 }
 #loadingOverlay{pointer-events:none!important;user-select:none!important}
 </style>
+
+<style id="announcement-admin-page-fix">
+#adminPengumumanPage{width:100%;max-width:1220px;margin:0 auto;}
+#adminPengumumanPage #tabPengumuman{width:100%;display:block;}
+#adminPengumumanPage .announcement-admin-grid{width:100%;}
+</style>
 </head>
 <body class="bg-slate-50 font-sans">
 
@@ -2111,6 +2117,12 @@ html{scroll-behavior:auto!important}
                     </div>
                 </div>
 
+
+
+            </div>
+
+            <!-- HALAMAN ADMIN PENGUMUMAN - TERPISAH DARI mainPage AGAR TIDAK TERPENGARUH TAB LAIN -->
+            <div id="adminPengumumanPage" class="hidden space-y-4">
                 <!-- BUAT PENGUMUMAN -->
                 <div id="tabPengumuman" class="tab-content hidden space-y-3">
                     <div class="flex justify-between items-center border-b border-slate-200 pb-2 gap-2">
@@ -2160,10 +2172,12 @@ html{scroll-behavior:auto!important}
                         </div>
                     </div>
                 </div>
-
             </div>
 
         </div>
+
+
+
     </div>
 
     <script>
@@ -2515,6 +2529,8 @@ startAutoRefresh();
                     document.getElementById('registerPage').classList.add('hidden');
                     document.getElementById('mainPage').classList.add('hidden');
                     document.getElementById('announcementPage').classList.add('hidden');
+                    const adminPengumumanPage = document.getElementById('adminPengumumanPage');
+                    if (adminPengumumanPage) { adminPengumumanPage.classList.add('hidden'); adminPengumumanPage.style.display = 'none'; }
                     document.getElementById('mainHeader').classList.add('hidden');
                     document.getElementById('leftNav').classList.add('hidden');
                     setSidebarState(false);
@@ -5681,7 +5697,8 @@ startAutoRefresh();
                 'tabOutletBWS',
                 'tabTambahCustomer',
                 'tabPricelist',
-                'tabPesananOutlet'
+                'tabPesananOutlet',
+                'tabPengumuman'
             ];
 
             const activeTab = activeTabs.find(function(id) {
@@ -5707,6 +5724,8 @@ startAutoRefresh();
                 loadPricelist(true, true);
             } else if (activeTab === 'tabPesananOutlet') {
                 loadPesananOutlet(true, true);
+            } else if (activeTab === 'tabPengumuman') {
+                loadPengumumanAdmin(true);
             }
         }
 
@@ -6014,12 +6033,12 @@ startAutoRefresh();
             const isAdminLogin = String(currentUsernameInput || '').trim().toLowerCase() === 'admin';
             if (!isAdminLogin) { applyRoleVisibility(); return; }
 
-            // Tutup landing pengumuman pasca-login dan batalkan callback lama.
             announcementLandingOpen = false;
             announcementLandingRequestSeq++;
 
             const announcementPage = document.getElementById('announcementPage');
             const mainPage = document.getElementById('mainPage');
+            const adminPage = document.getElementById('adminPengumumanPage');
             const mainHeader = document.getElementById('mainHeader');
             const leftNav = document.getElementById('leftNav');
             const tabPengumuman = document.getElementById('tabPengumuman');
@@ -6030,10 +6049,14 @@ startAutoRefresh();
                 announcementPage.style.display = 'none';
             }
             if (mainPage) {
-                mainPage.classList.remove('hidden');
-                mainPage.style.setProperty('display', 'block', 'important');
-                mainPage.style.setProperty('visibility', 'visible', 'important');
-                mainPage.style.setProperty('opacity', '1', 'important');
+                mainPage.classList.add('hidden');
+                mainPage.style.setProperty('display', 'none', 'important');
+            }
+            if (adminPage) {
+                adminPage.classList.remove('hidden');
+                adminPage.style.setProperty('display', 'block', 'important');
+                adminPage.style.setProperty('visibility', 'visible', 'important');
+                adminPage.style.setProperty('opacity', '1', 'important');
             }
             if (mainHeader) {
                 mainHeader.classList.remove('hidden');
@@ -6044,42 +6067,31 @@ startAutoRefresh();
                 leftNav.style.removeProperty('display');
             }
 
-            // Sembunyikan tab lain, tetapi jangan mengubah className tombol navigasi
-            // secara total karena dapat menghapus class penting dari layout.
-            const tabIds = ['tabInput','tabRiwayat','tabPencapaian','tabMonitoring','tabOutletKontrak','tabOutletBWS','tabTambahCustomer','tabPricelist','tabPesananOutlet','tabPengumuman'];
+            const tabIds = ['tabInput','tabRiwayat','tabPencapaian','tabMonitoring','tabOutletKontrak','tabOutletBWS','tabTambahCustomer','tabPricelist','tabPesananOutlet'];
             tabIds.forEach(function(id) {
                 const el = document.getElementById(id);
                 if (!el) return;
-                if (id === 'tabPengumuman') {
-                    el.classList.remove('hidden');
-                    el.style.setProperty('display', 'block', 'important');
-                    el.style.setProperty('visibility', 'visible', 'important');
-                    el.style.setProperty('opacity', '1', 'important');
-                    el.removeAttribute('aria-hidden');
-                } else {
-                    el.classList.add('hidden');
-                    el.style.setProperty('display', 'none', 'important');
-                }
+                el.classList.add('hidden');
+                el.style.setProperty('display', 'none', 'important');
             });
+
+            if (tabPengumuman) {
+                tabPengumuman.classList.remove('hidden');
+                tabPengumuman.style.setProperty('display', 'block', 'important');
+                tabPengumuman.style.setProperty('visibility', 'visible', 'important');
+                tabPengumuman.style.setProperty('opacity', '1', 'important');
+                tabPengumuman.removeAttribute('aria-hidden');
+            }
 
             const navIds = ['navInput','navRiwayat','navPencapaian','navMonitoring','navOutletKontrak','navOutletBWS','navTambahCustomer','navPricelist','navPesananOutlet'];
             navIds.forEach(function(id) {
                 const el = document.getElementById(id);
                 if (!el) return;
                 el.classList.remove('sidebar-item-active');
-                if (id === 'navOutletBWS') el.classList.remove('hidden');
             });
             if (navPengumuman) {
                 navPengumuman.classList.remove('hidden');
                 navPengumuman.classList.add('sidebar-item-active');
-            }
-
-            // Guard terakhir: tab pengumuman harus benar-benar terlihat.
-            if (tabPengumuman) {
-                tabPengumuman.classList.remove('hidden');
-                tabPengumuman.style.setProperty('display', 'block', 'important');
-                tabPengumuman.style.setProperty('visibility', 'visible', 'important');
-                tabPengumuman.style.setProperty('opacity', '1', 'important');
             }
 
             setSidebarState(true);
@@ -6099,6 +6111,11 @@ startAutoRefresh();
             closeAnnouncementLanding();
 
             const mainPage = document.getElementById('mainPage');
+            const adminPage = document.getElementById('adminPengumumanPage');
+            if (adminPage) {
+                adminPage.classList.add('hidden');
+                adminPage.style.setProperty('display', 'none', 'important');
+            }
             const mainHeader = document.getElementById('mainHeader');
             const leftNav = document.getElementById('leftNav');
             if (mainPage) { mainPage.classList.remove('hidden'); mainPage.style.removeProperty('display'); }
@@ -6242,6 +6259,8 @@ startAutoRefresh();
                     currentUser = ""; currentUsernameInput = ""; shoppingCart = []; globalRiwayatData = []; rawMonitoringDataObject = {}; globalOutletKontrakData = []; pencapaianCache = {}; pencapaianDetailCache = {}; globalPricelistData = []; globalTambahCustomerData = { headers: [], rows: [] }; globalTambahCustomerFormMaster = { headers: [], dayVisits: [], channels: [], dsrs: [], today: '', salesName: '', isAdmin: false, newCustCode: '' }; tambahCustomerLoaded = false;
                     document.getElementById('mainPage').classList.add('hidden');
                     document.getElementById('announcementPage').classList.add('hidden');
+                    const adminPengumumanPage = document.getElementById('adminPengumumanPage');
+                    if (adminPengumumanPage) { adminPengumumanPage.classList.add('hidden'); adminPengumumanPage.style.display = 'none'; }
                     document.getElementById('mainHeader').classList.add('hidden');
                     document.getElementById('leftNav').classList.add('hidden');
                     setSidebarState(false);
