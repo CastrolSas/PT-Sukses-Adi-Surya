@@ -1487,6 +1487,11 @@ html{scroll-behavior:auto!important}
 .pengumuman-dot{width:9px;height:9px;border-radius:50%;background:#10b981;box-shadow:0 0 0 5px #d1fae5}
 #announcementContent{padding:26px}
 .pengumuman-card{overflow:hidden;border:1px solid #e2e8f0;border-radius:24px;background:#fff;box-shadow:0 14px 38px rgba(15,23,42,.08);margin-bottom:20px}
+.pengumuman-carousel{display:flex;flex-direction:row;gap:18px;overflow-x:auto;overflow-y:hidden;padding:4px 4px 14px;scroll-snap-type:x mandatory;-webkit-overflow-scrolling:touch;touch-action:pan-x;overscroll-behavior-x:contain;scrollbar-width:none}
+.pengumuman-carousel::-webkit-scrollbar{display:none}
+.pengumuman-carousel .pengumuman-card{flex:0 0 min(86%,760px);margin-bottom:0;scroll-snap-align:center;scroll-snap-stop:always}
+.pengumuman-carousel .pengumuman-card img{max-height:62vh;min-height:220px;object-fit:contain}
+@media(max-width:767px){.pengumuman-carousel{gap:12px;padding-left:2px;padding-right:2px}.pengumuman-carousel .pengumuman-card{flex-basis:88%}.pengumuman-carousel .pengumuman-card img{min-height:180px;max-height:55vh}}
 .pengumuman-card:last-child{margin-bottom:0}
 .pengumuman-card img{display:block;width:100%;max-height:62vh;object-fit:contain;background:#f8fafc}
 .pengumuman-caption{padding:18px 22px 22px;text-align:center;color:#334155;font-size:14px;line-height:1.75;font-weight:700;white-space:pre-wrap}
