@@ -2449,6 +2449,8 @@ html{scroll-behavior:auto!important}
             const tabPengumumanAdmin = document.getElementById('tabPengumumanAdmin');
             if (navPengumumanAdmin) navPengumumanAdmin.classList.toggle('hidden', !isAdminLogin);
             if (tabPengumumanAdmin) tabPengumumanAdmin.classList.toggle('hidden', !isAdminLogin);
+            const filterOutletKontrakSales = document.getElementById('filterOutletKontrakSales');
+            if (filterOutletKontrakSales) filterOutletKontrakSales.classList.toggle('hidden', !isAdminLogin);
         }
 
         function restoreAuthState() {
