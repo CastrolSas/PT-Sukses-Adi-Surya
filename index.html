@@ -5723,9 +5723,52 @@ startAutoRefresh();
 
 
         // Auto refresh setiap 5 detik untuk SEMUA tab kecuali tab Input.
-        // Refresh hanya dilakukan pada tab yang sedang aktif agar ringan dan tidak
-        // mengambil data dari semua tab sekaligus. Modal/detail tetap tidak diganggu.
+        // Refresh hanya dilakukan jika user sedang tidak berinteraksi dengan filter,
+        // pencarian, hasil filter, dropdown/kategori, atau kontrol form lainnya.
+        // Modal/detail tetap tidak diganggu.
         let autoRefreshTimer = null;
+        let autoRefreshUserActivityUntil = 0;
+
+        function markAutoRefreshUserActivity() {
+            // Beri jeda setelah aktivitas user agar refresh tidak memotong interaksi.
+            autoRefreshUserActivityUntil = Date.now() + 8000;
+        }
+
+        function autoRefreshTabHasUserState(tab) {
+            const root = document.getElementById(tab);
+            if (!root) return false;
+
+            // Jika fokus masih berada pada input/select/textarea, jangan refresh.
+            const active = document.activeElement;
+            if (active && root.contains(active) && /^(INPUT|SELECT|TEXTAREA)$/.test(active.tagName)) return true;
+
+            // Jika user sedang melihat hasil pencarian/filter, pertahankan tampilan tersebut.
+            // Nilai non-default pada kontrol filter dianggap sebagai state aktif.
+            const controls = root.querySelectorAll('input, select, textarea');
+            for (let i = 0; i < controls.length; i++) {
+                const el = controls[i];
+                if (el.disabled || el.type === 'hidden') continue;
+                if (el.tagName === 'SELECT') {
+                    if (String(el.value || '') !== '') return true;
+                } else if (el.type === 'checkbox' || el.type === 'radio') {
+                    if (el.checked) return true;
+                } else if (String(el.value || '').trim() !== '') {
+                    return true;
+                }
+            }
+
+            return false;
+        }
+
+        // Aktivitas pengguna menunda auto refresh tanpa mengubah fungsi aplikasi.
+        ['pointerdown','keydown','input','change','focusin','touchstart','wheel','scroll'].forEach(function(evt) {
+            document.addEventListener(evt, function(event) {
+                const target = event && event.target;
+                if (!target || !target.closest) return;
+                if (target.closest('#mainPage')) markAutoRefreshUserActivity();
+            }, {passive:true});
+        });
+
         function autoRefreshActiveTab() {
             const mainPage = document.getElementById('mainPage');
             if (!mainPage || mainPage.classList.contains('hidden')) return;
@@ -5749,8 +5792,17 @@ startAutoRefresh();
                 return el && !el.classList.contains('hidden');
             });
 
+            if (!activeTab) return;
+
+            // Jangan refresh saat user baru saja beraktivitas.
+            if (Date.now() < autoRefreshUserActivityUntil) return;
+
+            // Jangan refresh tab yang sedang memakai filter/pencarian/kategori.
+            // Ini menjaga hasil pencarian dan pilihan user tetap di layar.
+            if (autoRefreshTabHasUserState(activeTab)) return;
+
             // TAB INPUT sengaja tidak dimasukkan ke daftar di atas.
-            // Semua tab lainnya diperbarui secara silent: halaman tidak reload, kontrol/filter dipertahankan, dan tidak menampilkan loading ulang.
+            // Semua tab lainnya diperbarui secara silent tanpa overlay/loading.
             if (activeTab === 'tabRiwayat') {
                 loadRiwayat(true, true);
             } else if (activeTab === 'tabPencapaian') {
