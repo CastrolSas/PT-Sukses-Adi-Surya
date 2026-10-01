@@ -3450,7 +3450,7 @@ startAutoRefresh();
                 </div>
                 <div id="monitoringDetailHistoryChart" class="mt-3 rounded-xl border border-slate-200 bg-white p-3">
                     <div class="text-[10px] font-extrabold text-slate-700">History Pengambilan</div>
-                    <div class="text-[9px] text-slate-400 mt-1">Memuat...</div>
+                    <div class="text-[9px] text-slate-400 mt-1">Memuat history dari sheet DAMEN...</div>
                 </div>
                 <div id="monitoringDetailProducts" class="text-xs text-slate-400 text-center py-6">${initialMsg}</div>
             `;
@@ -3748,7 +3748,7 @@ startAutoRefresh();
                         </div>
                     </div>
                 </div>
-                <div class="mt-1.5 text-[9px] text-slate-400"></div>
+                <div class="mt-1.5 text-[9px] text-slate-400">Volume pengambilan (dus) per bulan • Geser kiri/kanan untuk melihat bulan lainnya</div>
             `;
 
             const svg = document.getElementById('monitoringHistorySvg');
@@ -7311,6 +7311,15 @@ function deletePengumuman(row) {
   #tabOutletKontrak .bg-white.border.rounded-xl.shadow-sm > div {
     max-height: calc(100dvh - 220px) !important;
     height: calc(100dvh - 220px) !important;
+  }
+}
+</style>
+<style id="monitoring-detail-extra-wide">
+/* Detail Monitoring: lebih lebar pada layar desktop, tetap tidak full screen */
+@media (min-width: 768px) {
+  #customModal .bws-detail-modal-card {
+    width: min(1500px, calc(100vw - 48px)) !important;
+    max-width: 1500px !important;
   }
 }
 </style>
