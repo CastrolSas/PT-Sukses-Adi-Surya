@@ -2308,7 +2308,7 @@ html{scroll-behavior:auto!important}
             } catch(e) { return null; }
         }
         function restoreFastTabCaches() {
-            const mon = appLocalCacheGet('MONITORING_' + String(currentUsernameInput||'').toUpperCase());
+            const mon = appLocalCacheGet('MONITORING_V6_' + String(currentUsernameInput||'').toUpperCase());
             if (mon && typeof mon === 'object') rawMonitoringDataObject = mon;
             const kontrak = appLocalCacheGet('KONTRAK_' + String(currentUsernameInput||'').toUpperCase());
             if (Array.isArray(kontrak)) globalOutletKontrakData = kontrak;
@@ -3275,7 +3275,7 @@ startAutoRefresh();
                 monitoringLoading = false;
                 if (!silentRefresh) showLoading(false);
                 rawMonitoringDataObject = dataObj || {};
-                appLocalCacheSet('MONITORING_' + String(currentUsernameInput||'').toUpperCase(), rawMonitoringDataObject);
+                appLocalCacheSet('MONITORING_V6_' + String(currentUsernameInput||'').toUpperCase(), rawMonitoringDataObject);
                 let quarters = Object.keys(rawMonitoringDataObject).sort(function(a,b){
                     function quarterKey(v){
                         const m=String(v||'').match(/Q\s*([1-4])\s*(\d{4})/i);
@@ -3448,6 +3448,10 @@ startAutoRefresh();
                     </div>
                 </div>
                 <div id="monitoringDetailProducts" class="text-xs text-slate-400 text-center py-6">${initialMsg}</div>
+                <div id="monitoringDetailHistoryChart" class="mt-3 rounded-xl border border-slate-200 bg-white p-3">
+                    <div class="text-[10px] font-extrabold text-slate-700">History Pengambilan</div>
+                    <div class="text-[9px] text-slate-400 mt-1">Memuat history dari sheet DAMEN...</div>
+                </div>
             `;
             const monitoringModal = document.getElementById('customModal');
             const monitoringCard = monitoringModal ? monitoringModal.querySelector('.modern-modal-card') : null;
@@ -3557,18 +3561,125 @@ startAutoRefresh();
                             </div>
                         </div>
                         ${produkHtml}
+                        <div id="monitoringDetailHistoryChart" class="mt-3 rounded-xl border border-slate-200 bg-white p-3">
+                            <div class="text-[10px] font-extrabold text-slate-700">History Pengambilan</div>
+                            <div class="text-[9px] text-slate-400 mt-1">Memuat history dari sheet DAMEN...</div>
+                        </div>
                     `;
 
                     document.getElementById('modalBody').innerHTML = finalMsgHtml;
+                    loadMonitoringHistoryChart(data);
                 })
                 .withFailureHandler(function(err) {
                     document.getElementById('modalBody').innerHTML = `
                         <p class="text-red-500 text-xs py-4 text-center">
                             Gagal memuat detail: ${err && err.message ? err.message : 'Terjadi kesalahan.'}
                         </p>
+                        <div id="monitoringDetailHistoryChart" class="mt-3 rounded-xl border border-slate-200 bg-white p-3">
+                            <div class="text-[10px] font-extrabold text-slate-700">History Pengambilan</div>
+                            <div class="text-[9px] text-slate-400 mt-1">Memuat history dari sheet DAMEN...</div>
+                        </div>
                     `;
+                    loadMonitoringHistoryChart(data);
                 })
                 .getProdukDibeliOutletQuarter(data.outlet, data.quarter, data.custCode || '');
+        }
+
+
+        function loadMonitoringHistoryChart(data) {
+            const target = document.getElementById('monitoringDetailHistoryChart');
+            if (!target) return;
+            target.innerHTML = `
+                <div class="text-[10px] font-extrabold text-slate-700">History Pengambilan</div>
+                <div class="text-[9px] text-slate-400 mt-1">Memuat history dari sheet DAMEN...</div>
+            `;
+
+            google.script.run
+                .withSuccessHandler(function(history) {
+                    renderMonitoringHistoryChart(Array.isArray(history) ? history : []);
+                })
+                .withFailureHandler(function(err) {
+                    const el = document.getElementById('monitoringDetailHistoryChart');
+                    if (!el) return;
+                    el.innerHTML = `
+                        <div class="text-[10px] font-extrabold text-slate-700">History Pengambilan</div>
+                        <div class="text-[9px] text-red-500 mt-2">Gagal memuat history: ${escapeHtml(err && err.message ? err.message : 'Terjadi kesalahan.')}</div>
+                    `;
+                })
+                .getMonitoringOutletHistory(data.outlet || '', data.custCode || '', data.dsr || '');
+        }
+
+        function renderMonitoringHistoryChart(history) {
+            const target = document.getElementById('monitoringDetailHistoryChart');
+            if (!target) return;
+
+            if (!history.length) {
+                target.innerHTML = `
+                    <div class="text-[10px] font-extrabold text-slate-700">History Pengambilan</div>
+                    <div class="text-[9px] text-slate-400 mt-2">Belum ada history pengambilan pada sheet DAMEN.</div>
+                `;
+                return;
+            }
+
+            const width = 760;
+            const height = 300;
+            const padLeft = 52;
+            const padRight = 18;
+            const padTop = 28;
+            const padBottom = 54;
+            const chartW = width - padLeft - padRight;
+            const chartH = height - padTop - padBottom;
+            const maxValue = Math.max.apply(null, history.map(function(p){ return Number(p.volume) || 0; }));
+            const safeMax = maxValue > 0 ? maxValue : 1;
+            const stepX = history.length === 1 ? chartW / 2 : chartW / (history.length - 1);
+            const points = history.map(function(p, i) {
+                const x = history.length === 1 ? padLeft + chartW / 2 : padLeft + i * stepX;
+                const y = padTop + chartH - ((Number(p.volume) || 0) / safeMax) * chartH;
+                return {x:x, y:y, item:p};
+            });
+            const linePath = points.map(function(pt, i){ return (i === 0 ? 'M ' : 'L ') + pt.x.toFixed(1) + ' ' + pt.y.toFixed(1); }).join(' ');
+
+            let grid = '';
+            for (let i = 0; i <= 4; i++) {
+                const y = padTop + chartH - (chartH * i / 4);
+                const value = safeMax * i / 4;
+                grid += `<line x1="${padLeft}" y1="${y.toFixed(1)}" x2="${(width-padRight).toFixed(1)}" y2="${y.toFixed(1)}" stroke="#e2e8f0" stroke-width="1"/>`;
+                grid += `<text x="${padLeft-8}" y="${(y+3).toFixed(1)}" text-anchor="end" font-size="9" fill="#94a3b8">${value.toLocaleString('id-ID',{maximumFractionDigits:0})}</text>`;
+            }
+
+            let labels = '';
+            const maxLabels = 12;
+            const labelStep = Math.max(1, Math.ceil(history.length / maxLabels));
+            history.forEach(function(item, i) {
+                if (i % labelStep !== 0 && i !== history.length - 1) return;
+                const pt = points[i];
+                labels += `<text x="${pt.x.toFixed(1)}" y="${height-25}" text-anchor="middle" font-size="9" fill="#64748b">${escapeHtml(item.label)}</text>`;
+            });
+
+            let dots = '';
+            points.forEach(function(pt) {
+                const vol = Number(pt.item.volume) || 0;
+                dots += `<circle cx="${pt.x.toFixed(1)}" cy="${pt.y.toFixed(1)}" r="3.5" fill="#059669"><title>${escapeHtml(pt.item.label)}: ${vol.toLocaleString('id-ID',{maximumFractionDigits:1})} dus • ${Number(pt.item.transactions||0).toLocaleString('id-ID')} transaksi</title></circle>`;
+            });
+
+            target.innerHTML = `
+                <div class="flex items-start justify-between gap-2">
+                    <div>
+                        <div class="text-[10px] font-extrabold text-slate-700">History Pengambilan</div>
+                        <div class="text-[9px] text-slate-400 mt-1">Data dari DAMEN, seluruh periode • tidak mengikuti Quartal Monitoring</div>
+                    </div>
+                    <div class="text-[9px] font-bold text-emerald-700 whitespace-nowrap">${history.length} periode</div>
+                </div>
+                <div class="mt-2 w-full overflow-x-auto">
+                    <svg viewBox="0 0 ${width} ${height}" width="100%" role="img" aria-label="Chart history pengambilan">
+                        ${grid}
+                        <path d="${linePath}" fill="none" stroke="#059669" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+                        ${dots}
+                        ${labels}
+                    </svg>
+                </div>
+                <div class="mt-1 text-[9px] text-slate-400">Volume pengambilan (dus) per bulan</div>
+            `;
         }
 
         function updateQuarterMonthHeaderLabels(quarterKey) {
