@@ -1507,6 +1507,64 @@ html{scroll-behavior:auto!important}
 @media(max-width:767px){#announcementPage.pengumuman-page{padding:12px}.pengumuman-shell{min-height:calc(100dvh - 24px)}.pengumuman-panel{border-radius:22px}.pengumuman-hero{padding:26px 18px 22px}#announcementContent{padding:16px}.pengumuman-footer{padding:16px}.pengumuman-main-header-marquee{max-width:42vw;margin:0 7px}.pengumuman-marquee-text{padding:0 14vw;font-size:11px}}
 </style>
 
+
+<style id="monitoring-detail-simple-stats">
+/* DETAIL MONITORING: 1 kotak untuk Target, Actual, Gap, Ach. */
+#customModal .modal-detail-summary{
+    display:grid!important;
+    grid-template-columns:repeat(4,minmax(0,1fr))!important;
+    gap:0!important;
+    margin-bottom:11px!important;
+    padding:0!important;
+    border:1px solid #dfe8e2!important;
+    border-radius:14px!important;
+    background:#fff!important;
+    overflow:hidden!important;
+    box-shadow:0 6px 18px rgba(13,54,30,.04)!important;
+}
+#customModal .modal-detail-summary .modal-stat-card{
+    min-width:0!important;
+    padding:11px 13px!important;
+    border:0!important;
+    border-right:1px solid #e2e8f0!important;
+    border-radius:0!important;
+    background:#fff!important;
+}
+#customModal .modal-detail-summary .modal-stat-card:last-child{border-right:0!important}
+#customModal .modal-detail-summary .modal-stat-label{
+    font-size:9px!important;
+    font-weight:800!important;
+    color:#94a3b8!important;
+    letter-spacing:.05em!important;
+}
+#customModal .modal-detail-summary .modal-stat-value{
+    margin-top:4px!important;
+    font-size:13px!important;
+    line-height:1.25!important;
+    font-weight:800!important;
+    color:#0f172a!important;
+    white-space:nowrap!important;
+    overflow:hidden!important;
+    text-overflow:ellipsis!important;
+}
+#customModal .modal-detail-summary .modal-stat-value.is-main{color:#047857!important}
+
+@media(max-width:767px){
+    #customModal .modal-detail-summary{grid-template-columns:repeat(2,minmax(0,1fr))!important}
+    #customModal .modal-detail-summary .modal-stat-card:nth-child(2){border-right:0!important}
+    #customModal .modal-detail-summary .modal-stat-card:nth-child(-n+2){border-bottom:1px solid #e2e8f0!important}
+    #customModal .modal-detail-summary .modal-stat-card:nth-child(3){border-right:1px solid #e2e8f0!important}
+}
+@media(max-width:430px){
+    #customModal .modal-detail-summary{grid-template-columns:1fr!important}
+    #customModal .modal-detail-summary .modal-stat-card{
+        border-right:0!important;
+        border-bottom:1px solid #e2e8f0!important;
+    }
+    #customModal .modal-detail-summary .modal-stat-card:last-child{border-bottom:0!important}
+}
+</style>
+
 </head>
 <body class="bg-slate-50 font-sans">
 
