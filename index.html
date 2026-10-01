@@ -663,7 +663,8 @@ button{touch-action:manipulation}
 #tabOutletKontrak table,#tabPricelist table{min-width:760px}
 .modern-modal-overlay{padding:12px!important}
 .modern-modal-card{width:min(700px,100%)!important;max-height:min(88vh,800px)!important;border-radius:20px!important;overflow:hidden}
-.bws-detail-modal-card{width:min(860px,100%)!important;max-height:min(90vh,860px)!important}
+.bws-detail-modal-card{width:min(1040px,calc(100vw - 64px))!important;max-width:1040px!important;max-height:min(90vh,860px)!important}
+@media (min-width:768px){.bws-detail-modal-card{width:min(1040px,calc(100vw - 64px))!important;max-width:1040px!important}}
 .bws-detail-modal-card .modern-modal-footer{display:none!important}
 #customModal.detail-modal-active .modern-modal-footer{display:none!important}
 #customModal .modern-modal-card.detail-no-footer .modern-modal-footer{display:none!important}
@@ -3764,8 +3765,19 @@ startAutoRefresh();
                 tooltipLabel.textContent = group.getAttribute('data-label') || '';
                 tooltipVolume.textContent = group.getAttribute('data-volume') || '0';
                 tooltipTransactions.textContent = group.getAttribute('data-transactions') || '0';
-                tooltip.style.left = pt.x + 'px';
-                tooltip.style.top = pt.y + 'px';
+                // Tooltip tidak boleh tertutup di bagian atas chart.
+                // Jika titik terlalu dekat dengan atas, tooltip ditaruh di bawah titik.
+                const tooltipWidth = 150;
+                const safeX = Math.max(tooltipWidth / 2 + 8, Math.min(width - tooltipWidth / 2 - 8, pt.x));
+                if (pt.y < 92) {
+                    tooltip.style.left = safeX + 'px';
+                    tooltip.style.top = (pt.y + 14) + 'px';
+                    tooltip.style.transform = 'translate(-50%, 0)';
+                } else {
+                    tooltip.style.left = safeX + 'px';
+                    tooltip.style.top = pt.y + 'px';
+                    tooltip.style.transform = 'translate(-50%, -112%)';
+                }
                 tooltip.style.display = 'block';
                 points.forEach(function(p, n) {
                     const g = svg.querySelector('.monitor-history-point[data-index="' + n + '"] circle:last-child');
