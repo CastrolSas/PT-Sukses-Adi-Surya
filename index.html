@@ -3568,6 +3568,8 @@ startAutoRefresh();
                     `;
 
                     document.getElementById('modalBody').innerHTML = finalMsgHtml;
+                    const monitoringBodyEl = document.getElementById('modalBody');
+                    if (monitoringBodyEl) monitoringBodyEl.scrollTop = 0;
                     loadMonitoringHistoryChart(data);
                 })
                 .withFailureHandler(function(err) {
@@ -3615,20 +3617,20 @@ startAutoRefresh();
 
             if (!history.length) {
                 target.innerHTML = `
-                    <div class="text-[10px] font-extrabold text-slate-700">History Pengambilan</div>
+                    <div class="text-[11px] font-extrabold text-slate-700">History Pengambilan</div>
                     <div class="text-[9px] text-slate-400 mt-2">Belum ada history pengambilan pada sheet DAMEN.</div>
                 `;
                 return;
             }
 
-            // Satu titik = satu bulan. Lebar chart dibuat lebih besar dari area modal
-            // agar semua bulan dapat dilihat dengan jelas dan bisa digeser kiri/kanan.
-            const width = Math.max(1000, history.length * 88);
-            const height = 390;
-            const padLeft = 62;
-            const padRight = 28;
-            const padTop = 32;
-            const padBottom = 72;
+            // Chart tetap per bulan dan seluruh periode. Dibuat lebih ringkas secara vertikal
+            // agar grafik tetap jelas di dalam Detail tanpa perlu terlalu banyak scroll.
+            const width = Math.max(980, history.length * 82);
+            const height = 285;
+            const padLeft = 56;
+            const padRight = 24;
+            const padTop = 22;
+            const padBottom = 48;
             const chartW = width - padLeft - padRight;
             const chartH = height - padTop - padBottom;
 
@@ -3644,16 +3646,40 @@ startAutoRefresh();
                 return { x:x, y:y, item:item };
             });
 
-            const linePath = points.map(function(pt, i) {
-                return (i === 0 ? 'M ' : 'L ') + pt.x.toFixed(1) + ' ' + pt.y.toFixed(1);
-            }).join(' ');
+            // Kurva smooth dengan cubic Bezier, tetap mengikuti semua titik bulanan.
+            function smoothPath_(pts) {
+                if (pts.length === 1) return 'M ' + pts[0].x.toFixed(1) + ' ' + pts[0].y.toFixed(1);
+                let d = 'M ' + pts[0].x.toFixed(1) + ' ' + pts[0].y.toFixed(1);
+                for (let i = 0; i < pts.length - 1; i++) {
+                    const p0 = pts[i - 1] || pts[i];
+                    const p1 = pts[i];
+                    const p2 = pts[i + 1];
+                    const p3 = pts[i + 2] || p2;
+                    const tension = 0.18;
+                    const cp1x = p1.x + (p2.x - p0.x) * tension;
+                    const cp1y = p1.y + (p2.y - p0.y) * tension;
+                    const cp2x = p2.x - (p3.x - p1.x) * tension;
+                    const cp2y = p2.y - (p3.y - p1.y) * tension;
+                    d += ' C ' + cp1x.toFixed(1) + ' ' + cp1y.toFixed(1) +
+                         ', ' + cp2x.toFixed(1) + ' ' + cp2y.toFixed(1) +
+                         ', ' + p2.x.toFixed(1) + ' ' + p2.y.toFixed(1);
+                }
+                return d;
+            }
+
+            const linePath = smoothPath_(points);
+
+            // Area lembut di bawah kurva agar tampilan lebih modern.
+            const areaPath = linePath +
+                ' L ' + points[points.length - 1].x.toFixed(1) + ' ' + (padTop + chartH).toFixed(1) +
+                ' L ' + points[0].x.toFixed(1) + ' ' + (padTop + chartH).toFixed(1) + ' Z';
 
             let grid = '';
-            for (let i = 0; i <= 5; i++) {
-                const y = padTop + chartH - (chartH * i / 5);
-                const value = safeMax * i / 5;
-                grid += `<line x1="${padLeft}" y1="${y.toFixed(1)}" x2="${(width-padRight).toFixed(1)}" y2="${y.toFixed(1)}" stroke="#e2e8f0" stroke-width="1"/>`;
-                grid += `<text x="${padLeft-10}" y="${(y+4).toFixed(1)}" text-anchor="end" font-size="10" fill="#94a3b8">${value.toLocaleString('id-ID',{maximumFractionDigits:0})}</text>`;
+            for (let i = 0; i <= 4; i++) {
+                const y = padTop + chartH - (chartH * i / 4);
+                const value = safeMax * i / 4;
+                grid += `<line x1="${padLeft}" y1="${y.toFixed(1)}" x2="${(width-padRight).toFixed(1)}" y2="${y.toFixed(1)}" stroke="#e8eef2" stroke-width="1"/>`;
+                grid += `<text x="${padLeft-9}" y="${(y+3.5).toFixed(1)}" text-anchor="end" font-size="9" fill="#94a3b8">${value.toLocaleString('id-ID',{maximumFractionDigits:0})}</text>`;
             }
 
             let labels = '';
@@ -3664,45 +3690,117 @@ startAutoRefresh();
                 const month = parts.length > 0 ? parts[0] : label;
                 const year = parts.length > 1 ? parts.slice(1).join(' ') : '';
                 labels += `
-                    <text x="${pt.x.toFixed(1)}" y="${height-39}" text-anchor="middle" font-size="10" fill="#64748b">
+                    <text x="${pt.x.toFixed(1)}" y="${height-25}" text-anchor="middle" font-size="9.5" font-weight="600" fill="#64748b">
                         ${escapeHtml(month)}
                     </text>
-                    <text x="${pt.x.toFixed(1)}" y="${height-23}" text-anchor="middle" font-size="9" fill="#94a3b8">
+                    <text x="${pt.x.toFixed(1)}" y="${height-10}" text-anchor="middle" font-size="8.5" fill="#94a3b8">
                         ${escapeHtml(year)}
                     </text>
                 `;
             });
 
             let dots = '';
-            points.forEach(function(pt) {
+            points.forEach(function(pt, i) {
                 const vol = Number(pt.item.volume) || 0;
-                dots += `<circle cx="${pt.x.toFixed(1)}" cy="${pt.y.toFixed(1)}" r="5" fill="#059669" stroke="#ffffff" stroke-width="2">
-                    <title>${escapeHtml(pt.item.label)}: ${vol.toLocaleString('id-ID',{maximumFractionDigits:1})} dus • ${Number(pt.item.transactions||0).toLocaleString('id-ID')} transaksi</title>
-                </circle>`;
+                const tx = Number(pt.item.transactions || 0);
+                const label = escapeHtml(pt.item.label || '');
+                dots += `
+                    <g class="monitor-history-point" tabindex="0"
+                       data-index="${i}"
+                       data-label="${label}"
+                       data-volume="${vol.toLocaleString('id-ID',{maximumFractionDigits:1})}"
+                       data-transactions="${tx.toLocaleString('id-ID')}">
+                        <circle cx="${pt.x.toFixed(1)}" cy="${pt.y.toFixed(1)}" r="8" fill="transparent"></circle>
+                        <circle cx="${pt.x.toFixed(1)}" cy="${pt.y.toFixed(1)}" r="4.8" fill="#059669" stroke="#ffffff" stroke-width="2.5"></circle>
+                    </g>
+                `;
             });
 
             target.innerHTML = `
-                <div class="flex items-start justify-between gap-2">
-                    <div>
-                        <div class="text-[11px] font-extrabold text-slate-700">History Pengambilan</div>
-                        <div class="text-[9px] text-slate-400 mt-1">Data dari DAMEN, seluruh periode • tidak mengikuti Quartal Monitoring</div>
-                    </div>
+                <div class="flex items-center justify-between gap-2">
+                    <div class="text-[11px] font-extrabold text-slate-700">History Pengambilan</div>
                     <div class="text-[9px] font-bold text-emerald-700 whitespace-nowrap">${history.length} bulan</div>
                 </div>
 
-                <div class="mt-3 w-full overflow-x-auto overflow-y-hidden rounded-lg" style="-webkit-overflow-scrolling:touch;">
-                    <div style="min-width:${width}px;">
-                        <svg viewBox="0 0 ${width} ${height}" width="${width}" height="${height}" role="img" aria-label="Chart history pengambilan per bulan" style="display:block;max-width:none;">
+                <div class="mt-2 w-full overflow-x-auto overflow-y-hidden rounded-xl border border-slate-100 bg-slate-50/50" style="-webkit-overflow-scrolling:touch;scrollbar-width:thin;">
+                    <div style="min-width:${width}px;position:relative;">
+                        <svg id="monitoringHistorySvg" viewBox="0 0 ${width} ${height}" width="${width}" height="${height}" role="img" aria-label="Chart history pengambilan per bulan" style="display:block;max-width:none;overflow:visible;">
+                            <defs>
+                                <linearGradient id="monitorHistoryAreaGradient" x1="0" y1="0" x2="0" y2="1">
+                                    <stop offset="0%" stop-color="#10b981" stop-opacity="0.18"></stop>
+                                    <stop offset="100%" stop-color="#10b981" stop-opacity="0.015"></stop>
+                                </linearGradient>
+                                <filter id="monitorHistoryShadow" x="-20%" y="-20%" width="140%" height="160%">
+                                    <feDropShadow dx="0" dy="2" stdDeviation="2.5" flood-color="#059669" flood-opacity="0.18"></feDropShadow>
+                                </filter>
+                            </defs>
                             ${grid}
-                            <path d="${linePath}" fill="none" stroke="#059669" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"/>
+                            <path d="${areaPath}" fill="url(#monitorHistoryAreaGradient)" stroke="none"></path>
+                            <path d="${linePath}" fill="none" stroke="#059669" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round" filter="url(#monitorHistoryShadow)"></path>
                             ${dots}
                             ${labels}
                         </svg>
+                        <div id="monitorHistoryTooltip" style="display:none;position:absolute;z-index:10;min-width:150px;pointer-events:none;padding:9px 11px;border-radius:12px;background:rgba(15,23,42,.96);box-shadow:0 8px 22px rgba(15,23,42,.18);color:#fff;font-size:10px;line-height:1.45;transform:translate(-50%,-112%);">
+                            <div id="monitorHistoryTooltipLabel" style="font-weight:800;font-size:10px;"></div>
+                            <div style="margin-top:3px;color:#d1fae5;">Volume: <strong id="monitorHistoryTooltipVolume"></strong> dus</div>
+                            <div style="color:#e2e8f0;">Transaksi: <strong id="monitorHistoryTooltipTransactions"></strong> kali</div>
+                        </div>
                     </div>
                 </div>
-
-                <div class="mt-1 text-[9px] text-slate-400">Volume pengambilan (dus) per bulan • Geser kiri/kanan untuk melihat seluruh bulan</div>
+                <div class="mt-1.5 text-[9px] text-slate-400">Volume pengambilan (dus) per bulan • Geser kiri/kanan untuk melihat bulan lainnya</div>
             `;
+
+            const svg = document.getElementById('monitoringHistorySvg');
+            const tooltip = document.getElementById('monitorHistoryTooltip');
+            const tooltipLabel = document.getElementById('monitorHistoryTooltipLabel');
+            const tooltipVolume = document.getElementById('monitorHistoryTooltipVolume');
+            const tooltipTransactions = document.getElementById('monitorHistoryTooltipTransactions');
+            if (!svg || !tooltip) return;
+
+            function showHistoryTooltip_(group) {
+                const idx = Number(group.getAttribute('data-index') || 0);
+                const pt = points[idx];
+                if (!pt) return;
+                tooltipLabel.textContent = group.getAttribute('data-label') || '';
+                tooltipVolume.textContent = group.getAttribute('data-volume') || '0';
+                tooltipTransactions.textContent = group.getAttribute('data-transactions') || '0';
+                tooltip.style.left = pt.x + 'px';
+                tooltip.style.top = pt.y + 'px';
+                tooltip.style.display = 'block';
+                points.forEach(function(p, n) {
+                    const g = svg.querySelector('.monitor-history-point[data-index="' + n + '"] circle:last-child');
+                    if (g) g.setAttribute('r', n === idx ? '6.5' : '4.8');
+                });
+            }
+
+            function hideHistoryTooltip_() {
+                tooltip.style.display = 'none';
+                svg.querySelectorAll('.monitor-history-point circle:last-child').forEach(function(c) {
+                    c.setAttribute('r', '4.8');
+                });
+            }
+
+            svg.querySelectorAll('.monitor-history-point').forEach(function(group) {
+                group.addEventListener('mouseenter', function() { showHistoryTooltip_(group); });
+                group.addEventListener('mouseleave', hideHistoryTooltip_);
+                group.addEventListener('focus', function() { showHistoryTooltip_(group); });
+                group.addEventListener('blur', hideHistoryTooltip_);
+                group.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    const wasVisible = tooltip.style.display === 'block';
+                    const currentLabel = tooltipLabel.textContent;
+                    showHistoryTooltip_(group);
+                    if (wasVisible && currentLabel === (group.getAttribute('data-label') || '')) {
+                        setTimeout(hideHistoryTooltip_, 1800);
+                    }
+                });
+                group.addEventListener('touchstart', function() {
+                    showHistoryTooltip_(group);
+                    setTimeout(function(){
+                        if (tooltip.style.display === 'block') hideHistoryTooltip_();
+                    }, 2600);
+                }, {passive:true});
+            });
         }
 
         function updateQuarterMonthHeaderLabels(quarterKey) {
