@@ -3447,11 +3447,11 @@ startAutoRefresh();
                         <div class="modal-stat-value">${initialTarget > 0 ? initialAch.toFixed(1) + '%' : '-'}</div>
                     </div>
                 </div>
-                <div id="monitoringDetailProducts" class="text-xs text-slate-400 text-center py-6">${initialMsg}</div>
                 <div id="monitoringDetailHistoryChart" class="mt-3 rounded-xl border border-slate-200 bg-white p-3">
                     <div class="text-[10px] font-extrabold text-slate-700">History Pengambilan</div>
                     <div class="text-[9px] text-slate-400 mt-1">Memuat history dari sheet DAMEN...</div>
                 </div>
+                <div id="monitoringDetailProducts" class="text-xs text-slate-400 text-center py-6">${initialMsg}</div>
             `;
             const monitoringModal = document.getElementById('customModal');
             const monitoringCard = monitoringModal ? monitoringModal.querySelector('.modern-modal-card') : null;
@@ -3560,11 +3560,11 @@ startAutoRefresh();
                                 <div class="modal-stat-value">${detailTarget > 0 ? detailAch.toFixed(1) + '%' : '-'}</div>
                             </div>
                         </div>
-                        ${produkHtml}
                         <div id="monitoringDetailHistoryChart" class="mt-3 rounded-xl border border-slate-200 bg-white p-3">
                             <div class="text-[10px] font-extrabold text-slate-700">History Pengambilan</div>
                             <div class="text-[9px] text-slate-400 mt-1">Memuat history dari sheet DAMEN...</div>
                         </div>
+                        ${produkHtml}
                     `;
 
                     document.getElementById('modalBody').innerHTML = finalMsgHtml;
@@ -3621,64 +3621,87 @@ startAutoRefresh();
                 return;
             }
 
-            const width = 760;
-            const height = 300;
-            const padLeft = 52;
-            const padRight = 18;
-            const padTop = 28;
-            const padBottom = 54;
+            // Satu titik = satu bulan. Lebar chart dibuat lebih besar dari area modal
+            // agar semua bulan dapat dilihat dengan jelas dan bisa digeser kiri/kanan.
+            const width = Math.max(1000, history.length * 88);
+            const height = 390;
+            const padLeft = 62;
+            const padRight = 28;
+            const padTop = 32;
+            const padBottom = 72;
             const chartW = width - padLeft - padRight;
             const chartH = height - padTop - padBottom;
-            const maxValue = Math.max.apply(null, history.map(function(p){ return Number(p.volume) || 0; }));
+
+            const values = history.map(function(p) { return Number(p.volume) || 0; });
+            const maxValue = Math.max.apply(null, values);
             const safeMax = maxValue > 0 ? maxValue : 1;
-            const stepX = history.length === 1 ? chartW / 2 : chartW / (history.length - 1);
-            const points = history.map(function(p, i) {
-                const x = history.length === 1 ? padLeft + chartW / 2 : padLeft + i * stepX;
-                const y = padTop + chartH - ((Number(p.volume) || 0) / safeMax) * chartH;
-                return {x:x, y:y, item:p};
+
+            const stepX = history.length === 1 ? 0 : chartW / (history.length - 1);
+            const points = history.map(function(item, i) {
+                const value = Number(item.volume) || 0;
+                const x = history.length === 1 ? padLeft + chartW / 2 : padLeft + stepX * i;
+                const y = padTop + chartH - (value / safeMax) * chartH;
+                return { x:x, y:y, item:item };
             });
-            const linePath = points.map(function(pt, i){ return (i === 0 ? 'M ' : 'L ') + pt.x.toFixed(1) + ' ' + pt.y.toFixed(1); }).join(' ');
+
+            const linePath = points.map(function(pt, i) {
+                return (i === 0 ? 'M ' : 'L ') + pt.x.toFixed(1) + ' ' + pt.y.toFixed(1);
+            }).join(' ');
 
             let grid = '';
-            for (let i = 0; i <= 4; i++) {
-                const y = padTop + chartH - (chartH * i / 4);
-                const value = safeMax * i / 4;
+            for (let i = 0; i <= 5; i++) {
+                const y = padTop + chartH - (chartH * i / 5);
+                const value = safeMax * i / 5;
                 grid += `<line x1="${padLeft}" y1="${y.toFixed(1)}" x2="${(width-padRight).toFixed(1)}" y2="${y.toFixed(1)}" stroke="#e2e8f0" stroke-width="1"/>`;
-                grid += `<text x="${padLeft-8}" y="${(y+3).toFixed(1)}" text-anchor="end" font-size="9" fill="#94a3b8">${value.toLocaleString('id-ID',{maximumFractionDigits:0})}</text>`;
+                grid += `<text x="${padLeft-10}" y="${(y+4).toFixed(1)}" text-anchor="end" font-size="10" fill="#94a3b8">${value.toLocaleString('id-ID',{maximumFractionDigits:0})}</text>`;
             }
 
             let labels = '';
-            const maxLabels = 12;
-            const labelStep = Math.max(1, Math.ceil(history.length / maxLabels));
             history.forEach(function(item, i) {
-                if (i % labelStep !== 0 && i !== history.length - 1) return;
                 const pt = points[i];
-                labels += `<text x="${pt.x.toFixed(1)}" y="${height-25}" text-anchor="middle" font-size="9" fill="#64748b">${escapeHtml(item.label)}</text>`;
+                const label = String(item.label || '').trim();
+                const parts = label.split(/\s+/);
+                const month = parts.length > 0 ? parts[0] : label;
+                const year = parts.length > 1 ? parts.slice(1).join(' ') : '';
+                labels += `
+                    <text x="${pt.x.toFixed(1)}" y="${height-39}" text-anchor="middle" font-size="10" fill="#64748b">
+                        ${escapeHtml(month)}
+                    </text>
+                    <text x="${pt.x.toFixed(1)}" y="${height-23}" text-anchor="middle" font-size="9" fill="#94a3b8">
+                        ${escapeHtml(year)}
+                    </text>
+                `;
             });
 
             let dots = '';
             points.forEach(function(pt) {
                 const vol = Number(pt.item.volume) || 0;
-                dots += `<circle cx="${pt.x.toFixed(1)}" cy="${pt.y.toFixed(1)}" r="3.5" fill="#059669"><title>${escapeHtml(pt.item.label)}: ${vol.toLocaleString('id-ID',{maximumFractionDigits:1})} dus • ${Number(pt.item.transactions||0).toLocaleString('id-ID')} transaksi</title></circle>`;
+                dots += `<circle cx="${pt.x.toFixed(1)}" cy="${pt.y.toFixed(1)}" r="5" fill="#059669" stroke="#ffffff" stroke-width="2">
+                    <title>${escapeHtml(pt.item.label)}: ${vol.toLocaleString('id-ID',{maximumFractionDigits:1})} dus • ${Number(pt.item.transactions||0).toLocaleString('id-ID')} transaksi</title>
+                </circle>`;
             });
 
             target.innerHTML = `
                 <div class="flex items-start justify-between gap-2">
                     <div>
-                        <div class="text-[10px] font-extrabold text-slate-700">History Pengambilan</div>
+                        <div class="text-[11px] font-extrabold text-slate-700">History Pengambilan</div>
                         <div class="text-[9px] text-slate-400 mt-1">Data dari DAMEN, seluruh periode • tidak mengikuti Quartal Monitoring</div>
                     </div>
-                    <div class="text-[9px] font-bold text-emerald-700 whitespace-nowrap">${history.length} periode</div>
+                    <div class="text-[9px] font-bold text-emerald-700 whitespace-nowrap">${history.length} bulan</div>
                 </div>
-                <div class="mt-2 w-full overflow-x-auto">
-                    <svg viewBox="0 0 ${width} ${height}" width="100%" role="img" aria-label="Chart history pengambilan">
-                        ${grid}
-                        <path d="${linePath}" fill="none" stroke="#059669" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
-                        ${dots}
-                        ${labels}
-                    </svg>
+
+                <div class="mt-3 w-full overflow-x-auto overflow-y-hidden rounded-lg" style="-webkit-overflow-scrolling:touch;">
+                    <div style="min-width:${width}px;">
+                        <svg viewBox="0 0 ${width} ${height}" width="${width}" height="${height}" role="img" aria-label="Chart history pengambilan per bulan" style="display:block;max-width:none;">
+                            ${grid}
+                            <path d="${linePath}" fill="none" stroke="#059669" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"/>
+                            ${dots}
+                            ${labels}
+                        </svg>
+                    </div>
                 </div>
-                <div class="mt-1 text-[9px] text-slate-400">Volume pengambilan (dus) per bulan</div>
+
+                <div class="mt-1 text-[9px] text-slate-400">Volume pengambilan (dus) per bulan • Geser kiri/kanan untuk melihat seluruh bulan</div>
             `;
         }
 
