@@ -2367,7 +2367,7 @@ html{scroll-behavior:auto!important}
             } catch(e) { return null; }
         }
         function restoreFastTabCaches() {
-            const mon = appLocalCacheGet('MONITORING_V8_' + String(currentUsernameInput||'').toUpperCase());
+            const mon = appLocalCacheGet('MONITORING_V6_' + String(currentUsernameInput||'').toUpperCase());
             if (mon && typeof mon === 'object') rawMonitoringDataObject = mon;
             const kontrak = appLocalCacheGet('KONTRAK_' + String(currentUsernameInput||'').toUpperCase());
             if (Array.isArray(kontrak)) globalOutletKontrakData = kontrak;
@@ -3321,40 +3321,10 @@ startAutoRefresh();
 
         function loadMonitoring(forceReload, silentRefresh) {
             const hasCached = Object.keys(rawMonitoringDataObject || {}).length > 0;
-            let container = document.getElementById('listMonitoringTableBody');
-
-            // Jika data sudah ada di browser, tampilkan SEKETIKA.
-            // Server tetap diperbarui di belakang layar tanpa mengganggu tampilan.
-            if (!forceReload && hasCached) {
-                renderMonitoringList();
-                if (monitoringLoading) return;
-                monitoringLoading = true;
-                google.script.run.withSuccessHandler(function(dataObj) {
-                    monitoringLoading = false;
-                    rawMonitoringDataObject = dataObj || {};
-                    appLocalCacheSet('MONITORING_V8_' + String(currentUsernameInput||'').toUpperCase(), rawMonitoringDataObject);
-                    let quarters = Object.keys(rawMonitoringDataObject).sort(function(a,b){
-                        function quarterKey(v){
-                            const m=String(v||'').match(/Q\s*([1-4])\s*(\d{4})/i);
-                            return m ? Number(m[2])*10+Number(m[1]) : -1;
-                        }
-                        return quarterKey(b)-quarterKey(a) || String(b).localeCompare(String(a));
-                    });
-                    let selectQ = document.getElementById('filterQuarterSelect');
-                    const previousQuarter = selectQ ? String(selectQ.value || '').trim() : '';
-                    if (selectQ) selectQ.innerHTML = '';
-                    quarters.forEach(function(q){ let opt=document.createElement('option'); opt.value=q; opt.textContent=q; selectQ.appendChild(opt); });
-                    if (selectQ && quarters.length) selectQ.value = quarters.indexOf(previousQuarter) !== -1 ? previousQuarter : quarters[0];
-                    renderMonitoringList();
-                }).withFailureHandler(function(err) {
-                    monitoringLoading = false;
-                    console.warn('Refresh Monitoring gagal:', err && err.message ? err.message : err);
-                }).getMonitoringOutletData(currentUser, currentUsernameInput);
-                return;
-            }
-
+            if (!forceReload && hasCached) { renderMonitoringList(); return; }
             if (monitoringLoading) return;
             monitoringLoading = true;
+            let container = document.getElementById('listMonitoringTableBody');
             if (forceReload && hasCached) renderMonitoringList();
             if (!silentRefresh) {
                 if (!hasCached && container) container.innerHTML = '<tr><td colspan="10" class="text-slate-400 text-center py-6">Memuat...</td></tr>';
@@ -3364,7 +3334,7 @@ startAutoRefresh();
                 monitoringLoading = false;
                 if (!silentRefresh) showLoading(false);
                 rawMonitoringDataObject = dataObj || {};
-                appLocalCacheSet('MONITORING_V8_' + String(currentUsernameInput||'').toUpperCase(), rawMonitoringDataObject);
+                appLocalCacheSet('MONITORING_V6_' + String(currentUsernameInput||'').toUpperCase(), rawMonitoringDataObject);
                 let quarters = Object.keys(rawMonitoringDataObject).sort(function(a,b){
                     function quarterKey(v){
                         const m=String(v||'').match(/Q\s*([1-4])\s*(\d{4})/i);
@@ -3374,9 +3344,9 @@ startAutoRefresh();
                 });
                 let selectQ = document.getElementById('filterQuarterSelect');
                 const previousQuarter = selectQ ? String(selectQ.value || '').trim() : '';
-                if (selectQ) selectQ.innerHTML = '';
+                if (selectQ) selectQ.innerHTML = "";
                 if (quarters.length === 0) { if(selectQ) selectQ.innerHTML = '<option value="">Tidak ada data</option>'; renderMonitoringList(); return; }
-                quarters.forEach(function(q){ let opt=document.createElement('option'); opt.value=q; opt.textContent=q; selectQ.appendChild(opt); });
+                quarters.forEach(q => { let opt=document.createElement('option'); opt.value=q; opt.textContent=q; selectQ.appendChild(opt); });
                 if (selectQ) selectQ.value = quarters.indexOf(previousQuarter) !== -1 ? previousQuarter : quarters[0];
                 renderMonitoringList();
             }).withFailureHandler(function(err) {
@@ -3549,141 +3519,81 @@ startAutoRefresh();
             document.getElementById('modalCancelBtn').style.display = 'none';
             document.getElementById('modalOkBtn').style.display = 'none';
 
-            // Jalankan History langsung setelah modal tampil, tanpa menunggu Transaksi.
-            loadMonitoringHistoryChart(data);
-
-            google.script.run
-                .withSuccessHandler(function(produkList) {
-                    let produkHtml = "";
-                    if (!produkList || produkList.length === 0) {
-                        produkHtml = `<p class="text-slate-400 text-xs py-2 italic">Tidak ada transaksi pada periode ini.</p>`;
-                    } else {
-                        // Grouping rincian berdasarkan tanggal.
-                        // Setiap tanggal ditampilkan sebagai header grup, lalu produk-produk di bawahnya.
-                        let grouped = {};
-                        produkList.forEach(function(p) {
-                            let tglValue = p.tanggal !== undefined && p.tanggal !== null && String(p.tanggal).trim()
-                                ? String(p.tanggal).trim() : '-';
-                            if (!grouped[tglValue]) grouped[tglValue] = [];
-                            grouped[tglValue].push(p);
-                        });
-
-                        let groupedDates = Object.keys(grouped).sort(function(a, b) {
-                            if (a === '-') return 1;
-                            if (b === '-') return -1;
-                            return new Date(b).getTime() - new Date(a).getTime();
-                        });
-
-                        produkHtml = `
-                            <div class="modal-table-wrap">
-                                <table class="modal-detail-table">
-                                    <thead>
-                                        <tr>
-                                            <th style="width:55px; text-align:center;">No</th>
-                                            <th style="text-align:left;">Produk</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                        `;
-
-                        let nomor = 1;
-                        groupedDates.forEach(function(tgl) {
-                            let dateLabel = tgl;
-                            if (tgl !== '-') {
-                                let parsed = new Date(tgl);
-                                if (!isNaN(parsed.getTime())) {
-                                    dateLabel = parsed.toLocaleDateString('id-ID', {
-                                        day: '2-digit', month: 'long', year: 'numeric'
-                                    });
-                                }
-                            }
-
-                            produkHtml += `
-                                <tr class="monitor-date-group-row">
-                                    <td colspan="2" class="monitor-date-group-cell">
-                                        <div class="monitor-date-group-label">
-                                            <span class="monitor-date-group-icon">📅</span>
-                                            <span>${escapeHtml(dateLabel)}</span>
-                                            <span class="monitor-date-group-count">${grouped[tgl].length} produk</span>
-                                        </div>
-                                    </td>
-                                </tr>
-                            `;
-
-                            grouped[tgl].forEach(function(p) {
-                                let produkValue = p.produk !== undefined && p.produk !== null ? String(p.produk) : '-';
-                                produkHtml += `
-                                    <tr>
-                                        <td class="p-2.5 text-center text-slate-400 font-bold">${nomor++}</td>
-                                        <td class="modal-product-name">${escapeHtml(produkValue)}</td>
-                                    </tr>
-                                `;
-                            });
-                        });
-
-                        produkHtml += `
-                                    </tbody>
-                                </table>
-                            </div>
-                        `;
-                    }
-
-                    // Data Target / Actual / Gap / Ach tetap menggunakan perhitungan yang sama.
-                    // Hanya area Transaksi yang diperbarui agar History tidak perlu menunggu transaksi selesai.
-                    const productsTarget = document.getElementById('monitoringDetailProducts');
-                    if (productsTarget) {
-                        productsTarget.innerHTML = produkHtml;
-                    }
-                    const monitoringBodyEl = document.getElementById('modalBody');
-                    if (monitoringBodyEl) monitoringBodyEl.scrollTop = 0;
-                })
-                .withFailureHandler(function(err) {
-                    const productsTarget = document.getElementById('monitoringDetailProducts');
-                    if (productsTarget) {
-                        productsTarget.innerHTML = `
-                            <p class="text-red-500 text-xs py-4 text-center">
-                                Gagal memuat transaksi: ${err && err.message ? err.message : 'Terjadi kesalahan.'}
-                            </p>
-                        `;
-                    }
-                })
-                .getProdukDibeliOutletQuarter(data.outlet, data.quarter, data.custCode || '');
-        }
+            // Ambil History + Transaksi dalam SATU request server.
+            // Jika pernah dibuka, tampilkan cache browser terlebih dahulu.
+            loadMonitoringDetailFast(data);
 
 
-        function loadMonitoringHistoryChart(data) {
-            const target = document.getElementById('monitoringDetailHistoryChart');
-            if (!target) return;
-            const custKey = String(data && data.custCode || '').trim().toUpperCase().replace(/\s+/g, ' ');
-            const cacheKey = 'MONITORING_HISTORY_' + custKey;
+        function loadMonitoringDetailFast(data) {
+            const cust = String(data.custCode || '').trim();
+            const quarter = String(data.quarter || '').trim();
+            const outlet = String(data.outlet || '').trim();
+            const cacheKey = 'MONITORING_DETAIL_FAST_' + (cust + '_' + quarter + '_' + outlet).toUpperCase().replace(/\s+/g,'_');
             const cached = appLocalCacheGet(cacheKey);
 
-            if (Array.isArray(cached)) {
-                renderMonitoringHistoryChart(cached);
-            } else {
-                target.innerHTML = `
-                    <div class="text-[10px] font-extrabold text-slate-700">History Pengambilan</div>
-                    <div class="text-[9px] text-slate-400 mt-1">Memuat history dari sheet DAMEN...</div>
-                `;
+            if (cached && typeof cached === 'object') {
+                renderMonitoringHistoryChart(Array.isArray(cached.history) ? cached.history : []);
+                renderMonitoringProductsFast(Array.isArray(cached.products) ? cached.products : []);
             }
 
             google.script.run
-                .withSuccessHandler(function(history) {
-                    const result = Array.isArray(history) ? history : [];
+                .withSuccessHandler(function(result) {
+                    result = result || {history:[], products:[]};
                     appLocalCacheSet(cacheKey, result);
-                    renderMonitoringHistoryChart(result);
+                    renderMonitoringHistoryChart(Array.isArray(result.history) ? result.history : []);
+                    renderMonitoringProductsFast(Array.isArray(result.products) ? result.products : []);
+                    const body = document.getElementById('modalBody');
+                    if (body) body.scrollTop = 0;
                 })
                 .withFailureHandler(function(err) {
-                    // Jika cache sudah tampil, jangan mengganti tampilan dengan pesan error.
-                    if (Array.isArray(cached)) return;
-                    const el = document.getElementById('monitoringDetailHistoryChart');
-                    if (!el) return;
-                    el.innerHTML = `
-                        <div class="text-[10px] font-extrabold text-slate-700">History Pengambilan</div>
-                        <div class="text-[9px] text-red-500 mt-2">Gagal memuat history: ${escapeHtml(err && err.message ? err.message : 'Terjadi kesalahan.')}</div>
-                    `;
+                    if (cached) return;
+                    const historyEl = document.getElementById('monitoringDetailHistoryChart');
+                    const productsEl = document.getElementById('monitoringDetailProducts');
+                    const msg = escapeHtml(err && err.message ? err.message : 'Terjadi kesalahan.');
+                    if (historyEl) historyEl.innerHTML = '<div class="text-[10px] font-extrabold text-slate-700">History Pengambilan</div><div class="text-[9px] text-red-500 mt-2">Gagal memuat history: ' + msg + '</div>';
+                    if (productsEl) productsEl.innerHTML = '<p class="text-red-500 text-xs py-4 text-center">Gagal memuat transaksi: ' + msg + '</p>';
                 })
-                .getMonitoringOutletHistory(data.custCode || '');
+                .getMonitoringDetailFast(outlet, quarter, cust);
+        }
+
+        function renderMonitoringProductsFast(produkList) {
+            const productsTarget = document.getElementById('monitoringDetailProducts');
+            if (!productsTarget) return;
+            let produkHtml = '';
+            if (!produkList || produkList.length === 0) {
+                produkHtml = '<p class="text-slate-400 text-xs py-2 italic">Tidak ada transaksi pada periode ini.</p>';
+            } else {
+                let grouped = {};
+                produkList.forEach(function(p) {
+                    let tglValue = p.tanggal !== undefined && p.tanggal !== null && String(p.tanggal).trim() ? String(p.tanggal).trim() : '-';
+                    if (!grouped[tglValue]) grouped[tglValue] = [];
+                    grouped[tglValue].push(p);
+                });
+                let groupedDates = Object.keys(grouped).sort(function(a,b){
+                    if (a === '-') return 1; if (b === '-') return -1;
+                    return new Date(b).getTime() - new Date(a).getTime();
+                });
+                produkHtml = '<div class="modal-table-wrap"><table class="modal-detail-table"><thead><tr><th style="width:55px; text-align:center;">No</th><th style="text-align:left;">Produk</th></tr></thead><tbody>';
+                let nomor = 1;
+                groupedDates.forEach(function(tgl) {
+                    let dateLabel = tgl;
+                    if (tgl !== '-') {
+                        let parsed = new Date(tgl);
+                        if (!isNaN(parsed.getTime())) dateLabel = parsed.toLocaleDateString('id-ID',{day:'2-digit',month:'long',year:'numeric'});
+                    }
+                    produkHtml += '<tr class="monitor-date-group-row"><td colspan="2" class="monitor-date-group-cell"><div class="monitor-date-group-label"><span class="monitor-date-group-icon">📅</span><span>' + escapeHtml(dateLabel) + '</span><span class="monitor-date-group-count">' + grouped[tgl].length + ' produk</span></div></td></tr>';
+                    grouped[tgl].forEach(function(p) {
+                        produkHtml += '<tr><td class="p-2.5 text-center text-slate-400 font-bold">' + (nomor++) + '</td><td class="modal-product-name">' + escapeHtml(p.produk == null ? '-' : String(p.produk)) + '</td></tr>';
+                    });
+                });
+                produkHtml += '</tbody></table></div>';
+            }
+            productsTarget.innerHTML = produkHtml;
+        }
+
+        // Kompatibilitas untuk pemanggilan lama.
+        function loadMonitoringHistoryChart(data) {
+            loadMonitoringDetailFast(data);
         }
 
         function renderMonitoringHistoryChart(history) {
