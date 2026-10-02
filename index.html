@@ -3349,6 +3349,36 @@ startAutoRefresh();
                 quarters.forEach(q => { let opt=document.createElement('option'); opt.value=q; opt.textContent=q; selectQ.appendChild(opt); });
                 if (selectQ) selectQ.value = quarters.indexOf(previousQuarter) !== -1 ? previousQuarter : quarters[0];
                 renderMonitoringList();
+
+                // PRELOAD HISTORY DI LATAR BELAKANG.
+                // Sumber CUST.CODE tetap dari OUTLET/Monitoring yang sudah tampil.
+                // Tidak menunggu proses ini untuk menampilkan tabel Monitoring.
+                try {
+                    const preloadCustCodes = [];
+                    const seenCust = {};
+                    Object.keys(rawMonitoringDataObject || {}).forEach(function(qk) {
+                        const rows = rawMonitoringDataObject[qk] || {};
+                        Object.keys(rows).forEach(function(rk) {
+                            const cc = String(rows[rk] && rows[rk].custCode || '').trim();
+                            const key = cc.toUpperCase();
+                            if (key && !seenCust[key]) {
+                                seenCust[key] = true;
+                                preloadCustCodes.push(cc);
+                            }
+                        });
+                    });
+                    if (preloadCustCodes.length) {
+                        google.script.run
+                            .withSuccessHandler(function(historyMap) {
+                                if (!historyMap || typeof historyMap !== 'object') return;
+                                Object.keys(historyMap).forEach(function(k) {
+                                    appLocalCacheSet('MONITORING_HISTORY_CUST_' + String(k).toUpperCase(), historyMap[k] || []);
+                                });
+                            })
+                            .withFailureHandler(function() {})
+                            .preloadMonitoringHistory(preloadCustCodes);
+                    }
+                } catch(e) {}
             }).withFailureHandler(function(err) {
                 monitoringLoading = false;
                 if (!silentRefresh) showLoading(false);
@@ -3530,9 +3560,16 @@ startAutoRefresh();
             const outlet = String(data.outlet || '').trim();
             const cacheKey = 'MONITORING_DETAIL_FAST_' + (cust + '_' + quarter + '_' + outlet).toUpperCase().replace(/\s+/g,'_');
             const cached = appLocalCacheGet(cacheKey);
+            const historyCacheKey = 'MONITORING_HISTORY_CUST_' + cust.toUpperCase();
+            const cachedHistory = appLocalCacheGet(historyCacheKey);
 
+            // History ditampilkan dari cache hasil preload terlebih dahulu.
+            // Jadi saat baris diklik, chart tidak menunggu pembacaan DAMEN.
+            if (Array.isArray(cachedHistory)) {
+                renderMonitoringHistoryChart(cachedHistory);
+            }
             if (cached && typeof cached === 'object') {
-                renderMonitoringHistoryChart(Array.isArray(cached.history) ? cached.history : []);
+                renderMonitoringHistoryChart(Array.isArray(cached.history) ? cached.history : (Array.isArray(cachedHistory) ? cachedHistory : []));
                 renderMonitoringProductsFast(Array.isArray(cached.products) ? cached.products : []);
             }
 
@@ -3540,7 +3577,13 @@ startAutoRefresh();
                 .withSuccessHandler(function(result) {
                     result = result || {history:[], products:[]};
                     appLocalCacheSet(cacheKey, result);
-                    renderMonitoringHistoryChart(Array.isArray(result.history) ? result.history : []);
+                    const serverHistory = Array.isArray(result.history) ? result.history : [];
+                    if (serverHistory.length || !Array.isArray(cachedHistory)) {
+                        appLocalCacheSet(historyCacheKey, serverHistory);
+                        renderMonitoringHistoryChart(serverHistory);
+                    } else {
+                        renderMonitoringHistoryChart(cachedHistory);
+                    }
                     renderMonitoringProductsFast(Array.isArray(result.products) ? result.products : []);
                     const body = document.getElementById('modalBody');
                     if (body) body.scrollTop = 0;
