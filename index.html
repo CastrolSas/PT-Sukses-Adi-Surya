@@ -1693,15 +1693,15 @@ html{scroll-behavior:auto!important}
 .pengumuman-card:last-child{margin-bottom:0}
 .pengumuman-card img{display:block;width:100%;max-height:62vh;object-fit:contain;background:#f8fafc}
 .pengumuman-caption{padding:18px 22px 22px;text-align:center;color:#334155;font-size:14px;line-height:1.75;font-weight:700;white-space:pre-wrap}
-.pengumuman-main-header-marquee{display:block;flex:1;min-width:0;max-width:none;margin:0 8px;overflow:hidden;white-space:nowrap;border:none;border-radius:0;background:transparent;padding:7px 0;box-shadow:none}
-.pengumuman-marquee-track{display:flex;width:max-content;animation:pengumumanMarqueeRTL 16s linear infinite;will-change:transform}
-.pengumuman-marquee-text{flex:0 0 auto;display:block;padding:0 6vw;font-size:16px;font-weight:800;color:#e8f7ef;letter-spacing:.01em;white-space:nowrap}
-@keyframes pengumumanMarqueeRTL{from{transform:translate3d(0,0,0)}to{transform:translate3d(-50%,0,0)}}
+.pengumuman-main-header-marquee{display:block;flex:1 1 auto;min-width:0;width:auto;max-width:none;margin:0 5px;overflow:hidden;white-space:nowrap;border:none;border-radius:0;background:transparent;padding:7px 0;box-shadow:none}
+.pengumuman-marquee-track{display:flex;width:max-content;animation:pengumumanMarqueeRTL 34s linear infinite;will-change:transform}
+.pengumuman-marquee-text{flex:0 0 auto;display:block;padding:0 5vw;font-size:16px;font-weight:800;color:#e8f7ef;letter-spacing:.01em;white-space:nowrap}
+@keyframes pengumumanMarqueeRTL{from{transform:translate3d(100%,0,0)}to{transform:translate3d(-50%,0,0)}}
 .pengumuman-footer{padding:20px 26px 26px;text-align:center;border-top:1px solid #eef2f7;background:#f8fafc}
 .pengumuman-main-btn{border:0;border-radius:15px;padding:13px 28px;background:#008a4c;color:#fff;font-weight:900;box-shadow:0 10px 24px rgba(0,138,76,.22);cursor:pointer}
 .pengumuman-main-btn:hover{background:#00733f}
 #tabPengumumanAdmin .pengumuman-thumb{width:72px;height:48px;object-fit:cover;border-radius:10px;border:1px solid #e2e8f0;background:#f8fafc}
-@media(max-width:767px){#announcementPage.pengumuman-page{padding:12px}.pengumuman-shell{min-height:calc(100dvh - 24px)}.pengumuman-panel{border-radius:22px}.pengumuman-hero{padding:26px 18px 22px}#announcementContent{padding:16px}.pengumuman-footer{padding:16px}.pengumuman-main-header-marquee{max-width:42vw;margin:0 7px}.pengumuman-marquee-text{padding:0 14vw;font-size:11px}}
+@media(max-width:767px){#announcementPage.pengumuman-page{padding:12px}.pengumuman-shell{min-height:calc(100dvh - 24px)}.pengumuman-panel{border-radius:22px}.pengumuman-hero{padding:26px 18px 22px}#announcementContent{padding:16px}.pengumuman-footer{padding:16px}.pengumuman-main-header-marquee{flex:1 1 auto;width:auto;max-width:none;min-width:0;margin:0 4px}.pengumuman-marquee-track{animation-duration:40s}.pengumuman-marquee-text{padding:0 10vw;font-size:11px}}
 </style>
 
 
@@ -6480,7 +6480,7 @@ startAutoRefresh();
                     if (!res || !res.success) return;
 
                     notificationData = Array.isArray(res.data) ? res.data : [];
-                    notificationUnreadCount = Number(res.unread != null ? res.unread : (res.unreadCount || 0));
+                    notificationUnreadCount = Number(res.unreadCount || 0);
                     renderNotifications();
                 })
                 .withFailureHandler(function(err) {
