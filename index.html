@@ -1704,6 +1704,57 @@ html{scroll-behavior:auto!important}
 @media(max-width:767px){#announcementPage.pengumuman-page{padding:12px}.pengumuman-shell{min-height:calc(100dvh - 24px)}.pengumuman-panel{border-radius:22px}.pengumuman-hero{padding:26px 18px 22px}#announcementContent{padding:16px}.pengumuman-footer{padding:16px}.pengumuman-main-header-marquee{flex:1 1 0%;width:0;max-width:none;min-width:0;margin:0 4px}.pengumuman-marquee-track{animation-duration:78s}.pengumuman-marquee-text{padding:0 18px;font-size:11px}}
 </style>
 
+<style id="monitoring-detail-mobile-list">
+/* DETAIL MONITORING MOBILE: satu kotak, 4 baris, titik dua sejajar. */
+@media (max-width:767px){
+  #customModal .modal-detail-summary{
+    display:block!important;
+    margin-bottom:11px!important;
+    padding:6px 12px!important;
+    border:1px solid #dfe8e2!important;
+    border-radius:14px!important;
+    background:#fff!important;
+    overflow:hidden!important;
+  }
+  #customModal .modal-detail-summary .modal-stat-card{
+    display:grid!important;
+    grid-template-columns:68px 14px minmax(0,1fr)!important;
+    align-items:center!important;
+    min-width:0!important;
+    padding:9px 0!important;
+    border:0!important;
+    border-bottom:1px solid #eef2f0!important;
+    border-radius:0!important;
+    background:#fff!important;
+  }
+  #customModal .modal-detail-summary .modal-stat-card:last-child{border-bottom:0!important}
+  #customModal .modal-detail-summary .modal-stat-label{
+    grid-column:1!important;
+    margin:0!important;
+    font-size:10px!important;
+    font-weight:800!important;
+    color:#64748b!important;
+    letter-spacing:0!important;
+    text-transform:none!important;
+    white-space:nowrap!important;
+  }
+  #customModal .modal-detail-summary .modal-stat-label::after{
+    content:":"!important;
+    margin-left:0!important;
+  }
+  #customModal .modal-detail-summary .modal-stat-value{
+    grid-column:3!important;
+    margin:0!important;
+    font-size:12px!important;
+    line-height:1.25!important;
+    font-weight:800!important;
+    text-align:left!important;
+    white-space:nowrap!important;
+    overflow:hidden!important;
+    text-overflow:ellipsis!important;
+  }
+}
+</style>
 
 <style id="monitoring-detail-simple-stats">
 /* DETAIL MONITORING: 1 kotak untuk Target, Actual, Gap, Ach. */
