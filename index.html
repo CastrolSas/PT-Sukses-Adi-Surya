@@ -6480,7 +6480,7 @@ startAutoRefresh();
                     if (!res || !res.success) return;
 
                     notificationData = Array.isArray(res.data) ? res.data : [];
-                    notificationUnreadCount = Number(res.unreadCount || 0);
+                    notificationUnreadCount = Number(res.unread != null ? res.unread : (res.unreadCount || 0));
                     renderNotifications();
                 })
                 .withFailureHandler(function(err) {
