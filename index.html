@@ -3725,6 +3725,15 @@ startAutoRefresh();
             let outletMap = rawMonitoringDataObject[selectedQuarter];
             let dataArray = Object.values(outletMap);
 
+            // Untuk login Sales, tabel Monitoring hanya menampilkan baris milik DSR yang login.
+            // Ini membuat outlet yang sama tetapi DSR/CUST.CODE berbeda tetap terpisah sesuai akun.
+            if (!isAdminMonitoring) {
+                const loginDsr = String(currentUser || '').trim().toUpperCase();
+                dataArray = dataArray.filter(function(item) {
+                    return String(item && item.dsr || '').trim().toUpperCase() === loginDsr;
+                });
+            }
+
             if (salesSelect) {
                 const previousSales = selectedSales;
                 const salesValues = [...new Set(dataArray.map(function(item){ return String(item && item.dsr || '').trim(); }).filter(Boolean))].sort(function(a,b){ return a.localeCompare(b,'id'); });
