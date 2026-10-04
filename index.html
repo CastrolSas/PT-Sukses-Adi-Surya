@@ -1693,7 +1693,7 @@ html{scroll-behavior:auto!important}
 .pengumuman-card:last-child{margin-bottom:0}
 .pengumuman-card img{display:block;width:100%;max-height:62vh;object-fit:contain;background:#f8fafc}
 .pengumuman-caption{padding:18px 22px 22px;text-align:center;color:#334155;font-size:14px;line-height:1.75;font-weight:700;white-space:pre-wrap}
-.pengumuman-main-header-marquee{display:block;flex:1 1 auto;min-width:0;width:auto;max-width:none;margin:0 5px;overflow:hidden;white-space:nowrap;border:none;border-radius:0;background:transparent;padding:7px 0;box-shadow:none}
+.pengumuman-main-header-marquee{display:block;flex:1 1 0%;min-width:0;width:0;max-width:none;margin:0 5px;overflow:hidden;white-space:nowrap;border:none;border-radius:0;background:transparent;padding:7px 0;box-shadow:none}
 .pengumuman-marquee-track{display:flex;width:max-content;animation:pengumumanMarqueeRTL 70s linear infinite;will-change:transform}
 .pengumuman-marquee-text{flex:0 0 auto;display:block;padding:0 24px;font-size:16px;font-weight:800;color:#e8f7ef;letter-spacing:.01em;white-space:nowrap}
 @keyframes pengumumanMarqueeRTL{from{transform:translate3d(0,0,0)}to{transform:translate3d(-50%,0,0)}}
@@ -1701,7 +1701,7 @@ html{scroll-behavior:auto!important}
 .pengumuman-main-btn{border:0;border-radius:15px;padding:13px 28px;background:#008a4c;color:#fff;font-weight:900;box-shadow:0 10px 24px rgba(0,138,76,.22);cursor:pointer}
 .pengumuman-main-btn:hover{background:#00733f}
 #tabPengumumanAdmin .pengumuman-thumb{width:72px;height:48px;object-fit:cover;border-radius:10px;border:1px solid #e2e8f0;background:#f8fafc}
-@media(max-width:767px){#announcementPage.pengumuman-page{padding:12px}.pengumuman-shell{min-height:calc(100dvh - 24px)}.pengumuman-panel{border-radius:22px}.pengumuman-hero{padding:26px 18px 22px}#announcementContent{padding:16px}.pengumuman-footer{padding:16px}.pengumuman-main-header-marquee{flex:1 1 auto;width:auto;max-width:none;min-width:0;margin:0 4px}.pengumuman-marquee-track{animation-duration:78s}.pengumuman-marquee-text{padding:0 18px;font-size:11px}}
+@media(max-width:767px){#announcementPage.pengumuman-page{padding:12px}.pengumuman-shell{min-height:calc(100dvh - 24px)}.pengumuman-panel{border-radius:22px}.pengumuman-hero{padding:26px 18px 22px}#announcementContent{padding:16px}.pengumuman-footer{padding:16px}.pengumuman-main-header-marquee{flex:1 1 0%;width:0;max-width:none;min-width:0;margin:0 4px}.pengumuman-marquee-track{animation-duration:78s}.pengumuman-marquee-text{padding:0 18px;font-size:11px}}
 </style>
 
 
@@ -1829,7 +1829,7 @@ html{scroll-behavior:auto!important}
 <div id="app" class="app-shell min-h-screen bg-slate-50 flex flex-col">
         
         <header id="mainHeader" class="bg-gradient-to-r from-slate-900 via-slate-800 to-emerald-950 text-white px-4 py-3.5 flex justify-between items-center shadow-lg border-b border-emerald-500/20 hidden">
-            <div class="flex items-center space-x-2.5 min-w-0">
+            <div class="flex items-center space-x-2.5 shrink-0">
                 <button type="button" id="sidebarToggle" onclick="toggleSidebar()" class="sidebar-toggle" title="Tutup menu" aria-label="Tutup menu" aria-expanded="true">
                     <svg id="sidebarToggleIcon" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                         <path stroke-linecap="round" stroke-linejoin="round" d="M4 6h16M4 12h16M4 18h16" />
@@ -1837,9 +1837,8 @@ html{scroll-behavior:auto!important}
                 </button>
                 <div class="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse"></div>
                 <h1 class="font-bold text-sm tracking-wide text-slate-100 truncate">Castrol</h1>
-                <div id="announcementHeaderMarquee" class="pengumuman-main-header-marquee hidden" aria-label="Pengumuman berjalan"></div>
             </div>
-            <div class="flex-1"></div>
+            <div id="announcementHeaderMarquee" class="pengumuman-main-header-marquee hidden" aria-label="Pengumuman berjalan"></div>
             <div class="notification-header-wrap" id="notificationHeaderWrap">
                 <button type="button" id="notificationBellBtn" class="notification-bell-btn"
                         onclick="toggleNotificationPanel()" title="Notifikasi" aria-label="Notifikasi" aria-expanded="false">
