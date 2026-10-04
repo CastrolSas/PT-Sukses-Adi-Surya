@@ -3725,14 +3725,9 @@ startAutoRefresh();
             let outletMap = rawMonitoringDataObject[selectedQuarter];
             let dataArray = Object.values(outletMap);
 
-            // Untuk login Sales, tabel Monitoring hanya menampilkan baris milik DSR yang login.
-            // Ini membuat outlet yang sama tetapi DSR/CUST.CODE berbeda tetap terpisah sesuai akun.
-            if (!isAdminMonitoring) {
-                const loginDsr = String(currentUser || '').trim().toUpperCase();
-                dataArray = dataArray.filter(function(item) {
-                    return String(item && item.dsr || '').trim().toUpperCase() === loginDsr;
-                });
-            }
+            // Tampilkan semua DSR yang tersedia pada data Monitoring.
+            // Jika outlet sama tetapi DSR/CUST.CODE berbeda, masing-masing tetap menjadi baris terpisah.
+            // Tidak mengubah perhitungan Target/Actual/Gap/Ach maupun Detail Monitoring.
 
             if (salesSelect) {
                 const previousSales = selectedSales;
