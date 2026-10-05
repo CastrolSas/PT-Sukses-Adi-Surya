@@ -9805,11 +9805,8 @@ button{ -webkit-tap-highlight-color:transparent }
 </style>
 
 
-<style id="ui-final-user-request-v12">
-/* UI ONLY — V12
-   DESKTOP: Produk, Qty, Satuan, Tambah Item sejajar & proporsional.
-   MOBILE TIDAK DIUBAH.
-*/
+<style id="ui-final-user-request-v11">
+/* UI ONLY — V11 */
 
 /* MOBILE: tulisan menu selalu rata kiri dan tidak terpotong. */
 @media (max-width: 767px){
@@ -9833,21 +9830,16 @@ button{ -webkit-tap-highlight-color:transparent }
   }
 }
 
-/* DESKTOP: Produk, Qty, Satuan, Tambah Item satu baris,
-   rapi, sejajar, dan proporsional. */
+/* DESKTOP: Produk kecil di kiri, lalu Qty, Satuan, Tambah Item di sampingnya.
+   Semua tetap satu baris dan setiap kolom punya ruang sendiri. */
 @media (min-width: 768px){
-
   #inputStep2 .ui-product-entry{
     display:grid !important;
-    grid-template-columns:
-      minmax(240px, 2fr)
-      minmax(65px, .6fr)
-      minmax(115px, 1fr)
-      minmax(112px, 1fr) !important;
+    grid-template-columns:220px 62px 108px 112px !important;
     align-items:end !important;
-    column-gap:10px !important;
+    column-gap:8px !important;
     row-gap:0 !important;
-    width:100% !important;
+    width:max-content !important;
     max-width:100% !important;
     box-sizing:border-box !important;
     overflow:visible !important;
@@ -9856,31 +9848,11 @@ button{ -webkit-tap-highlight-color:transparent }
   #inputStep2 .ui-product-entry > div:first-child{
     grid-column:1 !important;
     grid-row:1 !important;
-    width:100% !important;
-    min-width:0 !important;
-    max-width:none !important;
+    width:220px !important;
+    min-width:220px !important;
+    max-width:220px !important;
     box-sizing:border-box !important;
     overflow:visible !important;
-  }
-
-  #inputStep2 .ui-product-entry .ui-product-filters{
-    width:100% !important;
-    max-width:none !important;
-    display:flex !important;
-    gap:6px !important;
-    margin-bottom:6px !important;
-  }
-
-  #inputStep2 .ui-product-entry .ui-product-filters button{
-    flex:0 0 auto !important;
-    width:auto !important;
-  }
-
-  #inputStep2 .ui-product-entry #addItemProduk{
-    width:100% !important;
-    min-width:0 !important;
-    max-width:none !important;
-    box-sizing:border-box !important;
   }
 
   #inputStep2 .ui-product-entry > .ui-item-controls{
@@ -9890,43 +9862,176 @@ button{ -webkit-tap-highlight-color:transparent }
   #inputStep2 .ui-product-entry .ui-qty-control{
     grid-column:2 !important;
     grid-row:1 !important;
-    width:100% !important;
-    min-width:0 !important;
-    max-width:none !important;
+    width:62px !important;
+    min-width:62px !important;
+    max-width:62px !important;
     box-sizing:border-box !important;
-  }
-
-  #inputStep2 .ui-product-entry .ui-qty-control #addItemQty{
-    width:100% !important;
-    min-width:0 !important;
-    box-sizing:border-box !important;
-    text-align:center !important;
   }
 
   #inputStep2 .ui-product-entry .ui-satuan-control{
     grid-column:3 !important;
     grid-row:1 !important;
-    width:100% !important;
-    min-width:0 !important;
-    max-width:none !important;
-    box-sizing:border-box !important;
-  }
-
-  #inputStep2 .ui-product-entry .ui-satuan-control > div{
-    width:100% !important;
+    width:108px !important;
+    min-width:108px !important;
+    max-width:108px !important;
     box-sizing:border-box !important;
   }
 
   #inputStep2 .ui-product-entry > .ui-add-item-btn{
     grid-column:4 !important;
     grid-row:1 !important;
-    width:100% !important;
-    min-width:0 !important;
-    max-width:none !important;
+    width:112px !important;
+    min-width:112px !important;
+    max-width:112px !important;
     margin:0 !important;
     box-sizing:border-box !important;
     align-self:end !important;
-    white-space:nowrap !important;
+  }
+
+  #inputStep2 .ui-product-entry #addItemProduk{
+    width:220px !important;
+    min-width:220px !important;
+    max-width:220px !important;
+    box-sizing:border-box !important;
+  }
+
+  #inputStep2 .ui-product-entry .ui-product-filters{
+    width:220px !important;
+    max-width:220px !important;
+    overflow:visible !important;
+  }
+}
+</style>
+
+<!-- =========================================================
+     FINAL DESKTOP PRODUCT ENTRY FIX
+     Hanya desktop (>=768px). Mobile tidak disentuh.
+     ========================================================= -->
+<style id="final-desktop-product-entry-fix">
+@media (min-width: 768px) {
+  /* Baris utama: Produk | Qty | Satuan | Tambah Item */
+  #inputStep2 .ui-product-entry {
+    display: flex !important;
+    flex-direction: row !important;
+    flex-wrap: nowrap !important;
+    align-items: flex-end !important;
+    gap: 8px !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    min-width: 0 !important;
+    box-sizing: border-box !important;
+    overflow: visible !important;
+  }
+
+  /* Hapus efek space-y-2 pada elemen langsung agar tidak turun/bertumpuk */
+  #inputStep2 .ui-product-entry > * {
+    margin-top: 0 !important;
+  }
+
+  /* Kolom Produk mengambil semua ruang yang tersisa */
+  #inputStep2 .ui-product-entry > div:first-child {
+    flex: 1 1 auto !important;
+    width: auto !important;
+    min-width: 0 !important;
+    max-width: none !important;
+    box-sizing: border-box !important;
+    overflow: visible !important;
+  }
+
+  #inputStep2 .ui-product-entry .ui-product-filters {
+    display: flex !important;
+    flex-wrap: nowrap !important;
+    justify-content: flex-start !important;
+    gap: 6px !important;
+    width: 100% !important;
+    margin-bottom: 5px !important;
+    box-sizing: border-box !important;
+  }
+
+  #inputStep2 .ui-product-entry .ui-product-filters button {
+    flex: 0 0 auto !important;
+    width: auto !important;
+  }
+
+  #inputStep2 .ui-product-entry #addItemProduk {
+    display: block !important;
+    width: 100% !important;
+    min-width: 0 !important;
+    max-width: none !important;
+    height: 36px !important;
+    min-height: 36px !important;
+    box-sizing: border-box !important;
+  }
+
+  /* Qty + Satuan tetap sebagai satu kelompok di samping Produk */
+  #inputStep2 .ui-product-entry > .ui-item-controls {
+    display: flex !important;
+    flex: 0 0 auto !important;
+    flex-direction: row !important;
+    align-items: flex-end !important;
+    gap: 8px !important;
+    width: auto !important;
+    min-width: 0 !important;
+    margin: 0 !important;
+    box-sizing: border-box !important;
+  }
+
+  #inputStep2 .ui-product-entry .ui-qty-control {
+    flex: 0 0 62px !important;
+    width: 62px !important;
+    min-width: 62px !important;
+    max-width: 62px !important;
+    box-sizing: border-box !important;
+  }
+
+  #inputStep2 .ui-product-entry .ui-satuan-control {
+    flex: 0 0 108px !important;
+    width: 108px !important;
+    min-width: 108px !important;
+    max-width: 108px !important;
+    box-sizing: border-box !important;
+  }
+
+  #inputStep2 .ui-product-entry .ui-qty-control label,
+  #inputStep2 .ui-product-entry .ui-satuan-control label {
+    display: block !important;
+    margin-bottom: 5px !important;
+  }
+
+  #inputStep2 .ui-product-entry #addItemQty {
+    display: block !important;
+    width: 100% !important;
+    min-width: 0 !important;
+    max-width: none !important;
+    height: 36px !important;
+    min-height: 36px !important;
+    box-sizing: border-box !important;
+    text-align: center !important;
+  }
+
+  #inputStep2 .ui-product-entry .ui-satuan-control > div {
+    display: flex !important;
+    width: 100% !important;
+    min-width: 0 !important;
+    max-width: none !important;
+    height: 36px !important;
+    min-height: 36px !important;
+    box-sizing: border-box !important;
+  }
+
+  /* Tombol Tambah Item */
+  #inputStep2 .ui-product-entry > .ui-add-item-btn {
+    flex: 0 0 112px !important;
+    width: 112px !important;
+    min-width: 112px !important;
+    max-width: 112px !important;
+    height: 36px !important;
+    min-height: 36px !important;
+    margin: 0 !important;
+    padding: 0 8px !important;
+    box-sizing: border-box !important;
+    align-self: flex-end !important;
+    white-space: nowrap !important;
   }
 }
 </style>
