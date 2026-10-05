@@ -9488,6 +9488,89 @@ button{ -webkit-tap-highlight-color:transparent }
 }
 </style>
 
+
+<style id="ui-product-layout-v14-final">
+/* FINAL FIX: jangan pernah mengecilkan container utama produk pada desktop */
+@media (min-width: 768px) {
+  #inputStep2 > .ui-product-entry,
+  #inputStep2 .ui-product-entry {
+    display: grid !important;
+    grid-template-columns: minmax(0, 1fr) 62px 108px 112px !important;
+    width: 100% !important;
+    max-width: none !important;
+    min-width: 0 !important;
+    box-sizing: border-box !important;
+    align-items: end !important;
+    column-gap: 8px !important;
+    overflow: visible !important;
+  }
+
+  /* Kolom Pilih Produk memenuhi sisa ruang */
+  #inputStep2 .ui-product-entry > div:first-child {
+    grid-column: 1 !important;
+    grid-row: 1 !important;
+    width: 100% !important;
+    min-width: 0 !important;
+    max-width: none !important;
+    box-sizing: border-box !important;
+    overflow: visible !important;
+  }
+
+  #inputStep2 .ui-product-entry .ui-product-filters,
+  #inputStep2 .ui-product-entry #addItemProduk {
+    width: 100% !important;
+    min-width: 0 !important;
+    max-width: none !important;
+    box-sizing: border-box !important;
+  }
+
+  #inputStep2 .ui-product-entry .ui-item-controls {
+    display: contents !important;
+  }
+
+  /* Hanya kontrol bagian dalam yang kecil */
+  #inputStep2 .ui-product-entry .ui-qty-control {
+    grid-column: 2 !important;
+    grid-row: 1 !important;
+    width: 62px !important;
+    min-width: 62px !important;
+    max-width: 62px !important;
+    box-sizing: border-box !important;
+  }
+
+  #inputStep2 .ui-product-entry .ui-satuan-control {
+    grid-column: 3 !important;
+    grid-row: 1 !important;
+    width: 108px !important;
+    min-width: 108px !important;
+    max-width: 108px !important;
+    box-sizing: border-box !important;
+  }
+
+  #inputStep2 .ui-product-entry > button.ui-add-item-btn {
+    grid-column: 4 !important;
+    grid-row: 1 !important;
+    width: 112px !important;
+    min-width: 112px !important;
+    max-width: 112px !important;
+    margin: 0 !important;
+    box-sizing: border-box !important;
+  }
+
+  #inputStep2 .ui-product-entry #addItemQty {
+    width: 100% !important;
+    min-width: 0 !important;
+    max-width: none !important;
+  }
+
+  #inputStep2 .ui-product-entry .ui-satuan-control > div {
+    width: 100% !important;
+    min-width: 0 !important;
+    max-width: none !important;
+  }
+}
+</style>
+
 </body>
 </html>
 <style id="mobile-monitoring-pricelist-bottom-fix">
