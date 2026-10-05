@@ -6664,7 +6664,6 @@ startAutoRefresh();
 
         function clearAllNotifications() {
             if (!notificationData.length) return;
-
             google.script.run
                 .withSuccessHandler(function(res) {
                     if (res && res.success) {
