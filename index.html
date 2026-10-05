@@ -6664,17 +6664,30 @@ startAutoRefresh();
 
         function clearAllNotifications() {
             if (!notificationData.length) return;
+
+            // Langsung kosongkan tampilan agar aksi terasa realtime.
+            // Penghapusan tampilan permanen diselesaikan oleh backend.
+            var previousData = notificationData.slice();
+            var previousUnread = Number(notificationUnreadCount || 0);
+            notificationData = [];
+            notificationUnreadCount = 0;
+            renderNotifications();
+
             google.script.run
                 .withSuccessHandler(function(res) {
-                    if (res && res.success) {
-                        notificationData = [];
-                        notificationUnreadCount = 0;
+                    if (!res || !res.success) {
+                        // Kembalikan tampilan jika server gagal menghapus.
+                        notificationData = previousData;
+                        notificationUnreadCount = previousUnread;
                         renderNotifications();
-                    } else {
                         console.warn('Gagal membersihkan notifikasi:', res && res.message ? res.message : res);
                     }
                 })
                 .withFailureHandler(function(err) {
+                    // Kembalikan tampilan jika komunikasi ke server gagal.
+                    notificationData = previousData;
+                    notificationUnreadCount = previousUnread;
+                    renderNotifications();
                     console.warn('Gagal membersihkan notifikasi:', err && err.message ? err.message : err);
                 })
                 .clearNotifikasi(currentUser || '', currentUsernameInput || '');
@@ -6685,22 +6698,13 @@ startAutoRefresh();
             if (wrap && !wrap.contains(e.target)) closeNotificationPanel();
         });
 
-        // Saat kembali ke tab/aplikasi, cek notifikasi seketika tanpa menunggu interval.
-        document.addEventListener('visibilitychange', function() {
-            if (!document.hidden) loadNotifications(true);
-        });
-        window.addEventListener('focus', function() {
-            loadNotifications(true);
-        });
-
         function startAutoRefresh() {
             if (autoRefreshTimer) clearInterval(autoRefreshTimer);
-            // Notifikasi diperiksa setiap 1 detik agar perubahan dari user/admin lain
-            // muncul nyaris realtime tanpa perlu membuka ulang panel.
+            // Jalankan setiap 5 detik.
             autoRefreshTimer = setInterval(function() {
                 autoRefreshActiveTab();
                 loadNotifications(true);
-            }, 1000);
+            }, 5000);
         }
 
         let appBackgroundPreloadStarted = false;
