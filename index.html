@@ -5962,315 +5962,7 @@ startAutoRefresh();
             const rows=data.map(function(item,i){return '<tr><td>'+(i+1)+'</td><td>'+escapeHtml(item.nama||'-')+'</td><td style="text-align:right">'+formatRupiah(item.harga||0)+'</td></tr>';}).join('');
             const win=window.open('','_blank');
             if(!win){showModal('Export PDF','Browser memblokir jendela cetak. Izinkan pop-up untuk Export PDF.');return;}
-            win.document.write('<!doctype html><html><head><title>Pricelist Castrol</title><style>body{font-family:Arial,sans-serif;padding:24px;color:#111}h1{font-size:20px;margin:0 0 6px}p{font-size:11px;color:#666;margin:0 0 16px}table{width:100%;border-collapse:collapse;font-size:11px}th,td{border:1px solid #ccc;padding:7px}th{text-align:left;background:#f1f5f9}@media print{body{padding:10px}}</style></head><body><h1>Pricelist Castrol</h1><p>'+escapeHtml(filterText)+'</p><table><thead><tr><th style="width:50px">No</th><th>Produk</th><th style="width:160px;text-align:right">Harga</th></tr></thead><tbody>'+rows+'</tbody></table>
-<style id="ui-modern-smooth-v2">
-/* =========================================================
-   UI MODERN V2 — VISUAL ONLY
-   Tidak mengubah HTML, JS, fungsi, perhitungan, atau alur.
-   ========================================================= */
-:root{
-  --ui-green:#008a4c;
-  --ui-green-dark:#006f3d;
-  --ui-ink:#0f172a;
-  --ui-muted:#64748b;
-  --ui-line:#e5e7eb;
-  --ui-soft:#f6faf8;
-  --ui-radius:16px;
-  --ui-shadow:0 8px 24px rgba(15,23,42,.055);
-}
-
-/* ---------- MENU: text only, clean & compact ---------- */
-#leftNav .sidebar-inner{gap:5px!important}
-#leftNav .sidebar-label{
-  margin:2px 8px 7px!important;
-  padding:0!important;
-  font-size:9px!important;
-  font-weight:900!important;
-  letter-spacing:.16em!important;
-  color:#94a3b8!important;
-}
-#leftNav .sidebar-icon{display:none!important}
-#leftNav .sidebar-item,
-#leftNav .sidebar-user-item{
-  min-height:38px!important;
-  height:38px!important;
-  padding:0 13px!important;
-  border:1px solid transparent!important;
-  border-radius:10px!important;
-  gap:0!important;
-  justify-content:flex-start!important;
-  box-shadow:none!important;
-  background:transparent!important;
-  color:#475569!important;
-  font-size:11px!important;
-  font-weight:750!important;
-  letter-spacing:.005em!important;
-  transition:background .16s ease,color .16s ease,border-color .16s ease,transform .16s ease!important;
-}
-#leftNav .sidebar-item:hover{
-  background:#f0f8f4!important;
-  border-color:#dcefe5!important;
-  color:#006f3d!important;
-  transform:translateX(2px)!important;
-}
-#leftNav .sidebar-item-active{
-  background:#eaf7f0!important;
-  border-color:#ccebd9!important;
-  color:#006f3d!important;
-  box-shadow:inset 3px 0 0 #008a4c!important;
-}
-#leftNav .sidebar-item-danger:hover{
-  background:#fff1f2!important;
-  border-color:#ffe4e6!important;
-  color:#be123c!important;
-  transform:translateX(2px)!important;
-}
-#leftNav .sidebar-user-item{
-  cursor:default!important;
-  color:#334155!important;
-  background:#f8fafc!important;
-  border-color:#eef2f7!important;
-  margin-bottom:3px!important;
-}
-#leftNav .sidebar-user-text{
-  overflow:hidden!important;
-  text-overflow:ellipsis!important;
-  white-space:nowrap!important;
-}
-#leftNav .sidebar-bottom{gap:5px!important}
-
-/* Desktop: menu lebih kecil dan proporsional */
-@media(min-width:768px){
-  #leftNav.app-sidebar{
-    width:184px!important;
-    min-width:184px!important;
-  }
-  #leftNav .sidebar-inner{padding:12px 10px!important}
-  #leftNav .sidebar-item,
-  #leftNav .sidebar-user-item{
-    min-height:36px!important;
-    height:36px!important;
-    padding:0 12px!important;
-    font-size:10.5px!important;
-  }
-  #leftNav .sidebar-label{font-size:8px!important;margin-left:7px!important}
-}
-
-/* Mobile: tetap text-only, mudah disentuh */
-@media(max-width:767px){
-  #leftNav .sidebar-item,
-  #leftNav .sidebar-user-item{
-    min-height:42px!important;
-    height:42px!important;
-    padding:0 14px!important;
-    font-size:11px!important;
-  }
-  #leftNav .sidebar-label{margin-bottom:6px!important}
-}
-
-/* ---------- BUTTONS: desktop compact & tidy ---------- */
-@media(min-width:768px){
-  button:not(.sidebar-item):not(.sidebar-toggle){
-    min-height:34px;
-  }
-  #tabInput button,
-  #tabRiwayat button,
-  #tabMonitoring button,
-  #tabOutletKontrak button,
-  #tabOutletBWS button,
-  #tabPricelist button,
-  #tabTambahCustomer button,
-  #tabPesananOutlet button,
-  #tabPengumumanAdmin button{
-    padding-top:7px!important;
-    padding-bottom:7px!important;
-    padding-left:11px!important;
-    padding-right:11px!important;
-    border-radius:9px!important;
-    font-size:10px!important;
-  }
-  #tabInput .payment-btn{min-height:34px!important}
-}
-
-/* ---------- INPUT / ORDER: lebih premium & tidak memenuhi layar ---------- */
-#tabInput > .bg-white.border.border-slate-200.rounded-2xl.shadow-sm.overflow-hidden{
-  max-width:1040px!important;
-  margin:0 auto!important;
-  border-radius:20px!important;
-  border-color:#e4ebe7!important;
-  box-shadow:0 10px 34px rgba(15,23,42,.055)!important;
-}
-#inputStep1{
-  max-width:900px!important;
-  margin:0 auto!important;
-  padding:18px!important;
-}
-#inputStep1 > .rounded-xl.bg-slate-50.border.border-slate-200.p-3:first-child{
-  background:linear-gradient(180deg,#fbfefd 0%,#f5faf7 100%)!important;
-  border-color:#dcebe2!important;
-  border-radius:18px!important;
-  padding:16px!important;
-  box-shadow:0 6px 20px rgba(0,88,48,.035)!important;
-}
-
-/* Header Informasi Outlet */
-#inputStep1 > .rounded-xl:first-child > .flex.items-center.gap-2.mb-3{
-  padding-bottom:10px!important;
-  margin-bottom:13px!important;
-  border-bottom:1px solid #e6eee9!important;
-}
-#inputStep1 > .rounded-xl:first-child > .flex.items-center.gap-2.mb-3 > span{
-  display:none!important;
-}
-#inputStep1 > .rounded-xl:first-child > .flex.items-center.gap-2.mb-3 > div > div:first-child{
-  font-size:14px!important;
-  letter-spacing:-.01em!important;
-}
-#inputStep1 > .rounded-xl:first-child > .flex.items-center.gap-2.mb-3 > div > div:last-child{
-  font-size:9px!important;
-  color:#7a8b83!important;
-}
-
-/* Outlet selector terasa seperti product picker */
-#inputOutlet + .select2-container,
-#inputOutlet{
-  width:100%!important;
-}
-#inputStep1 #inputOutlet + .select2-container .select2-selection--single{
-  height:46px!important;
-  border:1px solid #d8e5de!important;
-  border-radius:13px!important;
-  background:#fff!important;
-  padding:7px 12px!important;
-  box-shadow:0 4px 14px rgba(15,23,42,.035)!important;
-}
-#inputStep1 #inputOutlet + .select2-container .select2-selection__rendered{
-  line-height:30px!important;
-  font-size:11px!important;
-  font-weight:800!important;
-  color:#1e293b!important;
-}
-#inputStep1 #inputOutlet + .select2-container .select2-selection__arrow{
-  height:44px!important;
-  right:7px!important;
-}
-
-/* CUST.CODE + CHANNEL: kartu ringkas ala product selection */
-#inputStep1 .grid.grid-cols-2.gap-2.mt-2{
-  grid-template-columns:repeat(2,minmax(0,1fr))!important;
-  gap:10px!important;
-  margin-top:10px!important;
-}
-#inputStep1 .grid.grid-cols-2.gap-2.mt-2 > div{
-  position:relative!important;
-  min-height:58px!important;
-  padding:10px 12px!important;
-  border:1px solid #dce8e1!important;
-  border-radius:14px!important;
-  background:#fff!important;
-  box-shadow:0 4px 14px rgba(15,23,42,.035)!important;
-  transition:border-color .16s ease,box-shadow .16s ease,transform .16s ease!important;
-}
-#inputStep1 .grid.grid-cols-2.gap-2.mt-2 > div:hover{
-  border-color:#b8dcc8!important;
-  box-shadow:0 7px 18px rgba(0,138,76,.07)!important;
-  transform:translateY(-1px)!important;
-}
-#inputStep1 .grid.grid-cols-2.gap-2.mt-2 > div > div:first-child{
-  font-size:8px!important;
-  font-weight:900!important;
-  color:#7b8b84!important;
-  letter-spacing:.10em!important;
-}
-#inputStep1 .grid.grid-cols-2.gap-2.mt-2 > div::after{
-  content:'TERPILIH';
-  position:absolute!important;
-  top:10px!important;
-  right:11px!important;
-  font-size:7px!important;
-  font-weight:900!important;
-  letter-spacing:.08em!important;
-  color:#00915a!important;
-  background:#eaf8f1!important;
-  border-radius:999px!important;
-  padding:3px 6px!important;
-}
-#inputStep1 .grid.grid-cols-2.gap-2.mt-2 > div input{
-  display:block!important;
-  width:calc(100% - 52px)!important;
-  margin-top:6px!important;
-  min-height:20px!important;
-  font-size:12px!important;
-  font-weight:850!important;
-  color:#102a1f!important;
-  white-space:nowrap!important;
-  overflow:hidden!important;
-  text-overflow:ellipsis!important;
-}
-
-/* Di desktop, Informasi Outlet tidak melebar penuh */
-@media(min-width:768px){
-  #inputStep1 > .rounded-xl:first-child{
-    max-width:760px!important;
-    margin:0 auto!important;
-  }
-  #inputStep1 > .rounded-xl:nth-child(2){
-    max-width:760px!important;
-    margin:0 auto!important;
-  }
-  #inputStep1 > button:last-child{
-    max-width:760px!important;
-    margin:2px auto 0!important;
-    display:flex!important;
-  }
-}
-
-/* Mobile: kartu tetap compact dan tidak membuat layar terasa penuh */
-@media(max-width:600px){
-  #inputStep1{padding:12px!important}
-  #inputStep1 > .rounded-xl:first-child{padding:13px!important}
-  #inputStep1 .grid.grid-cols-2.gap-2.mt-2{gap:8px!important}
-  #inputStep1 .grid.grid-cols-2.gap-2.mt-2 > div{min-height:56px!important;padding:9px 10px!important}
-  #inputStep1 .grid.grid-cols-2.gap-2.mt-2 > div::after{font-size:6.5px!important;right:8px!important}
-  #inputStep1 .grid.grid-cols-2.gap-2.mt-2 > div input{font-size:11px!important;width:calc(100% - 45px)!important}
-}
-@media(max-width:380px){
-  #inputStep1 .grid.grid-cols-2.gap-2.mt-2{grid-template-columns:1fr!important}
-}
-
-/* ---------- Detail transaksi lebih ringan ---------- */
-#inputStep1 > .rounded-xl.bg-slate-50.border.border-slate-200.p-3:nth-child(2){
-  border-color:#e5ece8!important;
-  background:#fff!important;
-  border-radius:16px!important;
-}
-#inputStep1 > .rounded-xl.bg-slate-50.border.border-slate-200.p-3:nth-child(2) > .flex.items-center.gap-2.mb-3 > span{
-  display:none!important;
-}
-
-/* Select2 dropdown lebih modern */
-.select2-container--default .select2-selection--single:focus,
-.select2-container--default.select2-container--focus .select2-selection--single{
-  border-color:#8fd0ac!important;
-  box-shadow:0 0 0 3px rgba(0,138,76,.09)!important;
-}
-.select2-dropdown{
-  border-color:#dbe7e0!important;
-  border-radius:13px!important;
-  overflow:hidden!important;
-  box-shadow:0 14px 34px rgba(15,23,42,.12)!important;
-}
-.select2-results__option{padding:9px 11px!important;font-size:11px!important}
-.select2-results__option--highlighted[aria-selected]{background:#008a4c!important}
-
-/* Header/tab spacing desktop */
-@media(min-width:768px){
-  #mainPage{padding-top:2px!important}
-  #mainPage .tab-content{max-width:1180px!important;margin-left:auto!important;margin-right:auto!important}
-}
-</style>
-
-</body></html>');
+            win.document.write('<!doctype html><html><head><title>Pricelist Castrol</title><style>body{font-family:Arial,sans-serif;padding:24px;color:#111}h1{font-size:20px;margin:0 0 6px}p{font-size:11px;color:#666;margin:0 0 16px}table{width:100%;border-collapse:collapse;font-size:11px}th,td{border:1px solid #ccc;padding:7px}th{text-align:left;background:#f1f5f9}@media print{body{padding:10px}}</style></head><body><h1>Pricelist Castrol</h1><p>'+escapeHtml(filterText)+'</p><table><thead><tr><th style="width:50px">No</th><th>Produk</th><th style="width:160px;text-align:right">Harga</th></tr></thead><tbody>'+rows+'</tbody></table></body></html>');
             win.document.close();win.focus();setTimeout(function(){win.print();},250);
         }
 
@@ -8812,6 +8504,314 @@ button{ -webkit-tap-highlight-color:transparent }
 }
 </style>
 
+
+
+<style id="ui-modern-smooth-v2">
+/* =========================================================
+   UI MODERN V2 — VISUAL ONLY
+   Tidak mengubah HTML, JS, fungsi, perhitungan, atau alur.
+   ========================================================= */
+:root{
+  --ui-green:#008a4c;
+  --ui-green-dark:#006f3d;
+  --ui-ink:#0f172a;
+  --ui-muted:#64748b;
+  --ui-line:#e5e7eb;
+  --ui-soft:#f6faf8;
+  --ui-radius:16px;
+  --ui-shadow:0 8px 24px rgba(15,23,42,.055);
+}
+
+/* ---------- MENU: text only, clean & compact ---------- */
+#leftNav .sidebar-inner{gap:5px!important}
+#leftNav .sidebar-label{
+  margin:2px 8px 7px!important;
+  padding:0!important;
+  font-size:9px!important;
+  font-weight:900!important;
+  letter-spacing:.16em!important;
+  color:#94a3b8!important;
+}
+#leftNav .sidebar-icon{display:none!important}
+#leftNav .sidebar-item,
+#leftNav .sidebar-user-item{
+  min-height:38px!important;
+  height:38px!important;
+  padding:0 13px!important;
+  border:1px solid transparent!important;
+  border-radius:10px!important;
+  gap:0!important;
+  justify-content:flex-start!important;
+  box-shadow:none!important;
+  background:transparent!important;
+  color:#475569!important;
+  font-size:11px!important;
+  font-weight:750!important;
+  letter-spacing:.005em!important;
+  transition:background .16s ease,color .16s ease,border-color .16s ease,transform .16s ease!important;
+}
+#leftNav .sidebar-item:hover{
+  background:#f0f8f4!important;
+  border-color:#dcefe5!important;
+  color:#006f3d!important;
+  transform:translateX(2px)!important;
+}
+#leftNav .sidebar-item-active{
+  background:#eaf7f0!important;
+  border-color:#ccebd9!important;
+  color:#006f3d!important;
+  box-shadow:inset 3px 0 0 #008a4c!important;
+}
+#leftNav .sidebar-item-danger:hover{
+  background:#fff1f2!important;
+  border-color:#ffe4e6!important;
+  color:#be123c!important;
+  transform:translateX(2px)!important;
+}
+#leftNav .sidebar-user-item{
+  cursor:default!important;
+  color:#334155!important;
+  background:#f8fafc!important;
+  border-color:#eef2f7!important;
+  margin-bottom:3px!important;
+}
+#leftNav .sidebar-user-text{
+  overflow:hidden!important;
+  text-overflow:ellipsis!important;
+  white-space:nowrap!important;
+}
+#leftNav .sidebar-bottom{gap:5px!important}
+
+/* Desktop: menu lebih kecil dan proporsional */
+@media(min-width:768px){
+  #leftNav.app-sidebar{
+    width:184px!important;
+    min-width:184px!important;
+  }
+  #leftNav .sidebar-inner{padding:12px 10px!important}
+  #leftNav .sidebar-item,
+  #leftNav .sidebar-user-item{
+    min-height:36px!important;
+    height:36px!important;
+    padding:0 12px!important;
+    font-size:10.5px!important;
+  }
+  #leftNav .sidebar-label{font-size:8px!important;margin-left:7px!important}
+}
+
+/* Mobile: tetap text-only, mudah disentuh */
+@media(max-width:767px){
+  #leftNav .sidebar-item,
+  #leftNav .sidebar-user-item{
+    min-height:42px!important;
+    height:42px!important;
+    padding:0 14px!important;
+    font-size:11px!important;
+  }
+  #leftNav .sidebar-label{margin-bottom:6px!important}
+}
+
+/* ---------- BUTTONS: desktop compact & tidy ---------- */
+@media(min-width:768px){
+  button:not(.sidebar-item):not(.sidebar-toggle){
+    min-height:34px;
+  }
+  #tabInput button,
+  #tabRiwayat button,
+  #tabMonitoring button,
+  #tabOutletKontrak button,
+  #tabOutletBWS button,
+  #tabPricelist button,
+  #tabTambahCustomer button,
+  #tabPesananOutlet button,
+  #tabPengumumanAdmin button{
+    padding-top:7px!important;
+    padding-bottom:7px!important;
+    padding-left:11px!important;
+    padding-right:11px!important;
+    border-radius:9px!important;
+    font-size:10px!important;
+  }
+  #tabInput .payment-btn{min-height:34px!important}
+}
+
+/* ---------- INPUT / ORDER: lebih premium & tidak memenuhi layar ---------- */
+#tabInput > .bg-white.border.border-slate-200.rounded-2xl.shadow-sm.overflow-hidden{
+  max-width:1040px!important;
+  margin:0 auto!important;
+  border-radius:20px!important;
+  border-color:#e4ebe7!important;
+  box-shadow:0 10px 34px rgba(15,23,42,.055)!important;
+}
+#inputStep1{
+  max-width:900px!important;
+  margin:0 auto!important;
+  padding:18px!important;
+}
+#inputStep1 > .rounded-xl.bg-slate-50.border.border-slate-200.p-3:first-child{
+  background:linear-gradient(180deg,#fbfefd 0%,#f5faf7 100%)!important;
+  border-color:#dcebe2!important;
+  border-radius:18px!important;
+  padding:16px!important;
+  box-shadow:0 6px 20px rgba(0,88,48,.035)!important;
+}
+
+/* Header Informasi Outlet */
+#inputStep1 > .rounded-xl:first-child > .flex.items-center.gap-2.mb-3{
+  padding-bottom:10px!important;
+  margin-bottom:13px!important;
+  border-bottom:1px solid #e6eee9!important;
+}
+#inputStep1 > .rounded-xl:first-child > .flex.items-center.gap-2.mb-3 > span{
+  display:none!important;
+}
+#inputStep1 > .rounded-xl:first-child > .flex.items-center.gap-2.mb-3 > div > div:first-child{
+  font-size:14px!important;
+  letter-spacing:-.01em!important;
+}
+#inputStep1 > .rounded-xl:first-child > .flex.items-center.gap-2.mb-3 > div > div:last-child{
+  font-size:9px!important;
+  color:#7a8b83!important;
+}
+
+/* Outlet selector terasa seperti product picker */
+#inputOutlet + .select2-container,
+#inputOutlet{
+  width:100%!important;
+}
+#inputStep1 #inputOutlet + .select2-container .select2-selection--single{
+  height:46px!important;
+  border:1px solid #d8e5de!important;
+  border-radius:13px!important;
+  background:#fff!important;
+  padding:7px 12px!important;
+  box-shadow:0 4px 14px rgba(15,23,42,.035)!important;
+}
+#inputStep1 #inputOutlet + .select2-container .select2-selection__rendered{
+  line-height:30px!important;
+  font-size:11px!important;
+  font-weight:800!important;
+  color:#1e293b!important;
+}
+#inputStep1 #inputOutlet + .select2-container .select2-selection__arrow{
+  height:44px!important;
+  right:7px!important;
+}
+
+/* CUST.CODE + CHANNEL: kartu ringkas ala product selection */
+#inputStep1 .grid.grid-cols-2.gap-2.mt-2{
+  grid-template-columns:repeat(2,minmax(0,1fr))!important;
+  gap:10px!important;
+  margin-top:10px!important;
+}
+#inputStep1 .grid.grid-cols-2.gap-2.mt-2 > div{
+  position:relative!important;
+  min-height:58px!important;
+  padding:10px 12px!important;
+  border:1px solid #dce8e1!important;
+  border-radius:14px!important;
+  background:#fff!important;
+  box-shadow:0 4px 14px rgba(15,23,42,.035)!important;
+  transition:border-color .16s ease,box-shadow .16s ease,transform .16s ease!important;
+}
+#inputStep1 .grid.grid-cols-2.gap-2.mt-2 > div:hover{
+  border-color:#b8dcc8!important;
+  box-shadow:0 7px 18px rgba(0,138,76,.07)!important;
+  transform:translateY(-1px)!important;
+}
+#inputStep1 .grid.grid-cols-2.gap-2.mt-2 > div > div:first-child{
+  font-size:8px!important;
+  font-weight:900!important;
+  color:#7b8b84!important;
+  letter-spacing:.10em!important;
+}
+#inputStep1 .grid.grid-cols-2.gap-2.mt-2 > div::after{
+  content:'TERPILIH';
+  position:absolute!important;
+  top:10px!important;
+  right:11px!important;
+  font-size:7px!important;
+  font-weight:900!important;
+  letter-spacing:.08em!important;
+  color:#00915a!important;
+  background:#eaf8f1!important;
+  border-radius:999px!important;
+  padding:3px 6px!important;
+}
+#inputStep1 .grid.grid-cols-2.gap-2.mt-2 > div input{
+  display:block!important;
+  width:calc(100% - 52px)!important;
+  margin-top:6px!important;
+  min-height:20px!important;
+  font-size:12px!important;
+  font-weight:850!important;
+  color:#102a1f!important;
+  white-space:nowrap!important;
+  overflow:hidden!important;
+  text-overflow:ellipsis!important;
+}
+
+/* Di desktop, Informasi Outlet tidak melebar penuh */
+@media(min-width:768px){
+  #inputStep1 > .rounded-xl:first-child{
+    max-width:760px!important;
+    margin:0 auto!important;
+  }
+  #inputStep1 > .rounded-xl:nth-child(2){
+    max-width:760px!important;
+    margin:0 auto!important;
+  }
+  #inputStep1 > button:last-child{
+    max-width:760px!important;
+    margin:2px auto 0!important;
+    display:flex!important;
+  }
+}
+
+/* Mobile: kartu tetap compact dan tidak membuat layar terasa penuh */
+@media(max-width:600px){
+  #inputStep1{padding:12px!important}
+  #inputStep1 > .rounded-xl:first-child{padding:13px!important}
+  #inputStep1 .grid.grid-cols-2.gap-2.mt-2{gap:8px!important}
+  #inputStep1 .grid.grid-cols-2.gap-2.mt-2 > div{min-height:56px!important;padding:9px 10px!important}
+  #inputStep1 .grid.grid-cols-2.gap-2.mt-2 > div::after{font-size:6.5px!important;right:8px!important}
+  #inputStep1 .grid.grid-cols-2.gap-2.mt-2 > div input{font-size:11px!important;width:calc(100% - 45px)!important}
+}
+@media(max-width:380px){
+  #inputStep1 .grid.grid-cols-2.gap-2.mt-2{grid-template-columns:1fr!important}
+}
+
+/* ---------- Detail transaksi lebih ringan ---------- */
+#inputStep1 > .rounded-xl.bg-slate-50.border.border-slate-200.p-3:nth-child(2){
+  border-color:#e5ece8!important;
+  background:#fff!important;
+  border-radius:16px!important;
+}
+#inputStep1 > .rounded-xl.bg-slate-50.border.border-slate-200.p-3:nth-child(2) > .flex.items-center.gap-2.mb-3 > span{
+  display:none!important;
+}
+
+/* Select2 dropdown lebih modern */
+.select2-container--default .select2-selection--single:focus,
+.select2-container--default.select2-container--focus .select2-selection--single{
+  border-color:#8fd0ac!important;
+  box-shadow:0 0 0 3px rgba(0,138,76,.09)!important;
+}
+.select2-dropdown{
+  border-color:#dbe7e0!important;
+  border-radius:13px!important;
+  overflow:hidden!important;
+  box-shadow:0 14px 34px rgba(15,23,42,.12)!important;
+}
+.select2-results__option{padding:9px 11px!important;font-size:11px!important}
+.select2-results__option--highlighted[aria-selected]{background:#008a4c!important}
+
+/* Header/tab spacing desktop */
+@media(min-width:768px){
+  #mainPage{padding-top:2px!important}
+  #mainPage .tab-content{max-width:1180px!important;margin-left:auto!important;margin-right:auto!important}
+}
+</style>
 </body>
 </html>
 <style id="mobile-monitoring-pricelist-bottom-fix">
