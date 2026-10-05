@@ -9167,6 +9167,129 @@ button{ -webkit-tap-highlight-color:transparent }
   }
 }
 </style>
+
+<style id="ui-product-layout-v7">
+/* UI ONLY — V7. Tidak mengubah HTML/JS/function/perhitungan. */
+
+/* 1. Hilangkan tulisan "Outlet *" saja; dropdown Outlet tetap ada. */
+#tabInput #inputStep1 > .rounded-xl.bg-slate-50.border.border-slate-200 > label[for="inputOutlet"]{
+  display:none !important;
+}
+
+/* 2. DESKTOP: Pilih Produk | Qty | PCS/DUS | Tambah Item dalam 1 baris. */
+@media (min-width:768px){
+  #inputStep2 .ui-product-entry{
+    display:grid !important;
+    grid-template-columns:minmax(280px,1fr) 72px 132px 108px !important;
+    align-items:end !important;
+    column-gap:8px !important;
+    row-gap:0 !important;
+  }
+
+  #inputStep2 .ui-product-entry > div:first-child{
+    grid-column:1 !important;
+    grid-row:1 !important;
+    min-width:0 !important;
+  }
+
+  #inputStep2 .ui-product-entry > .ui-item-controls{
+    display:contents !important;
+  }
+
+  #inputStep2 .ui-product-entry .ui-qty-control{
+    grid-column:2 !important;
+    grid-row:1 !important;
+    width:auto !important;
+    flex:none !important;
+  }
+
+  #inputStep2 .ui-product-entry .ui-satuan-control{
+    grid-column:3 !important;
+    grid-row:1 !important;
+    width:auto !important;
+    flex:none !important;
+  }
+
+  #inputStep2 .ui-product-entry > button.ui-add-item-btn{
+    grid-column:4 !important;
+    grid-row:1 !important;
+    width:100% !important;
+    min-width:0 !important;
+    margin:0 !important;
+  }
+
+  #inputStep2 .ui-product-entry .ui-product-filters{
+    margin-bottom:5px !important;
+  }
+
+  #inputStep2 .ui-product-entry #addItemProduk,
+  #inputStep2 .ui-product-entry #addItemQty,
+  #inputStep2 .ui-product-entry .ui-satuan-control > div,
+  #inputStep2 .ui-product-entry .ui-add-item-btn{
+    height:36px !important;
+    min-height:36px !important;
+  }
+}
+
+/* 3. MOBILE: Pilih Produk di atas; Qty + PCS/DUS + Tambah Item di baris bawah. */
+@media (max-width:767px){
+  #inputStep2 .ui-product-entry{
+    display:grid !important;
+    grid-template-columns:1fr !important;
+    gap:8px !important;
+  }
+
+  #inputStep2 .ui-product-entry > div:first-child{
+    grid-column:1 !important;
+    grid-row:1 !important;
+    min-width:0 !important;
+  }
+
+  #inputStep2 .ui-product-entry > .ui-item-controls{
+    display:grid !important;
+    grid-template-columns:58px minmax(0,1fr) minmax(94px,1fr) !important;
+    grid-template-rows:auto !important;
+    align-items:end !important;
+    gap:6px !important;
+    width:100% !important;
+    grid-column:1 !important;
+    grid-row:2 !important;
+  }
+
+  #inputStep2 .ui-product-entry .ui-qty-control,
+  #inputStep2 .ui-product-entry .ui-satuan-control{
+    width:auto !important;
+    min-width:0 !important;
+    flex:none !important;
+  }
+
+  #inputStep2 .ui-product-entry .ui-qty-control{
+    grid-column:1 !important;
+  }
+
+  #inputStep2 .ui-product-entry .ui-satuan-control{
+    grid-column:2 !important;
+  }
+
+  #inputStep2 .ui-product-entry > button.ui-add-item-btn{
+    grid-column:3 !important;
+    grid-row:2 !important;
+    width:100% !important;
+    min-width:0 !important;
+    margin:0 !important;
+    height:34px !important;
+    padding:0 5px !important;
+    white-space:nowrap !important;
+  }
+
+  #inputStep2 .ui-product-entry #addItemProduk,
+  #inputStep2 .ui-product-entry #addItemQty,
+  #inputStep2 .ui-product-entry .ui-satuan-control > div{
+    height:34px !important;
+    min-height:34px !important;
+  }
+}
+</style>
 </body>
 </html>
 <style id="mobile-monitoring-pricelist-bottom-fix">
