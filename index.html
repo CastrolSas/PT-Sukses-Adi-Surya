@@ -9374,6 +9374,51 @@ button{ -webkit-tap-highlight-color:transparent }
   }
 }
 </style>
+
+<style id="ui-product-container-width-v12">
+/* V12: outer product area stays wide; only inner controls are compact. UI ONLY. */
+@media (min-width: 768px){
+  #inputStep2 .ui-product-entry{
+    width:100% !important;
+    max-width:100% !important;
+    grid-template-columns:minmax(260px,1fr) 62px 108px 112px !important;
+    box-sizing:border-box !important;
+  }
+  #inputStep2 .ui-product-entry > div:first-child{
+    width:100% !important;
+    min-width:0 !important;
+    max-width:none !important;
+    box-sizing:border-box !important;
+  }
+  #inputStep2 .ui-product-entry .ui-product-filters{
+    width:100% !important;
+    max-width:none !important;
+    box-sizing:border-box !important;
+  }
+  /* Select produk tetap berada di kiri, tetapi kontrol di dalamnya compact. */
+  #inputStep2 .ui-product-entry #addItemProduk{
+    width:100% !important;
+    min-width:0 !important;
+    max-width:none !important;
+    box-sizing:border-box !important;
+  }
+  #inputStep2 .ui-product-entry #addItemQty{
+    width:62px !important;
+    min-width:62px !important;
+    max-width:62px !important;
+  }
+  #inputStep2 .ui-product-entry .ui-satuan-control > div{
+    width:108px !important;
+    min-width:108px !important;
+    max-width:108px !important;
+  }
+  #inputStep2 .ui-product-entry > .ui-add-item-btn{
+    width:112px !important;
+    min-width:112px !important;
+    max-width:112px !important;
+  }
+}
+</style>
 </body>
 </html>
 <style id="mobile-monitoring-pricelist-bottom-fix">
