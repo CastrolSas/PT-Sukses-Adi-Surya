@@ -6685,13 +6685,22 @@ startAutoRefresh();
             if (wrap && !wrap.contains(e.target)) closeNotificationPanel();
         });
 
+        // Saat kembali ke tab/aplikasi, cek notifikasi seketika tanpa menunggu interval.
+        document.addEventListener('visibilitychange', function() {
+            if (!document.hidden) loadNotifications(true);
+        });
+        window.addEventListener('focus', function() {
+            loadNotifications(true);
+        });
+
         function startAutoRefresh() {
             if (autoRefreshTimer) clearInterval(autoRefreshTimer);
-            // Jalankan setiap 5 detik.
+            // Notifikasi diperiksa setiap 1 detik agar perubahan dari user/admin lain
+            // muncul nyaris realtime tanpa perlu membuka ulang panel.
             autoRefreshTimer = setInterval(function() {
                 autoRefreshActiveTab();
                 loadNotifications(true);
-            }, 5000);
+            }, 1000);
         }
 
         let appBackgroundPreloadStarted = false;
