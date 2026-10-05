@@ -8812,6 +8812,178 @@ button{ -webkit-tap-highlight-color:transparent }
   #mainPage .tab-content{max-width:1180px!important;margin-left:auto!important;margin-right:auto!important}
 }
 </style>
+
+<style id="ui-final-polish-v4">
+/* =========================================================
+   UI ONLY - FINAL POLISH V4
+   Tidak mengubah HTML/JS/function/perhitungan.
+   ========================================================= */
+
+/* 1. MENU: tulisan saja + rata kiri */
+#leftNav .sidebar-icon{
+  display:none!important;
+}
+#leftNav .sidebar-item{
+  justify-content:flex-start!important;
+  text-align:left!important;
+  align-items:center!important;
+  gap:0!important;
+  padding-left:14px!important;
+  padding-right:10px!important;
+  min-height:42px!important;
+  height:42px!important;
+  border-radius:10px!important;
+}
+#leftNav .sidebar-text{
+  display:block!important;
+  width:100%!important;
+  text-align:left!important;
+  font-size:11px!important;
+  font-weight:700!important;
+  letter-spacing:.01em!important;
+  white-space:nowrap!important;
+  overflow:hidden!important;
+  text-overflow:ellipsis!important;
+}
+#leftNav .sidebar-label{
+  text-align:left!important;
+  padding-left:14px!important;
+  margin-bottom:6px!important;
+  font-size:9px!important;
+}
+@media(min-width:768px){
+  #leftNav.app-sidebar{
+    width:150px!important;
+    padding:12px 8px!important;
+  }
+  #app:not(.sidebar-closed) #leftNav:not(.hidden) + div{
+    margin-left:150px!important;
+  }
+}
+
+/* 2. INFORMASI OUTLET: CUST.CODE + CHANNEL tepat di bawah judul */
+#tabInput #inputStep1 > .rounded-xl.bg-slate-50.border.border-slate-200.p-3:first-child{
+  display:flex!important;
+  flex-direction:column!important;
+}
+#tabInput #inputStep1 > .rounded-xl.bg-slate-50.border.border-slate-200.p-3:first-child > .flex.items-center.gap-2.mb-3{
+  order:1!important;
+  margin-bottom:8px!important;
+}
+#tabInput #inputStep1 > .rounded-xl.bg-slate-50.border.border-slate-200.p-3:first-child > .grid.grid-cols-2.gap-2.mt-2{
+  order:2!important;
+  margin:0 0 10px 0!important;
+  display:grid!important;
+  grid-template-columns:1fr 1fr!important;
+  gap:8px!important;
+}
+#tabInput #inputStep1 > .rounded-xl.bg-slate-50.border.border-slate-200.p-3:first-child > .grid.grid-cols-2.gap-2.mt-2 > div{
+  background:transparent!important;
+  border:0!important;
+  border-bottom:1px solid #e2e8f0!important;
+  border-radius:0!important;
+  padding:5px 2px 7px!important;
+}
+#tabInput #inputStep1 > .rounded-xl.bg-slate-50.border.border-slate-200.p-3:first-child > .grid.grid-cols-2.gap-2.mt-2 > div > div{
+  font-size:8px!important;
+  color:#94a3b8!important;
+  letter-spacing:.08em!important;
+}
+#tabInput #inputStep1 > .rounded-xl.bg-slate-50.border.border-slate-200.p-3:first-child > .grid.grid-cols-2.gap-2.mt-2 input{
+  margin-top:2px!important;
+  font-size:11px!important;
+  font-weight:800!important;
+  color:#0f172a!important;
+}
+#tabInput #inputStep1 > .rounded-xl.bg-slate-50.border.border-slate-200.p-3:first-child > #filterInputSalesWrap{
+  order:3!important;
+}
+#tabInput #inputStep1 > .rounded-xl.bg-slate-50.border.border-slate-200.p-3:first-child > label{
+  order:4!important;
+}
+#tabInput #inputStep1 > .rounded-xl.bg-slate-50.border.border-slate-200.p-3:first-child > #inputOutlet{
+  order:5!important;
+}
+
+/* 3. FILTER PRODUK: SEMUA / MCO / PCO compact */
+#tabInput #btnFilterProdukAll,
+#tabInput #btnFilterProdukMCO,
+#tabInput #btnFilterProdukPCO{
+  flex:0 0 auto!important;
+  width:auto!important;
+  min-width:52px!important;
+  padding:5px 10px!important;
+  min-height:28px!important;
+  height:28px!important;
+  border-radius:8px!important;
+  font-size:9px!important;
+  line-height:1!important;
+}
+#tabInput #btnFilterProdukAll + #btnFilterProdukMCO,
+#tabInput #btnFilterProdukMCO{
+  margin-left:0!important;
+}
+#tabInput #btnFilterProdukAll ~ button{
+  flex:0 0 auto!important;
+}
+
+/* 4. PCS / DUS + TAMBAH ITEM: compact dan satu baris */
+#tabInput #addItemProduk{
+  min-height:38px!important;
+}
+#tabInput .rounded-xl.border.border-slate-200.bg-slate-50.p-3.space-y-2:has(#btnSatuanPcs){
+  display:grid!important;
+  grid-template-columns:minmax(0,1fr) auto auto!important;
+  column-gap:8px!important;
+  row-gap:8px!important;
+}
+#tabInput .rounded-xl.border.border-slate-200.bg-slate-50.p-3.space-y-2:has(#btnSatuanPcs) > div:first-child{
+  grid-column:1 / -1!important;
+  min-width:0!important;
+}
+#tabInput .rounded-xl.border.border-slate-200.bg-slate-50.p-3.space-y-2:has(#btnSatuanPcs) > .grid.grid-cols-2.gap-2{
+  display:contents!important;
+}
+#tabInput .rounded-xl.border.border-slate-200.bg-slate-50.p-3.space-y-2:has(#btnSatuanPcs) > .grid.grid-cols-2.gap-2 > div:first-child{
+  grid-column:1!important;
+}
+#tabInput .rounded-xl.border.border-slate-200.bg-slate-50.p-3.space-y-2:has(#btnSatuanPcs) > .grid.grid-cols-2.gap-2 > div:nth-child(2){
+  grid-column:2!important;
+}
+#tabInput #btnSatuanPcs,
+#tabInput #btnSatuanDus{
+  flex:0 0 auto!important;
+  width:48px!important;
+  min-width:48px!important;
+  height:32px!important;
+  padding:0!important;
+  font-size:10px!important;
+}
+#tabInput #btnSatuanPcs + #btnSatuanDus{
+  width:48px!important;
+}
+#tabInput .rounded-xl.border.border-slate-200.bg-slate-50.p-3.space-y-2:has(#btnSatuanPcs) > button[onclick="tambahKeKeranjang()"]{
+  grid-column:3!important;
+  width:auto!important;
+  min-width:88px!important;
+  height:32px!important;
+  padding:0 11px!important;
+  border-radius:9px!important;
+  font-size:10px!important;
+  white-space:nowrap!important;
+}
+
+@media(max-width:640px){
+  #leftNav .sidebar-item{min-height:40px!important;height:40px!important;padding-left:12px!important}
+  #leftNav .sidebar-text{font-size:10.5px!important}
+  #tabInput #btnFilterProdukAll,
+  #tabInput #btnFilterProdukMCO,
+  #tabInput #btnFilterProdukPCO{min-width:48px!important;padding:5px 8px!important}
+  #tabInput .rounded-xl.border.border-slate-200.bg-slate-50.p-3.space-y-2:has(#btnSatuanPcs){
+    grid-template-columns:minmax(0,1fr) auto auto!important;
+  }
+}
+</style>
 </body>
 </html>
 <style id="mobile-monitoring-pricelist-bottom-fix">
