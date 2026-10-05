@@ -2106,7 +2106,7 @@ html{scroll-behavior:auto!important}
                 <div id="tabInput" class="tab-content space-y-4">
                     <div class="bg-white border border-slate-200 rounded-2xl shadow-sm overflow-hidden">
                         <div class="px-4 pt-4 pb-3 border-b border-slate-100">
-                            <div class="flex items-center justify-between gap-3">
+                            <div class="flex items-center justify-between gap-3 ui-input-order-title">
                                 <div>
                                     <div class="text-[9px] font-extrabold uppercase tracking-[0.18em] text-emerald-600">INPUT ORDER</div>
                                     <h2 class="text-lg font-extrabold text-slate-800 mt-0.5">Buat Order Baru</h2>
@@ -2131,7 +2131,7 @@ html{scroll-behavior:auto!important}
                         <!-- STEP 1 -->
                         <div id="inputStep1" class="p-4 space-y-3">
                             <div class="rounded-xl bg-slate-50 border border-slate-200 p-3">
-                                <div class="flex items-center gap-2 mb-3">
+                                <div class="flex items-center gap-2 mb-3 ui-outlet-title">
                                     <span class="w-7 h-7 rounded-lg bg-emerald-100 text-emerald-700 flex items-center justify-center">🏪</span>
                                     <div><div class="text-xs font-extrabold text-slate-800">Informasi Outlet</div><div class="text-[9px] text-slate-400">Pilih outlet untuk mengisi data pelanggan otomatis.</div></div>
                                 </div>
@@ -2195,21 +2195,21 @@ html{scroll-behavior:auto!important}
                                 <div id="inputStep2Meta" class="text-[9px] text-slate-500 mt-1">Cust. Code - · Channel -</div>
                             </div>
 
-                            <div class="rounded-xl border border-slate-200 bg-slate-50 p-3 space-y-2">
+                            <div class="rounded-xl border border-slate-200 bg-slate-50 p-3 space-y-2 ui-product-entry">
                                 <div>
                                     <label class="block text-[10px] font-bold text-slate-600 mb-1">Produk</label>
-                                    <div class="flex gap-1.5 mb-2">
+                                    <div class="flex gap-1.5 mb-2 ui-product-filters">
                                         <button type="button" id="btnFilterProdukAll" onclick="setProdukFilter('ALL')" class="flex-1 px-3 py-2 rounded-lg bg-emerald-700 text-white text-[10px] font-extrabold transition">SEMUA</button>
                                         <button type="button" id="btnFilterProdukMCO" onclick="setProdukFilter('MCO')" class="flex-1 px-3 py-2 rounded-lg bg-white border border-slate-200 text-slate-600 text-[10px] font-extrabold transition">MCO</button>
                                         <button type="button" id="btnFilterProdukPCO" onclick="setProdukFilter('PCO')" class="flex-1 px-3 py-2 rounded-lg bg-white border border-slate-200 text-slate-600 text-[10px] font-extrabold transition">PCO</button>
                                     </div>
                                     <select id="addItemProduk" class="w-full border border-slate-200 rounded-xl px-3 py-2.5 bg-white text-xs searchable-select"><option value="">-- Pilih Produk --</option></select>
                                 </div>
-                                <div class="grid grid-cols-2 gap-2">
-                                    <div><label class="block text-[10px] font-bold text-slate-600 mb-1">Qty</label><input type="number" id="addItemQty" min="1" value="1" class="w-full border border-slate-200 rounded-xl px-3 py-2.5 bg-white text-xs"></div>
-                                    <div><label class="block text-[10px] font-bold text-slate-600 mb-1">Satuan</label><div class="flex rounded-xl border border-slate-200 bg-white overflow-hidden h-[38px]"><button type="button" id="btnSatuanPcs" onclick="setSatuanInput('Pcs')" class="flex-1 bg-emerald-700 text-white font-bold text-xs transition">Pcs</button><button type="button" id="btnSatuanDus" onclick="setSatuanInput('Dus')" class="flex-1 bg-transparent text-slate-700 font-bold text-xs transition">Dus</button></div><input type="hidden" id="addItemSatuan" value="Pcs"></div>
+                                <div class="grid grid-cols-2 gap-2 ui-item-controls">
+                                    <div class="ui-qty-control"><label class="block text-[10px] font-bold text-slate-600 mb-1">Qty</label><input type="number" id="addItemQty" min="1" value="1" class="w-full border border-slate-200 rounded-xl px-3 py-2.5 bg-white text-xs"></div>
+                                    <div class="ui-satuan-control"><label class="block text-[10px] font-bold text-slate-600 mb-1">Satuan</label><div class="flex rounded-xl border border-slate-200 bg-white overflow-hidden h-[38px]"><button type="button" id="btnSatuanPcs" onclick="setSatuanInput('Pcs')" class="flex-1 bg-emerald-700 text-white font-bold text-xs transition">Pcs</button><button type="button" id="btnSatuanDus" onclick="setSatuanInput('Dus')" class="flex-1 bg-transparent text-slate-700 font-bold text-xs transition">Dus</button></div><input type="hidden" id="addItemSatuan" value="Pcs"></div>
                                 </div>
-                                <button type="button" onclick="tambahKeKeranjang()" class="w-full rounded-xl bg-emerald-700 hover:bg-emerald-800 text-white py-2.5 font-extrabold text-xs transition">+ Tambah Item</button>
+                                <button type="button" onclick="tambahKeKeranjang()" class="w-full rounded-xl bg-emerald-700 hover:bg-emerald-800 text-white py-2.5 font-extrabold text-xs transition ui-add-item-btn">+ Tambah Item</button>
                             </div>
 
                             <div>
@@ -8982,6 +8982,37 @@ button{ -webkit-tap-highlight-color:transparent }
   #tabInput .rounded-xl.border.border-slate-200.bg-slate-50.p-3.space-y-2:has(#btnSatuanPcs){
     grid-template-columns:minmax(0,1fr) auto auto!important;
   }
+}
+</style>
+
+<style id="ui-modern-v5-adjustments">
+/* UI ONLY — V5: merapikan ruang tanpa menyentuh logic/function. */
+.ui-input-order-title{display:none!important;}
+.ui-outlet-title{display:none!important;}
+
+/* Setelah judul dihilangkan, isi langsung naik tanpa ruang kosong. */
+#inputStep1 > .rounded-xl.bg-slate-50.border.border-slate-200{padding-top:10px!important;}
+#inputStep1 > .rounded-xl.bg-slate-50.border.border-slate-200 > #filterInputSalesWrap{margin-top:0!important;}
+
+/* Filter produk lebih kecil dan tidak melebar berlebihan. */
+.ui-product-filters{display:flex!important;justify-content:flex-start!important;gap:6px!important;}
+.ui-product-filters button{flex:0 0 auto!important;width:auto!important;min-width:52px!important;padding:6px 11px!important;font-size:9px!important;line-height:1.1!important;border-radius:8px!important;}
+
+/* Qty kecil; PCS/DUS dan Tambah Item satu baris. */
+.ui-product-entry .ui-item-controls{display:flex!important;align-items:flex-end!important;gap:7px!important;}
+.ui-product-entry .ui-qty-control{width:68px!important;flex:0 0 68px!important;}
+.ui-product-entry .ui-qty-control #addItemQty{height:34px!important;min-height:34px!important;padding:6px 8px!important;border-radius:9px!important;text-align:center!important;font-size:11px!important;}
+.ui-product-entry .ui-satuan-control{width:130px!important;flex:0 0 130px!important;}
+.ui-product-entry .ui-satuan-control > div{height:34px!important;border-radius:9px!important;}
+.ui-product-entry .ui-satuan-control button{font-size:10px!important;}
+.ui-product-entry .ui-add-item-btn{width:auto!important;min-width:112px!important;height:34px!important;padding:0 12px!important;border-radius:9px!important;align-self:flex-end!important;font-size:10px!important;white-space:nowrap!important;}
+
+@media(max-width:767px){
+  .ui-product-entry .ui-item-controls{gap:6px!important;}
+  .ui-product-entry .ui-qty-control{width:60px!important;flex-basis:60px!important;}
+  .ui-product-entry .ui-satuan-control{width:112px!important;flex-basis:112px!important;}
+  .ui-product-entry .ui-add-item-btn{min-width:96px!important;padding:0 9px!important;}
+  .ui-product-filters button{min-width:48px!important;padding:6px 9px!important;}
 }
 </style>
 </body>
