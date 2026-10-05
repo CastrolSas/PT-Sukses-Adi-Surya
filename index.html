@@ -6664,7 +6664,6 @@ startAutoRefresh();
 
         function clearAllNotifications() {
             if (!notificationData.length) return;
-            if (!confirm('Bersihkan semua notifikasi yang tampil?')) return;
 
             google.script.run
                 .withSuccessHandler(function(res) {
