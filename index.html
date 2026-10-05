@@ -6648,12 +6648,15 @@ startAutoRefresh();
         function markAllNotificationsRead() {
             if (!notificationUnreadCount) return;
 
+            // Langsung ubah tampilan lokal agar angka lencana hilang tanpa menunggu server.
+            notificationData.forEach(function(n) { n.unread = false; });
+            notificationUnreadCount = 0;
+            renderNotifications();
+
             google.script.run
                 .withSuccessHandler(function(res) {
-                    if (res && res.success) {
-                        notificationData.forEach(function(n) { n.unread = false; });
-                        notificationUnreadCount = 0;
-                        renderNotifications();
+                    if (!res || !res.success) {
+                        console.warn('Gagal menandai semua notifikasi:', res && res.message ? res.message : res);
                     }
                 })
                 .withFailureHandler(function(err) {
