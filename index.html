@@ -630,14 +630,7 @@
 .break-words{overflow-wrap:anywhere}
 </style>
 
-<style id="admin-input-visibility">
-/* ADMIN: menu dan halaman Input Order harus selalu tersembunyi */
-body.admin-mode #navInput,
-body.admin-mode #tabInput {
-    display: none !important;
-    visibility: hidden !important;
-}
-</style>
+
 
 <style id="modern-safe-responsive">
 :root{--ui-bg:#f5f7fa;--ui-card:#fff;--ui-border:#e2e8f0;--ui-text:#0f172a;--ui-muted:#64748b;--ui-green:#047857}
@@ -2142,6 +2135,12 @@ html{scroll-behavior:auto!important}
                                     <span class="w-7 h-7 rounded-lg bg-emerald-100 text-emerald-700 flex items-center justify-center">🏪</span>
                                     <div><div class="text-xs font-extrabold text-slate-800">Informasi Outlet</div><div class="text-[9px] text-slate-400">Pilih outlet untuk mengisi data pelanggan otomatis.</div></div>
                                 </div>
+                                <div id="filterInputSalesWrap" class="hidden mb-2">
+                                    <label for="filterInputSales" class="block text-[10px] font-bold text-slate-600 mb-1">Sales</label>
+                                    <select id="filterInputSales" onchange="onInputSalesFilterChange()" class="w-full border border-slate-200 rounded-xl px-3 py-2.5 bg-white text-xs searchable-select">
+                                        <option value="">-- Pilih Sales --</option>
+                                    </select>
+                                </div>
                                 <label class="block text-[10px] font-bold text-slate-600 mb-1">Outlet <span class="text-red-500">*</span></label>
                                 <select id="inputOutlet" onchange="onOutletChange()" required class="w-full border border-slate-200 rounded-xl px-3 py-2.5 bg-white text-xs searchable-select">
                                     <option value="">-- Pilih Outlet --</option>
@@ -2828,8 +2827,10 @@ html{scroll-behavior:auto!important}
             const tabInput = document.getElementById('tabInput');
             const navOutletBWS = document.getElementById('navOutletBWS');
             const tabOutletBWS = document.getElementById('tabOutletBWS');
-            if (navInput) navInput.classList.toggle('hidden', isAdminLogin);
-            if (tabInput) tabInput.classList.toggle('hidden', isAdminLogin);
+            if (navInput) navInput.classList.toggle('hidden', false);
+            if (tabInput) tabInput.classList.toggle('hidden', false);
+            const filterInputSalesWrap = document.getElementById('filterInputSalesWrap');
+            if (filterInputSalesWrap) filterInputSalesWrap.classList.toggle('hidden', !isAdminLogin);
             if (navOutletBWS) navOutletBWS.classList.toggle('hidden', !isAdminLogin);
             if (tabOutletBWS) tabOutletBWS.classList.toggle('hidden', !isAdminLogin);
             const btnTambahOutletBWS = document.getElementById('btnTambahOutletBWS');
@@ -2867,10 +2868,10 @@ html{scroll-behavior:auto!important}
                 const adminTools = document.getElementById('riwayatAdminTools');
                 if (adminTools) adminTools.classList.toggle('hidden', !isAdminLogin);
 
-                if (!isAdminLogin) loadOutletForSales(currentUser, currentUsernameInput);
-                else loadPencapaianSalesFilter();
+                loadOutletForSales(currentUser, currentUsernameInput);
+                if (isAdminLogin) loadPencapaianSalesFilter();
                 loadRiwayat(true, true);
-                if (!isAdminLogin) loadInputMasterData();
+                loadInputMasterData();
                 preloadAppDataInBackground();
                 if (isAdminLogin) switchTab('riwayat');
                 checkActivePengumuman();
@@ -2938,7 +2939,11 @@ startAutoRefresh();
             select.empty().append('<option value="">-- Pilih Produk --</option>');
 
             const filtered = (produkDataList || []).filter(function(p) {
-                const type = String(p.typeProduk || '').trim().toUpperCase();
+                const type = String(p.typeProduk == null ? '' : p.typeProduk)
+                    .replace(/\u00A0/g, ' ')
+                    .trim()
+                    .toUpperCase()
+                    .replace(/\s+/g, '');
                 if (produkFilterType === 'MCO') return type === 'MCO-4T' || type === 'MCO-2T';
                 if (produkFilterType === 'PCO') return type === 'PCO';
                 return true;
@@ -3036,10 +3041,10 @@ startAutoRefresh();
                     const adminTools = document.getElementById('riwayatAdminTools');
                     if (adminTools) adminTools.classList.toggle('hidden', !isAdminLogin);
                     saveAuthState();
-                    if (!isAdminLogin) loadOutletForSales(currentUser, currentUsernameInput);
-                    else loadPencapaianSalesFilter();
+                    loadOutletForSales(currentUser, currentUsernameInput);
+                    if (isAdminLogin) loadPencapaianSalesFilter();
                     loadRiwayat(true, true);
-                    if (!isAdminLogin) loadInputMasterData();
+                    loadInputMasterData();
                     preloadAppDataInBackground();
                     if (isAdminLogin) switchTab('riwayat');
                 } else {
@@ -3051,13 +3056,25 @@ startAutoRefresh();
         function loadOutletForSales(sales, usernameInput) {
             if (usernameInput && usernameInput.toLowerCase() === 'admin') {
                 google.script.run.withSuccessHandler(function(outlets) {
-                    outletDataList = outlets || [];
-                    let select = $('#inputOutlet');
-                    select.empty().append('<option value="">-- Pilih Outlet (Semua) --</option>');
-                    outlets.forEach(o => {
-                        select.append(new Option(o.outlet, o.outlet));
-                    });
-                    refreshSelect2('#inputOutlet');
+                    const allOutlets = outlets || [];
+                    window._inputAllOutlets = allOutlets.slice();
+                    outletDataList = allOutlets.slice();
+                    const salesSelect = $('#filterInputSales');
+                    if (salesSelect && salesSelect.length) {
+                        const currentSales = String(salesSelect.val() || '').trim();
+                        const salesMap = {};
+                        allOutlets.forEach(function(o) {
+                            const salesName = String(o.sales || '').trim();
+                            if (salesName) salesMap[salesName.toUpperCase()] = salesName;
+                        });
+                        salesSelect.empty().append('<option value="">-- Pilih Sales --</option>');
+                        Object.keys(salesMap).sort().forEach(function(key) {
+                            salesSelect.append(new Option(salesMap[key], salesMap[key]));
+                        });
+                        if (currentSales && salesMap[currentSales.toUpperCase()]) salesSelect.val(salesMap[currentSales.toUpperCase()]);
+                        refreshSelect2('#filterInputSales');
+                    }
+                    renderInputOutletOptions();
                 }).getAllOutlets();
             } else {
                 google.script.run.withSuccessHandler(function(outlets) {
@@ -3070,6 +3087,36 @@ startAutoRefresh();
                     refreshSelect2('#inputOutlet');
                 }).getOutletsBySales(sales);
             }
+        }
+
+        function renderInputOutletOptions() {
+            const select = $('#inputOutlet');
+            if (!select || !select.length) return;
+            const selectedOutlet = String(select.val() || '');
+            const isAdmin = String(currentUsernameInput || '').trim().toLowerCase() === 'admin';
+            const selectedSales = isAdmin ? String($('#filterInputSales').val() || '').trim().toUpperCase() : '';
+            const source = Array.isArray(window._inputAllOutlets) ? window._inputAllOutlets : outletDataList;
+            const filtered = isAdmin && selectedSales
+                ? source.filter(function(o) { return String(o.sales || '').trim().toUpperCase() === selectedSales; })
+                : source;
+
+            outletDataList = filtered.slice();
+            select.empty().append('<option value="">-- Pilih Outlet --</option>');
+            filtered.forEach(function(o) {
+                select.append(new Option(o.outlet, o.outlet));
+            });
+            if (selectedOutlet && filtered.some(function(o) { return String(o.outlet) === selectedOutlet; })) select.val(selectedOutlet);
+            else {
+                select.val('');
+                $('#inputCustCode').val('');
+                $('#inputChannel').val('');
+            }
+            refreshSelect2('#inputOutlet');
+        }
+
+        function onInputSalesFilterChange() {
+            if (String(currentUsernameInput || '').trim().toLowerCase() !== 'admin') return;
+            renderInputOutletOptions();
         }
 
         function updateInputWizardIndicator(step) {
@@ -3092,6 +3139,10 @@ startAutoRefresh();
         function lanjutKeTambahProduk() {
             const outlet = $('#inputOutlet').val();
             const tanggal = document.getElementById('inputTanggal').value;
+            if (String(currentUsernameInput || '').trim().toLowerCase() === 'admin' && !String($('#filterInputSales').val() || '').trim()) {
+                showModal('Peringatan', 'Pilih Sales terlebih dahulu.');
+                return;
+            }
             if (!outlet) { showModal('Peringatan', 'Pilih Outlet terlebih dahulu.'); return; }
             if (!tanggal) { showModal('Peringatan', 'Pilih tanggal order terlebih dahulu.'); return; }
             document.getElementById('inputStep1').classList.add('hidden');
@@ -3271,7 +3322,7 @@ startAutoRefresh();
             }
 
             let payload = {
-                sales: currentUser,
+                sales: (String(currentUsernameInput || '').trim().toLowerCase() === 'admin' ? String($('#filterInputSales').val() || '').trim() : currentUser),
                 outlet: outlet,
                 custCode: document.getElementById('inputCustCode').value,
                 channel: document.getElementById('inputChannel').value,
@@ -6791,6 +6842,7 @@ startAutoRefresh();
             if (isAdmin) {
                 run(function(){ loadOutletBWSAdmin(false, true); }, 640);
                 run(function(){ loadOutletBWSFormMaster(); }, 760);
+                run(function(){ loadInputMasterData(); }, 840);
             } else {
                 run(function(){ loadInputMasterData(); }, 640);
             }
@@ -6798,7 +6850,6 @@ startAutoRefresh();
 
         function switchTab(tab) {
             const isAdminLogin = String(currentUsernameInput || '').trim().toLowerCase() === 'admin';
-            if (isAdminLogin && tab === 'input') { applyRoleVisibility(); return; }
             if (tab === 'pengumumanadmin' && !isAdminLogin) { applyRoleVisibility(); return; }
             const tabMap = {input:'tabInput',riwayat:'tabRiwayat',pencapaian:'tabPencapaian',monitoring:'tabMonitoring',outletkontrak:'tabOutletKontrak',outletbws:'tabOutletBWS',tambahcustomer:'tabTambahCustomer',pricelist:'tabPricelist',pesananoutlet:'tabPesananOutlet',pengumumanadmin:'tabPengumumanAdmin'};
             const navMap = {input:'navInput',riwayat:'navRiwayat',pencapaian:'navPencapaian',monitoring:'navMonitoring',outletkontrak:'navOutletKontrak',outletbws:'navOutletBWS',tambahcustomer:'navTambahCustomer',pricelist:'navPricelist',pesananoutlet:'navPesananOutlet',pengumumanadmin:'navPengumumanAdmin'};
@@ -7821,6 +7872,637 @@ function deletePengumuman(row) {
     });
 }
 </script>
+
+
+
+<style id="ui-modern-smooth-v1">
+/* =========================================================
+   UI MODERN SMOOTH V1
+   UI ONLY — tidak mengubah fungsi, perhitungan, ID, atau struktur.
+   ========================================================= */
+
+:root{
+  --ui-primary:#007a3d;
+  --ui-primary-2:#00a651;
+  --ui-primary-dark:#005c2e;
+  --ui-accent:#b7d433;
+  --ui-danger:#e31837;
+  --ui-bg:#f4f7f5;
+  --ui-surface:#ffffff;
+  --ui-surface-soft:#f8fbf9;
+  --ui-line:#e1e9e4;
+  --ui-line-strong:#d3dfd8;
+  --ui-text:#102018;
+  --ui-muted:#718078;
+  --ui-radius-sm:10px;
+  --ui-radius-md:14px;
+  --ui-radius-lg:18px;
+  --ui-radius-xl:22px;
+  --ui-shadow-sm:0 3px 12px rgba(15,45,28,.055);
+  --ui-shadow-md:0 10px 28px rgba(15,45,28,.075);
+  --ui-shadow-lg:0 20px 55px rgba(15,45,28,.12);
+}
+
+/* ---------- GLOBAL ---------- */
+html{scroll-behavior:smooth}
+body{
+  background:
+    radial-gradient(circle at 0% 0%,rgba(0,166,81,.065),transparent 30%),
+    radial-gradient(circle at 100% 0%,rgba(183,212,51,.055),transparent 25%),
+    linear-gradient(180deg,#f7faf8 0%,#f1f5f3 100%) !important;
+  color:var(--ui-text);
+}
+button,input,select,textarea{transition:background-color .18s ease,border-color .18s ease,box-shadow .18s ease,transform .18s ease,opacity .18s ease}
+button{ -webkit-tap-highlight-color:transparent }
+::selection{background:rgba(0,166,81,.16);color:var(--ui-text)}
+
+/* ---------- APP FRAME ---------- */
+#app.app-shell{
+  max-width:1500px!important;
+  background:transparent!important;
+  box-shadow:none!important;
+}
+#app>.p-4.flex-1.overflow-y-auto{
+  padding:20px 24px!important;
+}
+#mainPage{
+  max-width:1240px!important;
+  margin:0 auto!important;
+}
+.tab-content{
+  animation:uiSmoothIn .24s cubic-bezier(.2,.7,.2,1) both!important;
+}
+@keyframes uiSmoothIn{
+  from{opacity:.65;transform:translateY(6px)}
+  to{opacity:1;transform:translateY(0)}
+}
+
+/* ---------- HEADER ---------- */
+#mainHeader{
+  min-height:64px!important;
+  padding:10px 18px!important;
+  background:
+    linear-gradient(135deg,#052b1a 0%,#006332 48%,#007a3d 100%)!important;
+  border-bottom:1px solid rgba(183,212,51,.24)!important;
+  box-shadow:0 8px 28px rgba(2,43,24,.18)!important;
+}
+#mainHeader:before{
+  content:"";
+  position:absolute;
+  inset:0;
+  pointer-events:none;
+  background:linear-gradient(90deg,rgba(255,255,255,.035),transparent 45%,rgba(255,255,255,.025));
+}
+#mainHeader:after{
+  height:2px!important;
+  opacity:.9!important;
+}
+#mainHeader>div:first-child{
+  gap:10px!important;
+}
+#mainHeader h1{
+  font-size:14px!important;
+  font-weight:850!important;
+  letter-spacing:.035em!important;
+}
+#mainHeader .sidebar-toggle{
+  width:40px!important;
+  height:40px!important;
+  border-radius:13px!important;
+  background:rgba(255,255,255,.075)!important;
+  border-color:rgba(255,255,255,.16)!important;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.08),0 4px 12px rgba(0,0,0,.08)!important;
+}
+#mainHeader .sidebar-toggle:hover{
+  transform:translateY(-1px);
+  background:rgba(255,255,255,.14)!important;
+}
+
+/* ---------- SIDEBAR ---------- */
+#leftNav.app-sidebar{
+  width:96px!important;
+  top:64px!important;
+  padding:14px 9px!important;
+  background:rgba(255,255,255,.94)!important;
+  border-right:1px solid rgba(213,225,218,.9)!important;
+  box-shadow:12px 0 34px rgba(9,45,26,.075)!important;
+  backdrop-filter:blur(18px);
+  -webkit-backdrop-filter:blur(18px);
+}
+#leftNav .sidebar-inner{
+  gap:7px!important;
+}
+#leftNav .sidebar-label{
+  font-size:8px!important;
+  letter-spacing:.16em!important;
+  color:#98a79f!important;
+  padding:2px 0 7px!important;
+}
+#leftNav .sidebar-item{
+  min-height:64px!important;
+  padding:7px 4px!important;
+  gap:5px!important;
+  border-radius:15px!important;
+  color:#68776f!important;
+  font-size:9px!important;
+  font-weight:800!important;
+  border:1px solid transparent!important;
+}
+#leftNav .sidebar-item:hover{
+  transform:translateY(-1px)!important;
+  color:var(--ui-primary)!important;
+  background:linear-gradient(180deg,#f2faf5,#ebf7ef)!important;
+  border-color:#d2e9d9!important;
+  box-shadow:0 7px 18px rgba(0,122,61,.065)!important;
+}
+#leftNav .sidebar-item-active{
+  color:var(--ui-primary-dark)!important;
+  background:linear-gradient(180deg,#ebf8f0,#dff3e7)!important;
+  border-color:#c5e3ce!important;
+  box-shadow:inset 3px 0 0 var(--ui-primary-2),0 8px 20px rgba(0,122,61,.09)!important;
+}
+#leftNav .sidebar-icon{
+  width:30px!important;
+  height:30px!important;
+  border-radius:10px!important;
+  font-size:15px!important;
+  background:rgba(255,255,255,.95)!important;
+  border:1px solid #e7eee9!important;
+  box-shadow:0 4px 11px rgba(18,56,35,.065)!important;
+}
+#leftNav .sidebar-item-active .sidebar-icon{
+  border-color:#cce6d4!important;
+  box-shadow:0 5px 13px rgba(0,122,61,.10)!important;
+}
+#leftNav .sidebar-bottom{
+  gap:6px!important;
+  padding-top:9px!important;
+  border-top-color:#e5ece8!important;
+}
+
+/* ---------- LOGIN / REGISTER ---------- */
+#loginPage,#registerPage{
+  width:min(100%,430px)!important;
+  margin:0 auto!important;
+  padding:26px!important;
+  border:1px solid rgba(216,228,220,.9);
+  border-radius:26px!important;
+  background:rgba(255,255,255,.91)!important;
+  box-shadow:0 22px 65px rgba(15,45,28,.09)!important;
+  backdrop-filter:blur(12px);
+  -webkit-backdrop-filter:blur(12px);
+}
+#loginPage>div:first-child,#registerPage>div:first-child{
+  margin-bottom:22px!important;
+}
+#loginPage .inline-block,#registerPage .inline-block{
+  padding:12px!important;
+  border-radius:17px!important;
+  border-color:#d9ebe0!important;
+  box-shadow:0 10px 24px rgba(0,122,61,.09)!important;
+}
+#loginPage h2,#registerPage h2{
+  margin-top:3px;
+  font-size:22px!important;
+  letter-spacing:-.025em;
+}
+#loginPage label,#registerPage label{
+  color:#526159!important;
+  font-size:10px!important;
+  font-weight:800!important;
+  letter-spacing:.02em;
+}
+#loginPage input,#loginPage select,#registerPage input,#registerPage select{
+  min-height:46px!important;
+  padding:11px 13px!important;
+  border-radius:13px!important;
+  border-color:#d6e1db!important;
+  background:#fbfdfc!important;
+  box-shadow:inset 0 1px 2px rgba(15,40,24,.025)!important;
+}
+#loginPage input:focus,#loginPage select:focus,#registerPage input:focus,#registerPage select:focus{
+  border-color:#39a866!important;
+  background:#fff!important;
+  box-shadow:0 0 0 4px rgba(0,166,81,.09)!important;
+}
+#loginPage form button[type="submit"],#registerPage form button[type="submit"]{
+  min-height:47px!important;
+  border-radius:13px!important;
+  font-weight:850!important;
+  box-shadow:0 10px 22px rgba(0,122,61,.17)!important;
+}
+#loginPage form button[type="submit"]:hover,#registerPage form button[type="submit"]:hover{
+  transform:translateY(-1px);
+}
+
+/* ---------- COMMON CARDS / SECTION HEADERS ---------- */
+#mainPage .bg-white{
+  border-color:var(--ui-line)!important;
+}
+#mainPage .rounded-xl{
+  border-radius:16px!important;
+}
+#tabInput>h2,
+#tabRiwayat>div:first-child,
+#tabMonitoring>div:first-child,
+#tabOutletKontrak>div:first-child,
+#tabOutletBWS>div:first-child,
+#tabTambahCustomer>div:first-child,
+#tabPricelist>div:first-child,
+#tabPesananOutlet>div:first-child{
+  padding-bottom:13px!important;
+  margin-bottom:13px!important;
+  border-bottom-color:var(--ui-line)!important;
+}
+#mainPage .shadow-sm{
+  box-shadow:var(--ui-shadow-sm)!important;
+}
+#mainPage .shadow-md{
+  box-shadow:var(--ui-shadow-md)!important;
+}
+
+/* ---------- INPUTS / SELECTS ---------- */
+#mainPage input,#mainPage select,#mainPage textarea{
+  border-color:#d5e0da!important;
+  border-radius:12px!important;
+  background:#fff!important;
+}
+#mainPage input:focus,#mainPage select:focus,#mainPage textarea:focus{
+  outline:none!important;
+  border-color:#43a96d!important;
+  box-shadow:0 0 0 4px rgba(0,166,81,.08)!important;
+}
+.select2-container .select2-selection--single{
+  min-height:44px!important;
+  height:44px!important;
+  padding:6px 10px!important;
+  border-radius:12px!important;
+  border-color:#d5e0da!important;
+  background:#fff!important;
+  box-shadow:none!important;
+}
+.select2-container--default .select2-selection--single .select2-selection__rendered{
+  line-height:30px!important;
+  font-size:11px!important;
+}
+.select2-dropdown{
+  border-color:#d5e0da!important;
+  border-radius:12px!important;
+  box-shadow:0 15px 35px rgba(15,45,28,.12)!important;
+  overflow:hidden;
+}
+
+/* ---------- BUTTONS ---------- */
+#mainPage button:not(.sidebar-item),
+#customModal button{
+  border-radius:11px;
+}
+#mainPage button:hover,#customModal button:hover{
+  transform:translateY(-1px);
+}
+#btnKirimOrder{
+  min-height:48px!important;
+  border-radius:13px!important;
+  box-shadow:0 10px 24px rgba(227,24,55,.15)!important;
+}
+#btnKirimOrder:hover{
+  filter:brightness(1.035);
+  transform:translateY(-1px);
+}
+
+/* ---------- TABLES ---------- */
+#mainPage table{
+  border-color:var(--ui-line)!important;
+}
+#mainPage table thead th{
+  padding-top:10px!important;
+  padding-bottom:10px!important;
+  background:linear-gradient(180deg,#f0f7f2,#e8f2ec)!important;
+  color:#3d5d4b!important;
+  font-size:9px!important;
+  font-weight:850!important;
+  letter-spacing:.025em;
+}
+#mainPage table tbody td{
+  border-bottom-color:#edf2ee!important;
+}
+#mainPage table tbody tr{
+  transition:background-color .16s ease,transform .16s ease;
+}
+#mainPage table tbody tr:hover{
+  background:#f4faf6!important;
+}
+
+/* ---------- RIWAYAT ---------- */
+.riwayat-card{
+  border-color:var(--ui-line)!important;
+  border-radius:17px!important;
+  box-shadow:var(--ui-shadow-sm)!important;
+}
+.riwayat-card:hover{
+  transform:translateY(-2px)!important;
+  box-shadow:var(--ui-shadow-md)!important;
+  border-color:#cfe0d5!important;
+}
+.riwayat-card-number{
+  background:#f0f6f2!important;
+  color:#607068!important;
+}
+.riwayat-card-stat{
+  background:#f6faf7!important;
+  border:1px solid #edf2ee;
+}
+
+/* ---------- MODAL ---------- */
+.modern-modal-overlay{
+  background:rgba(4,25,15,.54)!important;
+  backdrop-filter:blur(9px)!important;
+  -webkit-backdrop-filter:blur(9px)!important;
+}
+.modern-modal-card{
+  border:1px solid rgba(216,229,220,.95)!important;
+  border-radius:21px!important;
+  box-shadow:0 28px 90px rgba(2,32,18,.25)!important;
+  animation:uiModalIn .22s cubic-bezier(.2,.75,.2,1) both!important;
+}
+@keyframes uiModalIn{
+  from{opacity:0;transform:translateY(10px) scale(.985)}
+  to{opacity:1;transform:translateY(0) scale(1)}
+}
+.modern-modal-header{
+  padding:14px 16px!important;
+  background:linear-gradient(135deg,#fff,#f5faf7)!important;
+  border-bottom-color:#e2ebe5!important;
+}
+.modern-modal-title{
+  font-size:14px!important;
+}
+.modern-modal-body{
+  padding:15px!important;
+}
+.modern-modal-footer{
+  padding:11px 15px!important;
+  background:#f8fbf9!important;
+  border-top-color:#e2ebe5!important;
+}
+.modern-modal-ok{
+  min-height:38px!important;
+  padding:8px 16px!important;
+  border-radius:11px!important;
+  box-shadow:0 8px 18px rgba(0,122,61,.16)!important;
+}
+.modern-modal-cancel{
+  min-height:38px!important;
+  border-radius:11px!important;
+}
+
+/* ---------- NOTIFICATION ---------- */
+.notification-bell-btn{
+  width:40px!important;
+  height:40px!important;
+  border-radius:13px!important;
+  background:rgba(255,255,255,.075)!important;
+  border-color:rgba(255,255,255,.15)!important;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.07)!important;
+}
+.notification-panel{
+  border-radius:17px!important;
+  border-color:#dce7e0!important;
+  box-shadow:0 22px 65px rgba(2,32,18,.20)!important;
+}
+.notification-panel-head{
+  padding:13px 14px!important;
+}
+.notification-item{
+  border-radius:11px!important;
+  border-bottom:0!important;
+  margin:2px 0!important;
+}
+.notification-item:hover{background:#f3faf6!important}
+
+/* ---------- ANNOUNCEMENT ---------- */
+#announcementPage.pengumuman-page{
+  padding:18px!important;
+  background:
+    radial-gradient(circle at 10% 0%,rgba(0,166,81,.12),transparent 32%),
+    radial-gradient(circle at 90% 100%,rgba(183,212,51,.10),transparent 32%),
+    linear-gradient(180deg,#f6faf8,#eef5f1)!important;
+}
+.pengumuman-shell{
+  min-height:calc(100dvh - 36px)!important;
+}
+.pengumuman-panel{
+  max-width:1180px;
+  border-radius:26px!important;
+  border-color:#dce8df!important;
+  box-shadow:0 25px 75px rgba(15,45,28,.13)!important;
+}
+.pengumuman-hero{
+  padding:25px 22px 20px!important;
+  background:linear-gradient(135deg,#edf9f1,#fff 56%,#f6fae9)!important;
+}
+.pengumuman-pill{
+  padding:8px 13px!important;
+  border-color:#cce6d3!important;
+  box-shadow:0 5px 14px rgba(0,122,61,.06);
+}
+#announcementContent{padding:20px!important}
+.pengumuman-card{
+  border-radius:20px!important;
+  border-color:#e0e9e3!important;
+  box-shadow:0 12px 34px rgba(15,45,28,.075)!important;
+}
+.pengumuman-carousel{
+  gap:14px!important;
+  padding:2px 2px 12px!important;
+  scroll-behavior:smooth;
+}
+.pengumuman-carousel .pengumuman-card{
+  flex-basis:min(82%,760px)!important;
+}
+.pengumuman-caption{
+  padding:16px 18px 19px!important;
+  font-size:13px!important;
+  line-height:1.7!important;
+}
+.pengumuman-footer{
+  padding:15px 18px 18px!important;
+  background:#f8fbf9!important;
+  border-top-color:#e5ede8!important;
+}
+.pengumuman-main-btn{
+  min-height:44px!important;
+  padding:10px 22px!important;
+  border-radius:12px!important;
+  box-shadow:0 9px 20px rgba(0,138,76,.18)!important;
+}
+
+/* ---------- LOADING ---------- */
+.top-loading{
+  padding:8px 13px!important;
+  border-color:#dce8e0!important;
+  box-shadow:0 8px 22px rgba(15,45,28,.12)!important;
+}
+
+/* ---------- DESKTOP ---------- */
+@media (min-width:768px){
+  #app>.p-4.flex-1.overflow-y-auto{
+    padding:24px 28px!important;
+  }
+  #mainHeader{
+    min-height:66px!important;
+    padding-left:20px!important;
+    padding-right:20px!important;
+  }
+  #leftNav.app-sidebar{
+    top:66px!important;
+  }
+  #mainPage{
+    padding-top:2px;
+  }
+  #loginPage,#registerPage{
+    margin-top:24px!important;
+  }
+}
+
+/* ---------- TABLET ---------- */
+@media (min-width:768px) and (max-width:1100px){
+  #leftNav.app-sidebar{width:90px!important}
+  #app>.p-4.flex-1.overflow-y-auto{padding:18px!important}
+  #mainPage{max-width:1120px!important}
+}
+
+/* ---------- MOBILE ---------- */
+@media (max-width:767px){
+  #mainHeader{
+    min-height:58px!important;
+    padding:8px 10px!important;
+  }
+  #mainHeader h1{
+    max-width:145px!important;
+    font-size:12px!important;
+  }
+  #mainHeader .sidebar-toggle{
+    width:36px!important;
+    height:36px!important;
+    border-radius:11px!important;
+  }
+  #mainHeader .notification-bell-btn{
+    width:35px!important;
+    height:35px!important;
+    border-radius:11px!important;
+  }
+  #leftNav.app-sidebar{
+    top:58px!important;
+    width:76px!important;
+    padding:11px 7px!important;
+    border-radius:0 18px 18px 0;
+    box-shadow:12px 0 32px rgba(9,45,26,.12)!important;
+  }
+  #leftNav .sidebar-item{
+    min-height:58px!important;
+    border-radius:14px!important;
+    font-size:8.5px!important;
+  }
+  #leftNav .sidebar-icon{
+    width:27px!important;
+    height:27px!important;
+    font-size:14px!important;
+  }
+  #app>.p-4.flex-1.overflow-y-auto{
+    padding:9px!important;
+  }
+  #mainPage{
+    max-width:none!important;
+  }
+  #mainPage .rounded-xl{
+    border-radius:14px!important;
+  }
+  #tabInput>h2,
+  #tabRiwayat>div:first-child,
+  #tabMonitoring>div:first-child,
+  #tabOutletKontrak>div:first-child,
+  #tabOutletBWS>div:first-child,
+  #tabTambahCustomer>div:first-child,
+  #tabPricelist>div:first-child,
+  #tabPesananOutlet>div:first-child{
+    margin-bottom:10px!important;
+    padding-bottom:10px!important;
+  }
+  #tabInput input,#tabInput select,#tabInput textarea,
+  #searchRiwayatInput,#searchMonitoringInput,#searchOutletKontrakInput,
+  #filterQuarterSelect,#filterPricelistUpdate{
+    min-height:43px!important;
+  }
+  #loginPage,#registerPage{
+    width:100%!important;
+    max-width:430px!important;
+    padding:21px 17px!important;
+    border-radius:21px!important;
+    box-shadow:0 17px 45px rgba(15,45,28,.085)!important;
+  }
+  #loginPage h2,#registerPage h2{font-size:20px!important}
+  .modern-modal-overlay{padding:10px!important}
+  .modern-modal-card{
+    width:calc(100vw - 20px)!important;
+    max-width:500px!important;
+    border-radius:20px!important;
+  }
+  .modern-modal-header{padding:12px 13px!important}
+  .modern-modal-body{padding:12px!important}
+  .modern-modal-footer{padding:9px 12px!important}
+  #announcementPage.pengumuman-page{padding:8px!important}
+  .pengumuman-shell{min-height:calc(100dvh - 16px)!important}
+  .pengumuman-panel{border-radius:20px!important}
+  .pengumuman-hero{padding:18px 13px 15px!important}
+  #announcementContent{padding:12px!important}
+  .pengumuman-carousel{gap:10px!important}
+  .pengumuman-carousel .pengumuman-card{flex-basis:91%!important}
+  .pengumuman-carousel .pengumuman-card img{
+    min-height:160px!important;
+    max-height:53vh!important;
+  }
+  .pengumuman-caption{font-size:12px!important;padding:13px 14px 16px!important}
+  .pengumuman-footer{padding:12px!important}
+  .pengumuman-main-btn{width:100%!important}
+}
+
+/* ---------- SMALL PHONE ---------- */
+@media (max-width:430px){
+  #mainHeader h1{max-width:105px!important}
+  #mainHeader{gap:6px!important}
+  #leftNav.app-sidebar{
+    width:72px!important;
+    padding-left:6px!important;
+    padding-right:6px!important;
+  }
+  #leftNav .sidebar-item{
+    min-height:56px!important;
+    font-size:8px!important;
+    padding-left:2px!important;
+    padding-right:2px!important;
+  }
+  #leftNav .sidebar-icon{
+    width:25px!important;
+    height:25px!important;
+    font-size:13px!important;
+  }
+  #app>.p-4.flex-1.overflow-y-auto{padding:7px!important}
+  #loginPage,#registerPage{
+    padding:18px 14px!important;
+    border-radius:19px!important;
+  }
+}
+
+/* ---------- REDUCE MOTION ---------- */
+@media (prefers-reduced-motion:reduce){
+  html{scroll-behavior:auto!important}
+  *,*::before,*::after{
+    animation-duration:.01ms!important;
+    transition-duration:.01ms!important;
+  }
+}
+</style>
 
 </body>
 </html>
