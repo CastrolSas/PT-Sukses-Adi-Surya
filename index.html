@@ -2938,7 +2938,11 @@ startAutoRefresh();
             select.empty().append('<option value="">-- Pilih Produk --</option>');
 
             const filtered = (produkDataList || []).filter(function(p) {
-                const type = String(p.typeProduk || '').trim().toUpperCase();
+                const type = String(p.typeProduk == null ? '' : p.typeProduk)
+                    .replace(/\u00A0/g, ' ')
+                    .trim()
+                    .toUpperCase()
+                    .replace(/\s+/g, '');
                 if (produkFilterType === 'MCO') return type === 'MCO-4T' || type === 'MCO-2T';
                 if (produkFilterType === 'PCO') return type === 'PCO';
                 return true;
