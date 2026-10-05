@@ -9805,8 +9805,11 @@ button{ -webkit-tap-highlight-color:transparent }
 </style>
 
 
-<style id="ui-final-user-request-v11">
-/* UI ONLY — V11 */
+<style id="ui-final-user-request-v12">
+/* UI ONLY — V12
+   DESKTOP: Produk, Qty, Satuan, Tambah Item sejajar & proporsional.
+   MOBILE TIDAK DIUBAH.
+*/
 
 /* MOBILE: tulisan menu selalu rata kiri dan tidak terpotong. */
 @media (max-width: 767px){
@@ -9830,16 +9833,21 @@ button{ -webkit-tap-highlight-color:transparent }
   }
 }
 
-/* DESKTOP: Produk kecil di kiri, lalu Qty, Satuan, Tambah Item di sampingnya.
-   Semua tetap satu baris dan setiap kolom punya ruang sendiri. */
+/* DESKTOP: Produk, Qty, Satuan, Tambah Item satu baris,
+   rapi, sejajar, dan proporsional. */
 @media (min-width: 768px){
+
   #inputStep2 .ui-product-entry{
     display:grid !important;
-    grid-template-columns:220px 62px 108px 112px !important;
+    grid-template-columns:
+      minmax(240px, 2fr)
+      minmax(65px, .6fr)
+      minmax(115px, 1fr)
+      minmax(112px, 1fr) !important;
     align-items:end !important;
-    column-gap:8px !important;
+    column-gap:10px !important;
     row-gap:0 !important;
-    width:max-content !important;
+    width:100% !important;
     max-width:100% !important;
     box-sizing:border-box !important;
     overflow:visible !important;
@@ -9848,11 +9856,31 @@ button{ -webkit-tap-highlight-color:transparent }
   #inputStep2 .ui-product-entry > div:first-child{
     grid-column:1 !important;
     grid-row:1 !important;
-    width:220px !important;
-    min-width:220px !important;
-    max-width:220px !important;
+    width:100% !important;
+    min-width:0 !important;
+    max-width:none !important;
     box-sizing:border-box !important;
     overflow:visible !important;
+  }
+
+  #inputStep2 .ui-product-entry .ui-product-filters{
+    width:100% !important;
+    max-width:none !important;
+    display:flex !important;
+    gap:6px !important;
+    margin-bottom:6px !important;
+  }
+
+  #inputStep2 .ui-product-entry .ui-product-filters button{
+    flex:0 0 auto !important;
+    width:auto !important;
+  }
+
+  #inputStep2 .ui-product-entry #addItemProduk{
+    width:100% !important;
+    min-width:0 !important;
+    max-width:none !important;
+    box-sizing:border-box !important;
   }
 
   #inputStep2 .ui-product-entry > .ui-item-controls{
@@ -9862,43 +9890,43 @@ button{ -webkit-tap-highlight-color:transparent }
   #inputStep2 .ui-product-entry .ui-qty-control{
     grid-column:2 !important;
     grid-row:1 !important;
-    width:62px !important;
-    min-width:62px !important;
-    max-width:62px !important;
+    width:100% !important;
+    min-width:0 !important;
+    max-width:none !important;
     box-sizing:border-box !important;
+  }
+
+  #inputStep2 .ui-product-entry .ui-qty-control #addItemQty{
+    width:100% !important;
+    min-width:0 !important;
+    box-sizing:border-box !important;
+    text-align:center !important;
   }
 
   #inputStep2 .ui-product-entry .ui-satuan-control{
     grid-column:3 !important;
     grid-row:1 !important;
-    width:108px !important;
-    min-width:108px !important;
-    max-width:108px !important;
+    width:100% !important;
+    min-width:0 !important;
+    max-width:none !important;
+    box-sizing:border-box !important;
+  }
+
+  #inputStep2 .ui-product-entry .ui-satuan-control > div{
+    width:100% !important;
     box-sizing:border-box !important;
   }
 
   #inputStep2 .ui-product-entry > .ui-add-item-btn{
     grid-column:4 !important;
     grid-row:1 !important;
-    width:112px !important;
-    min-width:112px !important;
-    max-width:112px !important;
+    width:100% !important;
+    min-width:0 !important;
+    max-width:none !important;
     margin:0 !important;
     box-sizing:border-box !important;
     align-self:end !important;
-  }
-
-  #inputStep2 .ui-product-entry #addItemProduk{
-    width:220px !important;
-    min-width:220px !important;
-    max-width:220px !important;
-    box-sizing:border-box !important;
-  }
-
-  #inputStep2 .ui-product-entry .ui-product-filters{
-    width:220px !important;
-    max-width:220px !important;
-    overflow:visible !important;
+    white-space:nowrap !important;
   }
 }
 </style>
