@@ -9419,6 +9419,75 @@ button{ -webkit-tap-highlight-color:transparent }
   }
 }
 </style>
+
+<style id="ui-product-layout-v13">
+/* V13: container utama tetap full-width; hanya kontrol di dalam yang compact */
+@media (min-width: 768px) {
+  /* Jangan biarkan override sebelumnya menyempitkan wrapper pemilihan produk */
+  #inputStep2,
+  #inputStep2 .product-selection-container,
+  #inputStep2 .produk-selection-container,
+  #inputStep2 .product-picker-container,
+  #inputStep2 .product-picker,
+  #inputStep2 .produk-picker {
+    width: 100% !important;
+    max-width: none !important;
+    min-width: 0 !important;
+    box-sizing: border-box !important;
+  }
+
+  /* Baris kontrol utama tetap memenuhi lebar container */
+  #inputStep2 .product-selection-row,
+  #inputStep2 .produk-selection-row,
+  #inputStep2 .product-controls-row {
+    width: 100% !important;
+    max-width: none !important;
+    display: flex !important;
+    align-items: center !important;
+    gap: 8px !important;
+    box-sizing: border-box !important;
+  }
+
+  /* Pilih Produk mengambil ruang yang tersedia */
+  #inputStep2 .product-selection-row > :first-child,
+  #inputStep2 .produk-selection-row > :first-child,
+  #inputStep2 .product-controls-row > :first-child {
+    flex: 1 1 auto !important;
+    width: auto !important;
+    min-width: 0 !important;
+    max-width: none !important;
+  }
+
+  /* Hanya kotak di dalam yang compact */
+  #inputStep2 input[id*="qty" i],
+  #inputStep2 select[id*="satuan" i],
+  #inputStep2 select[id*="unit" i],
+  #inputStep2 button[id*="tambah" i] {
+    box-sizing: border-box !important;
+  }
+
+  #inputStep2 input[id*="qty" i] {
+    width: 62px !important;
+    min-width: 62px !important;
+    max-width: 62px !important;
+  }
+
+  #inputStep2 select[id*="satuan" i],
+  #inputStep2 select[id*="unit" i] {
+    width: 82px !important;
+    min-width: 82px !important;
+    max-width: 82px !important;
+  }
+
+  #inputStep2 button[id*="tambah" i] {
+    width: auto !important;
+    min-width: 92px !important;
+    max-width: 120px !important;
+    white-space: nowrap !important;
+  }
+}
+</style>
+
 </body>
 </html>
 <style id="mobile-monitoring-pricelist-bottom-fix">
