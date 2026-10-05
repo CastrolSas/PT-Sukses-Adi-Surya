@@ -631,9 +631,9 @@
 </style>
 
 <style id="admin-input-visibility">
-/* ADMIN: menu dan halaman Input Order tetap ditampilkan agar Admin dapat input order dengan filter Sales. */
-body.admin-mode #navInput,
-body.admin-mode #tabInput {
+/* ADMIN: menu Input Order tetap ditampilkan agar Admin dapat input order dengan filter Sales.
+   Tab content tetap mengikuti mekanisme switchTab() agar tab lain dapat tampil normal. */
+body.admin-mode #navInput {
     display: flex !important;
     visibility: visible !important;
 }
@@ -2814,7 +2814,8 @@ html{scroll-behavior:auto!important}
             const navOutletBWS = document.getElementById('navOutletBWS');
             const tabOutletBWS = document.getElementById('tabOutletBWS');
             if (navInput) navInput.classList.remove('hidden');
-            if (tabInput) tabInput.classList.remove('hidden');
+            // Jangan memaksa tabInput terlihat. switchTab() yang mengatur tab content.
+            // Ini menjaga tab lain tetap bisa tampil saat Admin berpindah menu.
             const adminInputSalesFilterWrap = document.getElementById('adminInputSalesFilterWrap');
             if (adminInputSalesFilterWrap) adminInputSalesFilterWrap.style.display = isAdminLogin ? 'block' : 'none';
             if (navOutletBWS) navOutletBWS.classList.toggle('hidden', !isAdminLogin);
