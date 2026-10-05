@@ -5175,7 +5175,7 @@ startAutoRefresh();
             const yearBadge = document.getElementById('outletKontrakYear');
             if (!tbody) return;
             const hasCached = Array.isArray(globalOutletKontrakData) && globalOutletKontrakData.length > 0;
-            if (!forceReload && hasCached) { renderOutletKontrakTable(globalOutletKontrakData); return; }
+            if (!forceReload && hasCached) { filterOutletKontrak(); return; }
             if (kontrakLoading) return;
             kontrakLoading = true;
             if (forceReload && hasCached) renderOutletKontrakTable(globalOutletKontrakData);
