@@ -3168,21 +3168,26 @@ body{background:
 }
 </style>
 
-<style id="standalone-product-boxes-final">
+<style id="product-layout-no-overlap-final">
 /* =========================================================
-   FINAL — KOTAK PRODUK BERDIRI SENDIRI
-   DESKTOP ONLY
-   - Kontainer/card luar Produk dihilangkan secara visual
-   - Kotak Pilih Produk berdiri sendiri
-   - Tombol SEMUA/MCO/PCO berdiri sendiri
-   - Qty, Satuan, +Tambah Item tetap sebagai kotak masing-masing
-   - JAVASCRIPT TIDAK DIUBAH
-   - MOBILE TIDAK DIUBAH
+   FINAL PRODUCT LAYOUT — NO OVERLAP
+   BASIS: ORIGINAL INDEX
+   JAVASCRIPT: LOCKED / TIDAK DIUBAH
+   MOBILE: TIDAK DIUBAH
    ========================================================= */
+
 @media (min-width: 768px) {
 
-  /* Hilangkan card/kontainer luar .ui-product-entry */
+  /* 1) Hilangkan kartu/kontainer luar secara VISUAL.
+        Isinya tetap ada dan fungsi JS tetap sama. */
   #inputStep2 .ui-product-entry {
+    display: grid !important;
+    grid-template-columns: 78px 145px 130px minmax(0, 1fr) !important;
+    grid-template-rows: auto auto !important;
+    column-gap: 8px !important;
+    row-gap: 8px !important;
+    align-items: end !important;
+
     background: transparent !important;
     border: 0 !important;
     box-shadow: none !important;
@@ -3190,61 +3195,133 @@ body{background:
     padding: 0 !important;
   }
 
-  /* Area Produk tidak ikut membuat kotak luar */
+  /* 2) Area Produk = baris pertama penuh */
   #inputStep2 .ui-product-entry > div:first-child {
-    background: transparent !important;
-    border: 0 !important;
-    box-shadow: none !important;
+    grid-column: 1 / -1 !important;
+    grid-row: 1 !important;
+    width: 100% !important;
+    min-width: 0 !important;
+    margin: 0 !important;
   }
 
-  /* Tombol filter berdiri sendiri */
+  /* 3) Tombol SEMUA / MCO / PCO berdiri sendiri */
   #inputStep2 .ui-product-entry .ui-product-filters {
     display: flex !important;
+    width: auto !important;
+    justify-content: flex-start !important;
     gap: 7px !important;
-    margin-bottom: 7px !important;
+    margin: 0 0 7px 0 !important;
   }
 
   #inputStep2 .ui-product-entry .ui-product-filters button {
     flex: 0 0 auto !important;
     width: auto !important;
-    min-width: 52px !important;
+    min-width: 58px !important;
+    height: 34px !important;
+    padding: 0 12px !important;
     border-radius: 9px !important;
   }
 
-  /* Pilih Produk = satu kotak mandiri, tidak mengikuti lebar card luar */
+  /* 4) IMPORTANT:
+        Jangan memberi width/position kepada SELECT ASLI.
+        Select2 memakai class select2-hidden-accessible.
+        Ini mencegah kotak native kecil muncul dan menumpuk. */
+  #inputStep2 #addItemProduk.select2-hidden-accessible {
+    position: absolute !important;
+    width: 1px !important;
+    min-width: 1px !important;
+    max-width: 1px !important;
+    height: 1px !important;
+    min-height: 1px !important;
+    max-height: 1px !important;
+    padding: 0 !important;
+    margin: -1px !important;
+    overflow: hidden !important;
+    clip: rect(0, 0, 0, 0) !important;
+    clip-path: inset(50%) !important;
+    white-space: nowrap !important;
+    border: 0 !important;
+  }
+
+  /* 5) Yang diatur lebarnya hanya KOTAK SELECT2 yang terlihat. */
   #inputStep2 .ui-product-entry #addItemProduk + .select2-container {
+    display: block !important;
     width: 72% !important;
     max-width: 72% !important;
-    display: block !important;
+    min-width: 0 !important;
+    margin: 0 !important;
+    box-sizing: border-box !important;
   }
 
   #inputStep2 .ui-product-entry #addItemProduk + .select2-container .select2-selection--single {
     width: 100% !important;
+    height: 38px !important;
+    min-height: 38px !important;
     box-sizing: border-box !important;
     border-radius: 10px !important;
   }
 
-  /* Jika select asli masih terlihat sebelum Select2 selesai, ukurannya sama */
-  #inputStep2 .ui-product-entry #addItemProduk {
-    width: 72% !important;
-    max-width: 72% !important;
+  /* 6) Wrapper Qty + Satuan dilepas dari grid internal,
+        supaya masing-masing kontrol menjadi kotak/grid item sendiri. */
+  #inputStep2 .ui-product-entry > .ui-item-controls {
+    display: contents !important;
+  }
+
+  /* 7) Qty = kotak sendiri, kiri bawah */
+  #inputStep2 .ui-product-entry .ui-qty-control {
+    grid-column: 1 !important;
+    grid-row: 2 !important;
+    width: 78px !important;
+    min-width: 78px !important;
+    max-width: 78px !important;
+    margin: 0 !important;
     box-sizing: border-box !important;
   }
 
-  /* Kontrol bawah tetap berupa kotak-kotak mandiri */
-  #inputStep2 .ui-product-entry .ui-qty-control,
+  #inputStep2 .ui-product-entry #addItemQty {
+    width: 78px !important;
+    min-width: 78px !important;
+    max-width: 78px !important;
+    height: 38px !important;
+    min-height: 38px !important;
+    box-sizing: border-box !important;
+    text-align: center !important;
+  }
+
+  /* 8) Satuan = kotak sendiri, tepat di sebelah Qty */
   #inputStep2 .ui-product-entry .ui-satuan-control {
-    background: transparent !important;
-    border: 0 !important;
-    box-shadow: none !important;
+    grid-column: 2 !important;
+    grid-row: 2 !important;
+    width: 145px !important;
+    min-width: 145px !important;
+    max-width: 145px !important;
+    margin: 0 !important;
+    box-sizing: border-box !important;
   }
 
   #inputStep2 .ui-product-entry .ui-satuan-control > div {
+    width: 145px !important;
+    min-width: 145px !important;
+    max-width: 145px !important;
+    height: 38px !important;
+    min-height: 38px !important;
+    box-sizing: border-box !important;
     border-radius: 10px !important;
   }
 
-  #inputStep2 .ui-product-entry > button.ui-add-item-btn {
-    border-radius: 10px !important;
+  /* 9) + Tambah Item = kotak sendiri, tepat di sebelah Satuan */
+  #inputStep2 .ui-product-entry > .ui-add-item-btn {
+    grid-column: 3 !important;
+    grid-row: 2 !important;
+    width: 130px !important;
+    min-width: 130px !important;
+    max-width: 130px !important;
+    height: 38px !important;
+    min-height: 38px !important;
+    margin: 0 !important;
+    box-sizing: border-box !important;
+    align-self: end !important;
+    white-space: nowrap !important;
   }
 }
 </style>
