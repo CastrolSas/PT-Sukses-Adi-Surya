@@ -2491,6 +2491,78 @@ body{font-family:Inter,ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-ser
   #mainHeader .pengumuman-marquee-track{max-width:none!important;}
 }
 </style>
+
+<style id="final-layout-precision-fix">
+/* =========================================================
+   FINAL LAYOUT PRECISION FIX
+   CSS ONLY — tidak mengubah HTML/JavaScript/function.
+   ========================================================= */
+
+/* 1) DESKTOP HEADER: marquee mendapat area sendiri.
+      Tombol notifikasi + refresh selalu berada di kanan dan
+      tidak pernah tertimpa teks berjalan. */
+@media (min-width:768px){
+  #mainHeader .pengumuman-main-header-marquee{
+    flex:1 1 auto!important;
+    min-width:0!important;
+    width:auto!important;
+    max-width:none!important;
+    margin-left:10px!important;
+    margin-right:118px!important;
+    overflow:hidden!important;
+    box-sizing:border-box!important;
+  }
+  #mainHeader .pengumuman-marquee-track{
+    max-width:none!important;
+    min-width:max-content!important;
+  }
+  #mainHeader .notification-header-wrap{
+    right:60px!important;
+  }
+  #mainHeader .header-refresh-wrap{
+    right:14px!important;
+  }
+}
+
+/* 2) MOBILE NOTIFICATION: panel mengikuti viewport, bukan posisi
+      wrapper, sehingga selalu presisi di layar. */
+@media (max-width:767px){
+  #mainHeader .notification-panel{
+    position:fixed!important;
+    top:66px!important;
+    left:10px!important;
+    right:10px!important;
+    width:auto!important;
+    max-width:none!important;
+    max-height:calc(100dvh - 78px)!important;
+    border-radius:16px!important;
+    z-index:1200!important;
+  }
+}
+
+/* 3) LOGIN DESKTOP: center terhadap viewport/content area ketika
+      login sedang tampil. Tidak mempengaruhi halaman utama setelah login. */
+@media (min-width:768px){
+  #app > .p-4.flex-1.overflow-y-auto:has(#loginPage:not(.hidden)),
+  #app > .p-4.flex-1.overflow-y-auto:has(#registerPage:not(.hidden)){
+    display:flex!important;
+    flex-direction:column!important;
+    align-items:center!important;
+    justify-content:center!important;
+    min-height:100dvh!important;
+    box-sizing:border-box!important;
+    padding:28px!important;
+  }
+  #app > .p-4.flex-1.overflow-y-auto:has(#loginPage:not(.hidden)) #loginPage,
+  #app > .p-4.flex-1.overflow-y-auto:has(#registerPage:not(.hidden)) #registerPage{
+    width:min(100%,430px)!important;
+    max-width:430px!important;
+    margin:0!important;
+    flex:0 0 auto!important;
+  }
+}
+</style>
+
 </head>
 <body class="bg-slate-50 font-sans">
 
