@@ -2440,6 +2440,17 @@ body{font-family:Inter,ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-ser
 @media(max-width:640px){.header-refresh-wrap{gap:4px}.global-refresh-btn{width:32px;height:32px}.global-last-sync{font-size:8px;min-width:64px}.global-refresh-btn svg{width:17px;height:17px;}}
 </style>
 
+<style id="processing-overlay-disabled">
+/* Proses tidak lagi menampilkan overlay "Memproses...".
+   Indicator proses menggunakan icon refresh di header. */
+#loadingOverlay {
+    display: none !important;
+    visibility: hidden !important;
+    opacity: 0 !important;
+    pointer-events: none !important;
+}
+</style>
+
 <style id="mobile-header-icon-size-only">
 /* Hanya mengecilkan icon header pada mobile; layout/fungsi lain tidak diubah. */
 @media (max-width: 767px){
@@ -3795,11 +3806,26 @@ body{background:
             }
         }
 
+        let processingIndicatorCount = 0;
+
         function showLoading(show) {
+            // Tidak lagi menampilkan overlay "Memproses...".
+            // Selama proses berjalan, icon refresh di header berputar.
+            if (show) {
+                processingIndicatorCount++;
+            } else {
+                processingIndicatorCount = Math.max(0, processingIndicatorCount - 1);
+            }
+
             const el = document.getElementById('loadingOverlay');
-            if (!el) return;
-            el.style.display = show ? 'flex' : 'none';
-            el.setAttribute('aria-hidden', show ? 'false' : 'true');
+            if (el) {
+                el.style.display = 'none';
+                el.setAttribute('aria-hidden', 'true');
+            }
+
+            if (typeof setGlobalRefreshState === 'function') {
+                setGlobalRefreshState(processingIndicatorCount > 0 || globalRefreshRunning === true);
+            }
         }
 
         let globalRefreshRunning = false;
