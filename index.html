@@ -10916,3 +10916,246 @@ function renderPencapaianCards(data) {
   }
 }
 </style>
+
+
+<!-- =========================================================
+     STEP 2 MOBILE PRODUCT LAYOUT FINAL OVERRIDE
+     UI ONLY — tidak mengubah HTML/JS/function yang sudah ada.
+     Urutan mobile:
+     SEMUA / MCO / PCO
+     Pilih Produk
+     Qty / Satuan / + Tambah Item
+     ========================================================= -->
+<style id="step2-mobile-product-layout-final">
+@media (max-width: 767px){
+  /* Kontainer produk: satu layout mobile yang pasti, tanpa overlap. */
+  #inputStep2 .ui-product-entry{
+    display:grid!important;
+    grid-template-columns:repeat(3,minmax(0,1fr))!important;
+    grid-template-rows:auto auto auto!important;
+    column-gap:7px!important;
+    row-gap:9px!important;
+    width:100%!important;
+    max-width:100%!important;
+    min-width:0!important;
+    margin:0!important;
+    padding:10px!important;
+    box-sizing:border-box!important;
+    overflow:visible!important;
+    align-items:end!important;
+  }
+
+  /* BARIS 1 — SEMUA / MCO / PCO */
+  #inputStep2 .ui-product-entry .ui-product-head{
+    grid-column:1 / -1!important;
+    grid-row:1!important;
+    width:100%!important;
+    min-width:0!important;
+    margin:0!important;
+    padding:0!important;
+    box-sizing:border-box!important;
+  }
+  #inputStep2 .ui-product-entry .ui-product-head > label{
+    display:block!important;
+    margin:0 0 5px!important;
+    font-size:9px!important;
+    line-height:1.2!important;
+  }
+  #inputStep2 .ui-product-entry .ui-product-filters{
+    display:grid!important;
+    grid-template-columns:repeat(3,minmax(0,1fr))!important;
+    gap:6px!important;
+    width:100%!important;
+    margin:0!important;
+    padding:0!important;
+    box-sizing:border-box!important;
+  }
+  #inputStep2 .ui-product-entry .ui-product-filters button,
+  #inputStep2 #btnFilterProdukAll,
+  #inputStep2 #btnFilterProdukMCO,
+  #inputStep2 #btnFilterProdukPCO{
+    display:flex!important;
+    align-items:center!important;
+    justify-content:center!important;
+    width:100%!important;
+    min-width:0!important;
+    max-width:none!important;
+    height:32px!important;
+    min-height:32px!important;
+    max-height:32px!important;
+    margin:0!important;
+    padding:0 6px!important;
+    box-sizing:border-box!important;
+    border-radius:8px!important;
+    font-size:9px!important;
+    line-height:1!important;
+    white-space:nowrap!important;
+  }
+
+  /* BARIS 2 — PILIH PRODUK full width. */
+  #inputStep2 .ui-product-entry .ui-product-select-wrap{
+    grid-column:1 / -1!important;
+    grid-row:2!important;
+    width:100%!important;
+    min-width:0!important;
+    max-width:none!important;
+    margin:0!important;
+    padding:0!important;
+    box-sizing:border-box!important;
+  }
+  #inputStep2 .ui-product-entry #addItemProduk,
+  #inputStep2 .ui-product-entry .ui-product-select-wrap > .select2-container{
+    display:block!important;
+    width:100%!important;
+    min-width:0!important;
+    max-width:none!important;
+    box-sizing:border-box!important;
+  }
+  #inputStep2 .ui-product-entry #addItemProduk{
+    height:40px!important;
+    min-height:40px!important;
+    max-height:40px!important;
+    margin:0!important;
+    padding:0 10px!important;
+    border-radius:10px!important;
+  }
+  #inputStep2 .ui-product-entry .ui-product-select-wrap .select2-container .select2-selection--single{
+    width:100%!important;
+    height:40px!important;
+    min-height:40px!important;
+    box-sizing:border-box!important;
+    border-radius:10px!important;
+  }
+
+  /* Hilangkan layout lama yang memaksa Qty berada di area Pilih Produk. */
+  #inputStep2 .ui-product-entry > .ui-item-controls,
+  #inputStep2 .ui-product-entry > .ui-bottom-product-controls{
+    display:contents!important;
+  }
+
+  /* BARIS 3 — Qty / Satuan / Tambah Item, masing-masing punya kolom sendiri. */
+  #inputStep2 .ui-product-entry .ui-qty-control{
+    grid-column:1!important;
+    grid-row:3!important;
+    width:100%!important;
+    min-width:0!important;
+    max-width:none!important;
+    margin:0!important;
+    padding:0!important;
+    box-sizing:border-box!important;
+  }
+  #inputStep2 .ui-product-entry .ui-qty-control label,
+  #inputStep2 .ui-product-entry .ui-satuan-control label{
+    display:block!important;
+    height:13px!important;
+    min-height:13px!important;
+    margin:0 0 4px!important;
+    padding:0!important;
+    font-size:9px!important;
+    line-height:13px!important;
+    white-space:nowrap!important;
+  }
+  #inputStep2 .ui-product-entry #addItemQty{
+    display:block!important;
+    width:100%!important;
+    min-width:0!important;
+    max-width:none!important;
+    height:40px!important;
+    min-height:40px!important;
+    max-height:40px!important;
+    margin:0!important;
+    padding:5px 7px!important;
+    box-sizing:border-box!important;
+    border-radius:10px!important;
+    text-align:center!important;
+  }
+
+  #inputStep2 .ui-product-entry .ui-satuan-control{
+    grid-column:2!important;
+    grid-row:3!important;
+    width:100%!important;
+    min-width:0!important;
+    max-width:none!important;
+    margin:0!important;
+    padding:0!important;
+    box-sizing:border-box!important;
+  }
+  #inputStep2 .ui-product-entry .ui-satuan-control > div{
+    display:flex!important;
+    width:100%!important;
+    min-width:0!important;
+    max-width:none!important;
+    height:40px!important;
+    min-height:40px!important;
+    max-height:40px!important;
+    margin:0!important;
+    box-sizing:border-box!important;
+    border-radius:10px!important;
+  }
+  #inputStep2 .ui-product-entry .ui-satuan-control button{
+    flex:1 1 50%!important;
+    width:50%!important;
+    min-width:0!important;
+    max-width:50%!important;
+    height:40px!important;
+    min-height:40px!important;
+    padding:0 4px!important;
+    font-size:9px!important;
+    box-sizing:border-box!important;
+  }
+
+  #inputStep2 .ui-product-entry .ui-add-item-btn{
+    grid-column:3!important;
+    grid-row:3!important;
+    display:flex!important;
+    align-items:center!important;
+    justify-content:center!important;
+    width:100%!important;
+    min-width:0!important;
+    max-width:none!important;
+    height:40px!important;
+    min-height:40px!important;
+    max-height:40px!important;
+    margin:0!important;
+    padding:0 5px!important;
+    box-sizing:border-box!important;
+    border-radius:10px!important;
+    font-size:9px!important;
+    line-height:1!important;
+    white-space:nowrap!important;
+  }
+}
+
+/* HP sangat kecil: tetap 3 kolom, hanya dipadatkan sedikit agar tidak bertumpuk. */
+@media (max-width:360px){
+  #inputStep2 .ui-product-entry{
+    column-gap:5px!important;
+    row-gap:8px!important;
+    padding:8px!important;
+  }
+  #inputStep2 .ui-product-entry .ui-product-filters{gap:5px!important;}
+  #inputStep2 .ui-product-entry .ui-product-filters button{
+    height:30px!important;
+    min-height:30px!important;
+    max-height:30px!important;
+    font-size:8px!important;
+  }
+  #inputStep2 .ui-product-entry #addItemProduk,
+  #inputStep2 .ui-product-entry .ui-product-select-wrap .select2-container .select2-selection--single{
+    height:38px!important;
+    min-height:38px!important;
+  }
+  #inputStep2 .ui-product-entry #addItemQty,
+  #inputStep2 .ui-product-entry .ui-satuan-control > div,
+  #inputStep2 .ui-product-entry .ui-satuan-control button,
+  #inputStep2 .ui-product-entry .ui-add-item-btn{
+    height:38px!important;
+    min-height:38px!important;
+    max-height:38px!important;
+  }
+  #inputStep2 .ui-product-entry .ui-qty-control label,
+  #inputStep2 .ui-product-entry .ui-satuan-control label{
+    font-size:8px!important;
+  }
+}
+</style>
