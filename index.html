@@ -12331,3 +12331,153 @@ function renderPencapaianCards(data) {
   }
 }
 </style>
+
+
+<!-- FINAL STEP 2 COMPACT SIZE -->
+<style id="step2-product-compact-final">
+/* STEP 2 DESKTOP — layout mengikuti contoh, hanya ukuran diperkecil. */
+@media (min-width: 768px) {
+
+  #inputStep2 .ui-product-entry {
+    display: grid !important;
+    grid-template-columns: minmax(0, 1fr) !important;
+    grid-template-rows: auto auto auto auto auto !important;
+    gap: 6px !important;
+    padding: 10px !important;
+    box-sizing: border-box !important;
+  }
+
+  /* Produk */
+  #inputStep2 .ui-product-entry > div:first-child {
+    display: contents !important;
+  }
+
+  #inputStep2 .ui-product-entry > div:first-child > label {
+    grid-column: 1 !important;
+    grid-row: 1 !important;
+    margin: 0 0 1px !important;
+    font-size: 9px !important;
+    line-height: 13px !important;
+  }
+
+  /* SEMUA / MCO / PCO */
+  #inputStep2 .ui-product-entry .ui-product-filters {
+    grid-column: 1 !important;
+    grid-row: 2 !important;
+    display: flex !important;
+    width: 100% !important;
+    gap: 6px !important;
+    margin: 0 !important;
+  }
+
+  #inputStep2 .ui-product-entry .ui-product-filters button {
+    flex: 1 1 0 !important;
+    min-width: 0 !important;
+    width: auto !important;
+    height: 30px !important;
+    min-height: 30px !important;
+    padding: 0 7px !important;
+    font-size: 9px !important;
+    border-radius: 8px !important;
+  }
+
+  /* Pilihan produk */
+  #inputStep2 .ui-product-entry > div:first-child > #addItemProduk,
+  #inputStep2 .ui-product-entry > div:first-child > .select2-container {
+    grid-column: 1 !important;
+    grid-row: 3 !important;
+    width: 100% !important;
+    min-width: 0 !important;
+    max-width: 100% !important;
+    box-sizing: border-box !important;
+  }
+
+  #inputStep2 .ui-product-entry > div:first-child > #addItemProduk {
+    height: 36px !important;
+    min-height: 36px !important;
+    padding: 6px 9px !important;
+    font-size: 10px !important;
+  }
+
+  /* Qty + Satuan dalam satu baris kecil */
+  #inputStep2 .ui-product-entry > .ui-item-controls {
+    display: grid !important;
+    grid-template-columns: 70px 115px !important;
+    column-gap: 7px !important;
+    grid-column: 1 !important;
+    grid-row: 4 !important;
+    width: 192px !important;
+    min-width: 192px !important;
+    max-width: 192px !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    box-sizing: border-box !important;
+    align-items: end !important;
+  }
+
+  #inputStep2 .ui-product-entry .ui-qty-control {
+    width: 70px !important;
+    min-width: 70px !important;
+    max-width: 70px !important;
+    margin: 0 !important;
+  }
+
+  #inputStep2 .ui-product-entry .ui-satuan-control {
+    width: 115px !important;
+    min-width: 115px !important;
+    max-width: 115px !important;
+    margin: 0 !important;
+  }
+
+  #inputStep2 .ui-product-entry .ui-qty-control label,
+  #inputStep2 .ui-product-entry .ui-satuan-control label {
+    font-size: 9px !important;
+    line-height: 12px !important;
+    height: 12px !important;
+    margin: 0 0 3px !important;
+  }
+
+  #inputStep2 .ui-product-entry #addItemQty {
+    width: 70px !important;
+    height: 32px !important;
+    min-height: 32px !important;
+    max-height: 32px !important;
+    padding: 5px 6px !important;
+    font-size: 10px !important;
+    border-radius: 8px !important;
+    box-sizing: border-box !important;
+  }
+
+  #inputStep2 .ui-product-entry .ui-satuan-control > div {
+    width: 115px !important;
+    height: 32px !important;
+    min-height: 32px !important;
+    max-height: 32px !important;
+    border-radius: 8px !important;
+    box-sizing: border-box !important;
+  }
+
+  #inputStep2 .ui-product-entry .ui-satuan-control button {
+    font-size: 9px !important;
+    padding: 0 5px !important;
+  }
+
+  /* + Tambah Item kecil dan tidak menumpuk */
+  #inputStep2 .ui-product-entry > button.ui-add-item-btn {
+    grid-column: 1 !important;
+    grid-row: 5 !important;
+    width: 150px !important;
+    min-width: 150px !important;
+    max-width: 150px !important;
+    height: 32px !important;
+    min-height: 32px !important;
+    max-height: 32px !important;
+    margin: 0 !important;
+    padding: 0 8px !important;
+    font-size: 9px !important;
+    border-radius: 8px !important;
+    box-sizing: border-box !important;
+    white-space: nowrap !important;
+  }
+}
+</style>
