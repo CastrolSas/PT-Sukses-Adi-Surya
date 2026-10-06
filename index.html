@@ -3168,24 +3168,30 @@ body{background:
 }
 </style>
 
-<style id="pilih-produk-width-final">
+<style id="final-pilih-produk-width-fix">
 /* =========================================================
-   PILIH PRODUK — LEBIH PENDEK KE SAMPING
-   DESKTOP ONLY
-   JAVASCRIPT TIDAK DIUBAH
+   FINAL FIX: LEBAR "PILIH PRODUK"
+   - Desktop saja
+   - Yang diubah adalah container Select2 yang terlihat
+   - JavaScript tetap 100% original
+   - Mobile tidak diubah
    ========================================================= */
 @media (min-width: 768px) {
-  #inputStep2 #addItemProduk,
-  #inputStep2 .select2-container {
+
+  /* Select2 yang benar-benar tampil di layar */
+  #inputStep2 .ui-product-entry #addItemProduk + .select2-container {
     width: 72% !important;
     max-width: 72% !important;
+    box-sizing: border-box !important;
   }
 
-  #inputStep2 .select2-container .select2-selection--single {
+  #inputStep2 .ui-product-entry #addItemProduk + .select2-container .select2-selection--single {
     width: 100% !important;
     box-sizing: border-box !important;
   }
+
 }
+</style>
 
 </head>
 <body class="bg-slate-50 font-sans">
