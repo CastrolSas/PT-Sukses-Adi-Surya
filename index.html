@@ -3003,6 +3003,110 @@ body{background:
   #tabOutletKontrak .kontrak-sales-wrap,#tabOutletKontrak .kontrak-search-wrap{width:100% !important;}
 }
 </style>
+
+<style id="ui-product-controls-size-match-v6">
+/* =========================================================
+   V6 — DESKTOP ONLY
+   Qty, Satuan, +Tambah Item dibuat compact dan seragam
+   dengan tombol SEMUA / MCO / PCO.
+   MOBILE TIDAK DIUBAH.
+   ========================================================= */
+@media (min-width:768px){
+  #inputStep2 .ui-product-entry{
+    grid-template-columns:minmax(0,1fr) 72px 128px 112px !important;
+    grid-template-rows:auto auto !important;
+    column-gap:10px !important;
+    row-gap:8px !important;
+    align-items:end !important;
+    overflow:visible !important;
+  }
+
+  /* Produk tetap penuh di baris pertama */
+  #inputStep2 .ui-product-entry > div:first-child{
+    grid-column:1 / -1 !important;
+    grid-row:1 !important;
+  }
+
+  /* Baris kontrol kedua: semua tinggi sama dengan tombol filter produk */
+  #inputStep2 .ui-product-entry .ui-qty-control,
+  #inputStep2 .ui-product-entry .ui-satuan-control,
+  #inputStep2 .ui-product-entry > .ui-add-item-btn{
+    grid-row:2 !important;
+    align-self:end !important;
+    box-sizing:border-box !important;
+  }
+
+  #inputStep2 .ui-product-entry .ui-qty-control{
+    grid-column:2 !important;
+    width:72px !important;
+    min-width:72px !important;
+    max-width:72px !important;
+  }
+
+  #inputStep2 .ui-product-entry .ui-satuan-control{
+    grid-column:3 !important;
+    width:128px !important;
+    min-width:128px !important;
+    max-width:128px !important;
+  }
+
+  #inputStep2 .ui-product-entry .ui-qty-control #addItemQty,
+  #inputStep2 .ui-product-entry .ui-satuan-control > div,
+  #inputStep2 .ui-product-entry > .ui-add-item-btn{
+    height:34px !important;
+    min-height:34px !important;
+    max-height:34px !important;
+    box-sizing:border-box !important;
+    border-radius:9px !important;
+  }
+
+  #inputStep2 .ui-product-entry .ui-qty-control #addItemQty{
+    width:72px !important;
+    min-width:72px !important;
+    max-width:72px !important;
+    padding:6px 8px !important;
+    text-align:center !important;
+    font-size:10px !important;
+  }
+
+  #inputStep2 .ui-product-entry .ui-satuan-control > div{
+    width:128px !important;
+    min-width:128px !important;
+    max-width:128px !important;
+    overflow:hidden !important;
+  }
+
+  #inputStep2 .ui-product-entry .ui-satuan-control button{
+    height:34px !important;
+    min-height:34px !important;
+    padding:0 10px !important;
+    font-size:10px !important;
+  }
+
+  #inputStep2 .ui-product-entry > .ui-add-item-btn{
+    grid-column:4 !important;
+    width:112px !important;
+    min-width:112px !important;
+    max-width:112px !important;
+    margin:0 !important;
+    padding:0 10px !important;
+    font-size:10px !important;
+    line-height:34px !important;
+    white-space:nowrap !important;
+    position:relative !important;
+    z-index:5 !important;
+  }
+
+  /* Label Qty dan Satuan tetap rapi di atas kontrol */
+  #inputStep2 .ui-product-entry .ui-qty-control label,
+  #inputStep2 .ui-product-entry .ui-satuan-control label{
+    display:block !important;
+    margin-bottom:4px !important;
+    line-height:1 !important;
+  }
+}
+</style>
+
 </head>
 <body class="bg-slate-50 font-sans">
 
