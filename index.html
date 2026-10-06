@@ -2563,6 +2563,19 @@ body{font-family:Inter,ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-ser
 }
 </style>
 
+
+<style id="desktop-header-icon-separation-final">
+/* Desktop only: pisahkan icon notifikasi dan refresh secara tegas. CSS-only. */
+@media (min-width: 768px){
+  #mainHeader{position:relative!important;overflow:hidden!important;}
+  #mainHeader .notification-header-wrap{position:absolute!important;top:50%!important;right:62px!important;transform:translateY(-50%)!important;width:40px!important;height:40px!important;margin:0!important;display:flex!important;align-items:center!important;justify-content:center!important;z-index:1102!important;flex:0 0 40px!important;}
+  #mainHeader .notification-bell-btn{width:40px!important;height:40px!important;flex:0 0 40px!important;margin:0!important;}
+  #mainHeader .header-refresh-wrap{position:absolute!important;top:50%!important;right:14px!important;transform:translateY(-50%)!important;width:34px!important;height:34px!important;margin:0!important;padding:0!important;display:flex!important;align-items:center!important;justify-content:center!important;z-index:1103!important;flex:0 0 34px!important;gap:0!important;}
+  #mainHeader .global-refresh-btn{width:34px!important;height:34px!important;min-width:34px!important;flex:0 0 34px!important;margin:0!important;}
+  #mainHeader .global-last-sync{display:none!important;}
+  #mainHeader .pengumuman-main-header-marquee{margin-right:112px!important;max-width:calc(100% - 112px)!important;overflow:hidden!important;}
+}
+</style>
 </head>
 <body class="bg-slate-50 font-sans">
 
