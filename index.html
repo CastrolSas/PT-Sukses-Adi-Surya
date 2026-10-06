@@ -2415,6 +2415,14 @@ body{font-family:Inter,ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-ser
 }
 </style>
 
+
+<style id="view-toggle-only">
+.view-toggle-btn{min-height:32px;padding:6px 11px;border:1px solid #dbe5df;border-radius:9px;background:#fff;color:#64748b;font-size:10px;font-weight:800;transition:all .15s ease;}
+.view-toggle-btn:hover{border-color:#9bd8b8;background:#f0fdf4;color:#047857}
+.view-toggle-btn.is-active{border-color:#0f9f6e;background:#ecfdf5;color:#047857;box-shadow:0 2px 8px rgba(15,159,110,.10)}
+#listRiwayat table th,#listRiwayat table td,#pencapaianSalesList table th,#pencapaianSalesList table td{vertical-align:middle}
+@media(max-width:640px){.view-toggle-btn{min-height:30px;padding:5px 9px;font-size:9px}}
+</style>
 </head>
 <body class="bg-slate-50 font-sans">
 
@@ -2814,6 +2822,11 @@ body{font-family:Inter,ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-ser
                         </button>
                     </div>
 
+                    <div class="flex items-center justify-end gap-1.5 mb-1" role="group" aria-label="Tampilan Riwayat">
+                        <button type="button" id="riwayatViewTableBtn" onclick="setRiwayatView('table')" class="view-toggle-btn is-active">▤ Tabel</button>
+                        <button type="button" id="riwayatViewChartBtn" onclick="setRiwayatView('chart')" class="view-toggle-btn">▥ Chart</button>
+                    </div>
+
                     <div id="riwayatFiltersBox" class="bg-white border border-slate-200 rounded-2xl p-3 shadow-sm">
                         <div class="flex items-center justify-between gap-2 mb-2">
                             <div>
@@ -2888,6 +2901,10 @@ body{font-family:Inter,ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-ser
                             </select>
                             <button type="button" onclick="refreshWithIndicator(function(){ return loadPencapaianSales(true, false); })" class="text-[10px] font-bold text-emerald-700 hover:text-emerald-800 px-2.5 py-1.5 rounded-lg border border-emerald-200 bg-emerald-50 hover:bg-emerald-100 transition">↻ Refresh</button>
                         </div>
+                    </div>
+                    <div class="flex items-center justify-end gap-1.5 mb-1" role="group" aria-label="Tampilan Pencapaian Sales">
+                        <button type="button" id="pencapaianViewTableBtn" onclick="setPencapaianView('table')" class="view-toggle-btn is-active">▤ Tabel</button>
+                        <button type="button" id="pencapaianViewChartBtn" onclick="setPencapaianView('chart')" class="view-toggle-btn">▥ Chart</button>
                     </div>
                     <div id="pencapaianLoading" class="bg-white border border-slate-200 rounded-2xl p-6 text-center shadow-sm">
                         <div class="text-sm font-semibold text-slate-600">Memuat pencapaian...</div>
@@ -3361,6 +3378,9 @@ body{font-family:Inter,ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-ser
         let monitoringLoading = false;
         let kontrakLoading = false;
         let pencapaianLoading = false;
+        // Preferensi tampilan hanya untuk tab Riwayat dan Pencapaian Sales.
+        let riwayatViewMode = 'table';
+        let pencapaianViewMode = 'table';
         let pencapaianRequestSeq = 0;
         let pencapaianCache = {};
         let pencapaianDetailCache = {};
@@ -3997,6 +4017,16 @@ startAutoRefresh();
                     </div>`;
                 return;
             }
+
+            if (riwayatViewMode === 'chart') {
+                renderRiwayatChart(data);
+                updateViewToggleButtons('riwayat');
+                return;
+            }
+
+            renderRiwayatTable(data);
+            updateViewToggleButtons('riwayat');
+            return;
 
             const isAdmin = currentUsernameInput &&
                 currentUsernameInput.toLowerCase() === 'admin';
@@ -6106,8 +6136,17 @@ startAutoRefresh();
             if (!container) return;
             if (!Array.isArray(data) || data.length === 0) {
                 container.innerHTML = '<div class="bg-white border border-slate-200 rounded-2xl p-6 text-center text-xs text-slate-400 shadow-sm">Belum ada target untuk periode ini.</div>';
+                updateViewToggleButtons('pencapaian');
                 return;
             }
+
+            if (pencapaianViewMode === 'chart') {
+                renderPencapaianChart(data);
+            } else {
+                renderPencapaianTable(data);
+            }
+            updateViewToggleButtons('pencapaian');
+            return;
 
             container.innerHTML = data.map(function(item) {
                 return `
@@ -6132,6 +6171,127 @@ startAutoRefresh();
                         </div>
                     </div>`;
             }).join('');
+        }
+
+        function updateViewToggleButtons(section) {
+            const modes = section === 'riwayat'
+                ? { table: 'riwayatViewTableBtn', chart: 'riwayatViewChartBtn' }
+                : { table: 'pencapaianViewTableBtn', chart: 'pencapaianViewChartBtn' };
+            const mode = section === 'riwayat' ? riwayatViewMode : pencapaianViewMode;
+            ['table', 'chart'].forEach(function(key) {
+                const btn = document.getElementById(modes[key]);
+                if (btn) btn.classList.toggle('is-active', mode === key);
+            });
+        }
+
+        function setRiwayatView(mode) {
+            riwayatViewMode = mode === 'chart' ? 'chart' : 'table';
+            renderRiwayatList(globalRiwayatData || []);
+        }
+
+        function setPencapaianView(mode) {
+            pencapaianViewMode = mode === 'chart' ? 'chart' : 'table';
+            const periodSelect = document.getElementById('pencapaianPeriodSelect');
+            const selectedPeriod = periodSelect && periodSelect.value ? periodSelect.value : '';
+            const isAdmin = String(currentUsernameInput || '').trim().toLowerCase() === 'admin';
+            const salesFilter = document.getElementById('pencapaianSalesFilter');
+            const selectedSales = isAdmin && salesFilter && salesFilter.value ? salesFilter.value : '';
+            const cacheKey = (currentUsernameInput || 'admin').toLowerCase() + '|' + selectedSales + '|' + selectedPeriod;
+            const cached = pencapaianCache[cacheKey];
+            if (cached && Array.isArray(cached.data)) {
+                renderPencapaianSales(cached.data);
+            } else {
+                loadPencapaianSales(false, true);
+            }
+        }
+
+        function renderRiwayatTable(data) {
+            const container = document.getElementById('listRiwayat');
+            if (!container) return;
+            const isAdmin = String(currentUsernameInput || '').toLowerCase() === 'admin';
+            const totalPages = isAdmin ? Math.max(1, Math.ceil(data.length / RIWAYAT_PAGE_SIZE)) : 1;
+            if (riwayatPage > totalPages) riwayatPage = totalPages;
+            const startIndex = isAdmin ? (riwayatPage - 1) * RIWAYAT_PAGE_SIZE : 0;
+            const rows = isAdmin ? data.slice(startIndex, startIndex + RIWAYAT_PAGE_SIZE) : data;
+
+            const statusBadge = function(status) {
+                const s = String(status || 'PENDING').toUpperCase();
+                const cls = s === 'APPROVE' ? 'text-emerald-700 bg-emerald-50 border-emerald-200' : s === 'DECLINE' ? 'text-red-700 bg-red-50 border-red-200' : 'text-amber-700 bg-amber-50 border-amber-200';
+                return '<span class="inline-flex items-center px-2 py-1 rounded-full border text-[9px] font-extrabold '+cls+'">'+escapeHtml(s)+'</span>';
+            };
+            const body = rows.map(function(item, index) {
+                const products = Array.isArray(item.products) ? item.products.filter(function(p){return String(p || '').trim() !== '';}) : [];
+                const productText = products.length ? products.map(escapeHtml).join('<br>') : '-';
+                const id = escapeHtml(item.id || '');
+                const status = String(item.status || 'PENDING').toUpperCase();
+                const selected = selectedRiwayatIds[String(item.id)] ? 'checked' : '';
+                const action = isAdmin ? '<select onclick="event.stopPropagation()" class="bulk-status-select w-full border border-slate-300 rounded-lg px-2 py-1.5 text-[9px] font-bold bg-white" data-order-id="'+id+'" data-current-status="'+escapeHtml(status)+'"><option value="">'+escapeHtml(status)+'</option><option value="APPROVE">APPROVE</option><option value="DECLINE">DECLINE</option></select>' : statusBadge(status);
+                const number = startIndex + index + 1;
+                return '<tr class="border-b border-slate-100 hover:bg-emerald-50/50">' +
+                    '<td class="px-3 py-2.5"><input type="checkbox" class="riwayat-select-checkbox w-4 h-4 accent-emerald-600 cursor-pointer" data-order-id="'+id+'" '+selected+' onclick="event.stopPropagation()" onchange="toggleRiwayatSelection(this)" title="Pilih transaksi"></td>' +
+                    '<td class="px-3 py-2.5 font-bold text-slate-500">#'+number+'</td>' +
+                    '<td class="px-3 py-2.5 whitespace-nowrap">'+escapeHtml(item.tanggal || '-')+'</td>' +
+                    '<td class="px-3 py-2.5 font-bold text-slate-700">'+escapeHtml(item.outlet || '-')+(isAdmin ? '<div class="text-[9px] text-slate-400 font-normal">DSR: '+escapeHtml(item.dsr || '-')+'</div>' : '')+'</td>' +
+                    '<td class="px-3 py-2.5 text-slate-600">'+productText+'</td>' +
+                    '<td class="px-3 py-2.5 text-right font-semibold">'+escapeHtml(item.volume || '0')+' L</td>' +
+                    '<td class="px-3 py-2.5 text-right font-semibold">Rp '+Number(item.value || 0).toLocaleString('id-ID')+'</td>' +
+                    '<td class="px-3 py-2.5">'+action+'</td>' +
+                    '<td class="px-3 py-2.5 whitespace-nowrap"><div class="flex gap-1"><button type="button" onclick="editRiwayat(\''+id+'\'); return false;" class="riwayat-action riwayat-action-edit">✏️</button><button type="button" onclick="kirimUlangWA(\''+id+'\')" class="riwayat-action riwayat-action-wa">💬</button><button type="button" onclick="hapusRiwayat(\''+id+'\')" class="riwayat-action riwayat-action-delete">🗑️</button></div></td>' +
+                    '</tr>';
+            }).join('');
+
+            const pagination = isAdmin && totalPages > 1 ? '<div class="flex items-center justify-between gap-2 mt-3 px-3 py-2 border border-slate-200 rounded-xl bg-slate-50 text-[10px]"><span class="text-slate-500">Menampilkan '+(startIndex+1)+'-'+Math.min(startIndex+RIWAYAT_PAGE_SIZE,data.length)+' dari '+data.length+' transaksi</span><div class="flex items-center gap-1"><button type="button" onclick="changeRiwayatPage(-1)" class="px-2.5 py-1.5 rounded-lg border bg-white">‹</button><span class="px-2 font-bold">Halaman '+riwayatPage+'/'+totalPages+'</span><button type="button" onclick="changeRiwayatPage(1)" class="px-2.5 py-1.5 rounded-lg border bg-white">›</button></div></div>' : '';
+            const bulkControls = isAdmin ? '<div class="flex flex-wrap items-center gap-2 p-3 bg-slate-50 border border-slate-200 rounded-xl mb-3"><button type="button" onclick="toggleSelectAllRiwayatVisible(true)" class="px-3 py-1.5 rounded-md bg-white hover:bg-slate-100 text-slate-600 text-[10px] font-bold border border-slate-200">PILIH SEMUA</button><button type="button" onclick="clearPilihanRiwayat()" class="px-3 py-1.5 rounded-md bg-white hover:bg-slate-100 text-slate-600 text-[10px] font-bold border border-slate-200">RESET PILIHAN</button><button type="button" onclick="doneBulkStatusRiwayat()" class="px-4 py-1.5 rounded-md bg-slate-800 hover:bg-slate-900 text-white text-[10px] font-extrabold shadow-sm">DONE</button><span id="bulkStatusInfo" class="text-[10px] text-slate-500 font-semibold ml-auto">Pilih status pada masing-masing baris lalu klik DONE.</span></div>' : '';
+            container.innerHTML = bulkControls + '<div class="bg-white border border-slate-200 rounded-2xl shadow-sm overflow-hidden"><div class="overflow-x-auto"><table class="w-full text-left text-[10px] min-w-[980px]"><thead><tr class="bg-slate-50 border-b border-slate-200 text-[9px] uppercase tracking-wide text-slate-500"><th class="px-3 py-2 w-9"><input type="checkbox" id="selectAllRiwayatVisible" class="riwayat-select-all w-4 h-4 accent-emerald-600 cursor-pointer" onchange="toggleSelectAllRiwayatVisible(true)" title="Pilih semua"></th><th class="px-3 py-2">No</th><th class="px-3 py-2">Tanggal</th><th class="px-3 py-2">Outlet</th><th class="px-3 py-2">Produk</th><th class="px-3 py-2 text-right">Volume</th><th class="px-3 py-2 text-right">Nilai</th><th class="px-3 py-2">Status</th><th class="px-3 py-2">Aksi</th></tr></thead><tbody>'+body+'</tbody></table></div></div>'+pagination;
+            updateSelectedRiwayatUI();
+        }
+
+        function renderRiwayatChart(data) {
+            const container = document.getElementById('listRiwayat');
+            if (!container) return;
+            const map = {};
+            data.forEach(function(item) {
+                const raw = String(item.tanggal || '');
+                let key = raw.slice(0,7);
+                if (!/^\d{4}-\d{2}$/.test(key)) {
+                    const d = new Date(raw);
+                    key = isNaN(d.getTime()) ? (raw || 'Lainnya') : d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0');
+                }
+                if (!map[key]) map[key] = {count:0, value:0, volume:0};
+                map[key].count++;
+                map[key].value += Number(item.value || 0);
+                map[key].volume += Number(String(item.volume || 0).replace(/[^0-9.-]/g,'')) || 0;
+            });
+            const items = Object.keys(map).sort().map(function(k){return {key:k, ...map[k]};});
+            const maxValue = Math.max.apply(null, items.map(function(x){return x.value;} ).concat([1]));
+            const maxVolume = Math.max.apply(null, items.map(function(x){return x.volume;} ).concat([1]));
+            const label = function(k){ if(/^\d{4}-\d{2}$/.test(k)){ const d=new Date(k+'-01T00:00:00'); return d.toLocaleDateString('id-ID',{month:'short',year:'numeric'}); } return k; };
+            container.innerHTML = '<div class="bg-white border border-slate-200 rounded-2xl p-4 shadow-sm"><div class="flex items-center justify-between gap-2 mb-3"><div><div class="text-[10px] font-extrabold uppercase tracking-wider text-slate-500">Ringkasan Riwayat</div><div class="text-[9px] text-slate-400">Volume, nilai, dan jumlah transaksi per bulan</div></div><span class="text-[9px] font-bold text-emerald-700 bg-emerald-50 border border-emerald-200 rounded-full px-2 py-1">'+data.length+' transaksi</span></div>'+items.map(function(x){ return '<div class="mb-4 last:mb-0"><div class="flex justify-between text-[10px] font-bold text-slate-700 mb-1"><span>'+escapeHtml(label(x.key))+'</span><span>'+x.count+' transaksi · Rp '+x.value.toLocaleString('id-ID')+'</span></div><div class="h-2.5 bg-slate-100 rounded-full overflow-hidden"><div class="h-full bg-emerald-600 rounded-full" style="width:'+Math.max(3,(x.value/maxValue)*100)+'%"></div></div><div class="mt-1 text-[9px] text-slate-400">Volume '+x.volume.toLocaleString('id-ID')+' L</div></div>'; }).join('')+'</div>';
+        }
+
+        function renderPencapaianTable(data) {
+            const container = document.getElementById('pencapaianSalesList');
+            if (!container) return;
+            const cats = [{key:'value',label:'Value',type:'value'},{key:'volume',label:'Volume',type:'volume'},{key:'active',label:'Active Outlet',type:'active'},{key:'product',label:'Produk Fokus',type:'product'},{key:'powerBrand',label:'Power Brand',type:'powerBrand'}];
+            let rows='';
+            data.forEach(function(item){
+                cats.forEach(function(c){
+                    const q=(item.categories&&item.categories[c.key]&&item.categories[c.key].quarter)||{};
+                    rows += '<tr class="border-b border-slate-100 hover:bg-emerald-50/50 cursor-pointer" onclick="openPencapaianDetail(\''+escapeHtml(categoryKeyForDetail(c.type))+'\', \''+escapeHtml(item.sales||'')+'\')"><td class="px-3 py-2.5 font-bold text-slate-700">'+escapeHtml(item.sales||'-')+'</td><td class="px-3 py-2.5">'+escapeHtml(c.label)+'</td><td class="px-3 py-2.5 text-right">'+formatPencapaianValue(q.target,c.type)+'</td><td class="px-3 py-2.5 text-right font-bold">'+formatPencapaianValue(q.actual,c.type)+'</td><td class="px-3 py-2.5 text-right font-bold '+(Number(q.gap||0)>=0?'text-emerald-700':'text-red-600')+'">'+formatPencapaianValue(q.gap||0,c.type)+'</td><td class="px-3 py-2.5 text-right font-extrabold">'+formatPercentID(q.percentage||0)+'</td></tr>';
+                });
+            });
+            container.innerHTML='<div class="bg-white border border-slate-200 rounded-2xl shadow-sm overflow-hidden"><div class="overflow-x-auto"><table class="w-full min-w-[820px] text-[10px]"><thead><tr class="bg-slate-50 border-b border-slate-200 text-[9px] uppercase tracking-wide text-slate-500"><th class="px-3 py-2 text-left">Sales</th><th class="px-3 py-2 text-left">Kategori</th><th class="px-3 py-2 text-right">Target</th><th class="px-3 py-2 text-right">Actual</th><th class="px-3 py-2 text-right">Gap</th><th class="px-3 py-2 text-right">%</th></tr></thead><tbody>'+rows+'</tbody></table></div></div>';
+        }
+
+        function renderPencapaianChart(data) {
+            const container = document.getElementById('pencapaianSalesList');
+            if (!container) return;
+            const cats = [{key:'value',label:'Value'},{key:'volume',label:'Volume'},{key:'active',label:'Active Outlet'},{key:'product',label:'Produk Fokus'},{key:'powerBrand',label:'Power Brand'}];
+            const blocks=data.map(function(item){
+                const bars=cats.map(function(c){ const q=(item.categories&&item.categories[c.key]&&item.categories[c.key].quarter)||{}; const pct=Math.max(0,Math.min(Number(q.percentage||0),100)); return '<div class="mb-2"><div class="flex justify-between text-[9px] font-bold text-slate-600 mb-1"><span>'+c.label+'</span><span>'+formatPercentID(q.percentage||0)+'</span></div><div class="h-2.5 rounded-full bg-slate-100 overflow-hidden"><div class="h-full rounded-full '+(Number(q.percentage||0)>=100?'bg-emerald-600':Number(q.percentage||0)>=80?'bg-amber-500':'bg-red-500')+'" style="width:'+Math.max(2,pct)+'%"></div></div></div>'; }).join('');
+                return '<div class="bg-white border border-slate-200 rounded-2xl p-3 shadow-sm"><div class="flex items-center justify-between mb-3"><div class="text-sm font-extrabold text-slate-800">'+escapeHtml(item.sales||'-')+'</div><span class="text-[9px] text-slate-400">'+escapeHtml(item.periode||'')+'</span></div>'+bars+'</div>';
+            }).join('');
+            container.innerHTML='<div class="grid grid-cols-1 lg:grid-cols-2 gap-3">'+blocks+'</div>';
         }
 
         function categoryKeyForDetail(type) {
