@@ -3168,19 +3168,95 @@ body{background:
 }
 </style>
 
-<style id="desktop-qty-satuan-tambah-final">
-/* FINAL: DESKTOP LAYOUT ONLY. JavaScript dan mobile TIDAK DIUBAH. */
-@media (min-width: 768px){
-  #inputStep2 .ui-product-entry{display:grid !important;grid-template-columns:78px 145px 130px minmax(0,1fr) !important;grid-template-rows:auto auto !important;column-gap:8px !important;row-gap:8px !important;align-items:end !important;width:100% !important;box-sizing:border-box !important;}
-  #inputStep2 .ui-product-entry > div:first-child{grid-column:1 / -1 !important;grid-row:1 !important;width:100% !important;min-width:0 !important;box-sizing:border-box !important;}
-  #inputStep2 .ui-product-entry > .ui-item-controls{display:contents !important;}
-  #inputStep2 .ui-product-entry .ui-qty-control{grid-column:1 !important;grid-row:2 !important;width:78px !important;min-width:78px !important;max-width:78px !important;box-sizing:border-box !important;}
-  #inputStep2 .ui-product-entry .ui-satuan-control{grid-column:2 !important;grid-row:2 !important;width:145px !important;min-width:145px !important;max-width:145px !important;box-sizing:border-box !important;}
-  #inputStep2 .ui-product-entry .ui-satuan-control > div{width:145px !important;min-width:145px !important;max-width:145px !important;box-sizing:border-box !important;}
-  #inputStep2 .ui-product-entry > .ui-add-item-btn{grid-column:3 !important;grid-row:2 !important;width:130px !important;min-width:130px !important;max-width:130px !important;height:38px !important;margin:0 !important;box-sizing:border-box !important;align-self:end !important;white-space:nowrap !important;}
-  #inputStep2 .ui-product-entry #addItemQty{width:78px !important;min-width:78px !important;max-width:78px !important;height:38px !important;box-sizing:border-box !important;text-align:center !important;}
+<style id="desktop-product-layout-final-safe">
+/* =========================================================
+   FINAL DESKTOP PRODUCT LAYOUT — CSS ONLY
+   Tidak mengubah JavaScript.
+   Mobile tidak disentuh.
+   ========================================================= */
+@media (min-width: 768px) {
+  #inputStep2 .ui-product-entry {
+    display: grid !important;
+    grid-template-columns: 78px 145px 130px minmax(0, 1fr) !important;
+    grid-template-rows: auto auto !important;
+    column-gap: 8px !important;
+    row-gap: 8px !important;
+    align-items: end !important;
+    width: 100% !important;
+    box-sizing: border-box !important;
+  }
+
+  /* Produk + filter + dropdown: baris pertama, full width */
+  #inputStep2 .ui-product-entry > div:first-child {
+    grid-column: 1 / -1 !important;
+    grid-row: 1 !important;
+    width: 100% !important;
+    min-width: 0 !important;
+    margin-bottom: 0 !important;
+  }
+
+  /* Lepaskan wrapper Qty + Satuan supaya menjadi item grid langsung */
+  #inputStep2 .ui-product-entry > .ui-item-controls {
+    display: contents !important;
+  }
+
+  /* Qty: kiri */
+  #inputStep2 .ui-product-entry .ui-qty-control {
+    grid-column: 1 !important;
+    grid-row: 2 !important;
+    width: 78px !important;
+    min-width: 78px !important;
+    max-width: 78px !important;
+    box-sizing: border-box !important;
+    align-self: end !important;
+  }
+
+  #inputStep2 .ui-product-entry #addItemQty {
+    width: 78px !important;
+    min-width: 78px !important;
+    max-width: 78px !important;
+    box-sizing: border-box !important;
+    text-align: center !important;
+  }
+
+  /* Satuan: langsung di sebelah Qty */
+  #inputStep2 .ui-product-entry .ui-satuan-control {
+    grid-column: 2 !important;
+    grid-row: 2 !important;
+    width: 145px !important;
+    min-width: 145px !important;
+    max-width: 145px !important;
+    box-sizing: border-box !important;
+    align-self: end !important;
+  }
+
+  #inputStep2 .ui-product-entry .ui-satuan-control > div {
+    width: 145px !important;
+    min-width: 145px !important;
+    max-width: 145px !important;
+    box-sizing: border-box !important;
+  }
+
+  /* + Tambah Item: langsung di sebelah Satuan */
+  #inputStep2 .ui-product-entry > button.ui-add-item-btn {
+    grid-column: 3 !important;
+    grid-row: 2 !important;
+    width: 130px !important;
+    min-width: 130px !important;
+    max-width: 130px !important;
+    height: 38px !important;
+    min-height: 38px !important;
+    max-height: 38px !important;
+    margin: 0 !important;
+    padding-left: 10px !important;
+    padding-right: 10px !important;
+    box-sizing: border-box !important;
+    align-self: end !important;
+    white-space: nowrap !important;
+  }
 }
 </style>
+
 </head>
 <body class="bg-slate-50 font-sans">
 
