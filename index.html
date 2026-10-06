@@ -1856,6 +1856,244 @@ html{scroll-behavior:auto!important}
 }
 </style>
 
+
+<style id="castrol-ui-modern-final">
+/* =========================================================
+   CASTROL UI MODERN FINAL
+   Visual layer only — tidak mengubah fungsi / ID / JavaScript.
+   Desktop + tablet + mobile responsive.
+   ========================================================= */
+:root{
+  --m-green:#007a3d;
+  --m-green-2:#00a651;
+  --m-green-3:#eaf7f0;
+  --m-red:#e31837;
+  --m-ink:#12221a;
+  --m-muted:#6b7a71;
+  --m-line:#dfe8e2;
+  --m-bg:#f4f8f5;
+  --m-card:#ffffff;
+  --m-radius:16px;
+  --m-shadow:0 8px 26px rgba(18,50,31,.065);
+  --m-shadow-hover:0 14px 34px rgba(18,50,31,.10);
+}
+
+html,body{background:var(--m-bg)!important;color:var(--m-ink)}
+body{font-family:Inter,ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-serif!important}
+
+/* ---------- APP / HEADER ---------- */
+#app.app-shell{max-width:1600px!important;background:transparent!important}
+#mainHeader{
+  min-height:68px!important;
+  padding:11px 20px!important;
+  background:linear-gradient(120deg,#042517 0%,#005d30 48%,#007a3d 100%)!important;
+  border-bottom:1px solid rgba(183,212,51,.25)!important;
+  box-shadow:0 10px 32px rgba(3,48,26,.18)!important;
+  backdrop-filter:blur(14px);
+}
+#mainHeader:after{height:2px!important;opacity:.9!important}
+#mainHeader h1{font-size:14px!important;font-weight:850!important;letter-spacing:.025em!important}
+#mainHeader .sidebar-toggle{width:40px!important;height:40px!important;border-radius:12px!important}
+#mainHeader .notification-bell-btn{width:40px!important;height:40px!important;border-radius:12px!important}
+#mainHeader .account-header-btn,.header-action-btn{
+  min-height:38px!important;border-radius:11px!important;
+  background:rgba(255,255,255,.08)!important;
+  border-color:rgba(255,255,255,.14)!important;
+}
+#mainHeader .account-header-btn:hover,.header-action-btn:hover{background:rgba(255,255,255,.15)!important}
+
+/* ---------- SIDEBAR ---------- */
+#leftNav.app-sidebar{
+  width:228px!important;
+  padding:14px 12px!important;
+  background:rgba(255,255,255,.96)!important;
+  border-right:1px solid var(--m-line)!important;
+  box-shadow:8px 0 30px rgba(18,50,31,.055)!important;
+  backdrop-filter:blur(18px);
+}
+#leftNav .sidebar-inner{gap:6px!important}
+#leftNav .sidebar-label{
+  margin:5px 8px 9px!important;text-align:left!important;
+  font-size:9px!important;letter-spacing:.14em!important;color:#94a39a!important;
+}
+#leftNav .sidebar-icon{display:flex!important;width:30px!important;height:30px!important;font-size:15px!important;flex:0 0 30px!important}
+#leftNav .sidebar-item,#leftNav .sidebar-user-item{
+  min-height:46px!important;height:46px!important;
+  flex-direction:row!important;justify-content:flex-start!important;gap:10px!important;
+  padding:0 11px!important;border-radius:12px!important;
+  font-size:11px!important;font-weight:750!important;
+}
+#leftNav .sidebar-item:hover{transform:translateX(2px)!important}
+#leftNav .sidebar-item-active{
+  background:linear-gradient(90deg,#e8f7ee,#f4fbf7)!important;
+  border-color:#c8e7d3!important;
+  box-shadow:inset 3px 0 0 var(--m-green-2),0 6px 16px rgba(0,122,61,.06)!important;
+}
+#leftNav .sidebar-bottom{padding-top:10px!important;margin-top:10px!important}
+
+/* Content offset for desktop sidebar; mobile remains overlay. */
+#app:not(.sidebar-closed) #leftNav.app-sidebar + div{margin-left:228px!important;transition:margin-left .22s ease!important}
+#app.sidebar-closed #leftNav.app-sidebar + div{margin-left:0!important}
+
+/* ---------- MAIN CONTENT ---------- */
+#app>.p-4.flex-1.overflow-y-auto{padding:24px 28px!important;background:transparent!important}
+#mainPage{max-width:1280px!important}
+.tab-content{animation:none!important}
+
+/* Section headers */
+#tabInput>h2,#tabRiwayat>div:first-child,#tabMonitoring>div:first-child,
+#tabOutletKontrak>div:first-child,#tabOutletBWS>div:first-child,
+#tabTambahCustomer>div:first-child,#tabPricelist>div:first-child,
+#tabPesananOutlet>div:first-child{
+  min-height:58px;
+  padding:0 2px 13px!important;
+  margin-bottom:14px!important;
+  border-bottom:1px solid var(--m-line)!important;
+}
+#mainPage h2{letter-spacing:-.01em}
+
+/* Cards / panels */
+#mainPage .bg-white.border,
+#mainPage .bg-slate-50.border,
+#mainPage .bg-emerald-50\/40{
+  border-color:var(--m-line)!important;
+  border-radius:var(--m-radius)!important;
+  box-shadow:var(--m-shadow)!important;
+}
+#mainPage .bg-white.border:hover{box-shadow:var(--m-shadow-hover)!important}
+
+/* Inputs */
+#mainPage input,#mainPage select,#mainPage textarea,
+#searchRiwayatInput,#searchMonitoringInput,#searchOutletKontrakInput,
+#filterQuarterSelect,#filterPricelistUpdate{
+  min-height:42px!important;
+  border:1px solid #d5e0d9!important;
+  border-radius:11px!important;
+  background:#fff!important;
+  color:#17251d!important;
+  box-shadow:0 1px 2px rgba(18,50,31,.025)!important;
+}
+#mainPage input:focus,#mainPage select:focus,#mainPage textarea:focus,
+#searchRiwayatInput:focus,#searchMonitoringInput:focus,#searchOutletKontrakInput:focus,
+#filterQuarterSelect:focus,#filterPricelistUpdate:focus{
+  border-color:#49a96e!important;
+  box-shadow:0 0 0 4px rgba(0,166,81,.09)!important;
+  outline:none!important;
+}
+
+/* Buttons */
+#mainPage button{border-radius:10px}
+#btnKirimOrder{
+  min-height:48px!important;border-radius:12px!important;
+  background:linear-gradient(135deg,#e31837,#c81531)!important;
+  box-shadow:0 9px 20px rgba(227,24,55,.16)!important;
+}
+#btnKirimOrder:hover{transform:translateY(-1px)!important}
+#mainPage button.bg-emerald-700,#mainPage button.bg-emerald-800{box-shadow:0 6px 15px rgba(0,122,61,.11)}
+
+/* Cart / order items */
+#cartList>div{
+  border:1px solid #e1ebe4!important;border-radius:13px!important;
+  box-shadow:0 4px 13px rgba(18,50,31,.045)!important;
+}
+
+/* ---------- TABLES ---------- */
+#tabMonitoring table,#tabOutletKontrak table,#tabOutletBWS table,#tabPricelist table,.riwayat-table{
+  border-collapse:separate!important;border-spacing:0!important;
+}
+#tabMonitoring table thead th,#tabOutletKontrak table thead th,#tabOutletBWS table thead th,
+#tabPricelist table thead th,.riwayat-table thead th{
+  padding:11px 12px!important;
+  background:#edf5ef!important;color:#315d45!important;
+  font-size:10px!important;font-weight:850!important;
+  letter-spacing:.025em!important;
+  border-bottom:1px solid #d8e5dc!important;
+}
+#tabMonitoring table tbody td,#tabOutletKontrak table tbody td,#tabOutletBWS table tbody td,
+#tabPricelist table tbody td,.riwayat-table tbody td{padding:10px 12px!important}
+#tabMonitoring table tbody tr,#tabOutletKontrak table tbody tr,#tabOutletBWS table tbody tr,#tabPricelist table tbody tr,.riwayat-table tbody tr{transition:background .14s ease!important}
+#tabMonitoring table tbody tr:hover,#tabOutletKontrak table tbody tr:hover,#tabOutletBWS table tbody tr:hover,#tabPricelist table tbody tr:hover,.riwayat-table tbody tr:hover{background:#f3faf6!important}
+
+/* ---------- HISTORY CARDS ---------- */
+.riwayat-card{
+  border-color:var(--m-line)!important;border-radius:17px!important;
+  box-shadow:var(--m-shadow)!important;
+}
+.riwayat-card:hover{box-shadow:var(--m-shadow-hover)!important;transform:translateY(-2px)!important}
+.riwayat-card-number{background:#edf6f0!important;color:#397054!important}
+
+/* ---------- MODALS ---------- */
+.modern-modal-overlay{background:rgba(2,28,16,.62)!important;backdrop-filter:blur(10px)!important}
+.modern-modal-card{
+  border:1px solid #d7e4db!important;border-radius:22px!important;
+  box-shadow:0 30px 90px rgba(1,28,15,.30)!important;
+}
+.modern-modal-header{padding:16px 18px!important}
+.modern-modal-body{padding:16px 18px!important}
+.modern-modal-footer{padding:12px 16px!important}
+.modern-modal-ok{border-radius:11px!important}
+
+/* ---------- SELECT2 ---------- */
+.select2-container .select2-selection--single{
+  height:42px!important;padding:5px 10px!important;border-radius:11px!important;border-color:#d5e0d9!important;
+}
+.select2-container--default .select2-selection--single .select2-selection__arrow{height:40px!important}
+.select2-container--default .select2-selection--single .select2-selection__rendered{line-height:30px!important;font-size:12px!important}
+.select2-dropdown{border-color:#d5e0d9!important;border-radius:11px!important;overflow:hidden}
+
+/* ---------- MOBILE DRAWER ---------- */
+@media(max-width:767px){
+  #mainHeader{min-height:58px!important;padding:8px 11px!important}
+  #mainHeader h1{font-size:12px!important;max-width:135px!important}
+  #mainHeader .sidebar-toggle,#mainHeader .notification-bell-btn{width:36px!important;height:36px!important}
+  #leftNav.app-sidebar{
+    width:min(82vw,280px)!important;max-width:280px!important;
+    top:58px!important;padding:12px!important;
+    border-radius:0 18px 18px 0!important;
+    box-shadow:16px 0 40px rgba(4,35,20,.16)!important;
+  }
+  #leftNav .sidebar-item,#leftNav .sidebar-user-item{min-height:44px!important;height:44px!important;font-size:11px!important}
+  #app:not(.sidebar-closed) #leftNav.app-sidebar + div,#app.sidebar-closed #leftNav.app-sidebar + div{margin-left:0!important}
+  #app>.p-4.flex-1.overflow-y-auto{padding:11px!important}
+  #mainPage{max-width:none!important}
+  #mainPage .bg-white.border,#mainPage .bg-slate-50.border{border-radius:14px!important}
+  #tabInput>h2,#tabRiwayat>div:first-child,#tabMonitoring>div:first-child,#tabOutletKontrak>div:first-child,
+  #tabOutletBWS>div:first-child,#tabTambahCustomer>div:first-child,#tabPricelist>div:first-child,#tabPesananOutlet>div:first-child{
+    min-height:0!important;padding-bottom:10px!important;margin-bottom:10px!important;
+  }
+  #tabInput .grid.grid-cols-3,#tabInput .grid.grid-cols-2{grid-template-columns:1fr!important}
+  #tabInput input,#tabInput select,#tabInput textarea{min-height:44px!important}
+  #btnKirimOrder{width:100%!important;min-height:48px!important}
+  .riwayat-cards-grid{grid-template-columns:1fr!important}
+  .riwayat-card{padding:13px!important}
+  .modern-modal-overlay{padding:10px!important}
+  .modern-modal-card{width:calc(100vw - 20px)!important;max-width:560px!important;max-height:90dvh!important;border-radius:18px!important}
+  .modern-modal-header{padding:13px 14px!important}
+  .modern-modal-body{padding:13px!important}
+}
+
+@media(max-width:430px){
+  #mainHeader{padding:8px!important}
+  #mainHeader h1{max-width:105px!important}
+  #mainHeader .user-badge{display:none!important}
+  #leftNav.app-sidebar{width:min(86vw,270px)!important}
+  #app>.p-4.flex-1.overflow-y-auto{padding:8px!important}
+  #mainPage .text-base{font-size:14px!important}
+  #mainPage .text-sm{font-size:12px!important}
+  #tabMonitoring table,#tabOutletKontrak table,#tabOutletBWS table,#tabPricelist table{font-size:10px!important}
+}
+
+@media(min-width:768px) and (max-width:1100px){
+  #leftNav.app-sidebar{width:200px!important}
+  #app:not(.sidebar-closed) #leftNav.app-sidebar + div{margin-left:200px!important}
+  #app>.p-4.flex-1.overflow-y-auto{padding:20px!important}
+}
+
+@media(prefers-reduced-motion:reduce){
+  *,*::before,*::after{animation-duration:.01ms!important;transition-duration:.01ms!important}
+}
+</style>
+
 </head>
 <body class="bg-slate-50 font-sans">
 
