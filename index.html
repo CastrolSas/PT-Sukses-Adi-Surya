@@ -7908,13 +7908,21 @@ startAutoRefresh();
             Object.keys(navMap).forEach(function(key){
                 const el=document.getElementById(navMap[key]);
                 if(!el) return;
-                // Jangan menimpa class "hidden" Outlet BWS saat switch tab.
-                if(key==='outletbws' && !isAdminLogin){
+                // Menu khusus Admin tidak boleh muncul untuk user non-admin.
+                if((key==='outletbws' || key==='pengumumanadmin') && !isAdminLogin){
                     el.className='sidebar-item hidden';
                 }else{
                     el.className=key===tab?'sidebar-item sidebar-item-active':'sidebar-item';
                 }
             });
+            // Defensive guard: menu admin-only selalu tersembunyi untuk non-admin.
+            if(!isAdminLogin){
+                const adminOnlyNavs = ['navOutletBWS','navPengumumanAdmin'];
+                adminOnlyNavs.forEach(function(id){
+                    const adminNav = document.getElementById(id);
+                    if(adminNav){ adminNav.classList.add('hidden'); adminNav.classList.remove('sidebar-item-active'); }
+                });
+            }
             setSidebarState(true);
 if(tab==='riwayat')loadRiwayat(false, true);
             if(tab==='pencapaian')loadPencapaianSales(false, true);
