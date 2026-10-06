@@ -11682,3 +11682,54 @@ function renderPencapaianCards(data) {
   }
 }
 </style>
+<style id="fix-tambah-item-visible-v5">
+/* Fix only: desktop product entry. Keep Produk on first row,
+   then Qty + Satuan + Tambah Item aligned on second row. */
+@media (min-width: 768px){
+  #inputStep2 .ui-product-entry{
+    display:grid !important;
+    grid-template-columns:minmax(0,1fr) 78px 145px 112px !important;
+    grid-template-rows:auto auto !important;
+    align-items:end !important;
+    column-gap:10px !important;
+    row-gap:8px !important;
+    overflow:visible !important;
+  }
+
+  #inputStep2 .ui-product-entry > div:first-child{
+    grid-column:1 / -1 !important;
+    grid-row:1 !important;
+    min-width:0 !important;
+  }
+
+  #inputStep2 .ui-product-entry .ui-item-controls{
+    display:contents !important;
+  }
+
+  #inputStep2 .ui-product-entry .ui-qty-control{
+    grid-column:2 !important;
+    grid-row:2 !important;
+    width:78px !important;
+    min-width:78px !important;
+  }
+
+  #inputStep2 .ui-product-entry .ui-satuan-control{
+    grid-column:3 !important;
+    grid-row:2 !important;
+    width:145px !important;
+    min-width:145px !important;
+  }
+
+  #inputStep2 .ui-product-entry .ui-add-item-btn{
+    grid-column:4 !important;
+    grid-row:2 !important;
+    width:112px !important;
+    min-width:112px !important;
+    height:38px !important;
+    margin:0 !important;
+    align-self:end !important;
+    position:relative !important;
+    z-index:5 !important;
+  }
+}
+</style>
