@@ -3168,28 +3168,84 @@ body{background:
 }
 </style>
 
-<style id="final-pilih-produk-width-fix">
+<style id="standalone-product-boxes-final">
 /* =========================================================
-   FINAL FIX: LEBAR "PILIH PRODUK"
-   - Desktop saja
-   - Yang diubah adalah container Select2 yang terlihat
-   - JavaScript tetap 100% original
-   - Mobile tidak diubah
+   FINAL — KOTAK PRODUK BERDIRI SENDIRI
+   DESKTOP ONLY
+   - Kontainer/card luar Produk dihilangkan secara visual
+   - Kotak Pilih Produk berdiri sendiri
+   - Tombol SEMUA/MCO/PCO berdiri sendiri
+   - Qty, Satuan, +Tambah Item tetap sebagai kotak masing-masing
+   - JAVASCRIPT TIDAK DIUBAH
+   - MOBILE TIDAK DIUBAH
    ========================================================= */
 @media (min-width: 768px) {
 
-  /* Select2 yang benar-benar tampil di layar */
+  /* Hilangkan card/kontainer luar .ui-product-entry */
+  #inputStep2 .ui-product-entry {
+    background: transparent !important;
+    border: 0 !important;
+    box-shadow: none !important;
+    border-radius: 0 !important;
+    padding: 0 !important;
+  }
+
+  /* Area Produk tidak ikut membuat kotak luar */
+  #inputStep2 .ui-product-entry > div:first-child {
+    background: transparent !important;
+    border: 0 !important;
+    box-shadow: none !important;
+  }
+
+  /* Tombol filter berdiri sendiri */
+  #inputStep2 .ui-product-entry .ui-product-filters {
+    display: flex !important;
+    gap: 7px !important;
+    margin-bottom: 7px !important;
+  }
+
+  #inputStep2 .ui-product-entry .ui-product-filters button {
+    flex: 0 0 auto !important;
+    width: auto !important;
+    min-width: 52px !important;
+    border-radius: 9px !important;
+  }
+
+  /* Pilih Produk = satu kotak mandiri, tidak mengikuti lebar card luar */
   #inputStep2 .ui-product-entry #addItemProduk + .select2-container {
     width: 72% !important;
     max-width: 72% !important;
-    box-sizing: border-box !important;
+    display: block !important;
   }
 
   #inputStep2 .ui-product-entry #addItemProduk + .select2-container .select2-selection--single {
     width: 100% !important;
     box-sizing: border-box !important;
+    border-radius: 10px !important;
   }
 
+  /* Jika select asli masih terlihat sebelum Select2 selesai, ukurannya sama */
+  #inputStep2 .ui-product-entry #addItemProduk {
+    width: 72% !important;
+    max-width: 72% !important;
+    box-sizing: border-box !important;
+  }
+
+  /* Kontrol bawah tetap berupa kotak-kotak mandiri */
+  #inputStep2 .ui-product-entry .ui-qty-control,
+  #inputStep2 .ui-product-entry .ui-satuan-control {
+    background: transparent !important;
+    border: 0 !important;
+    box-shadow: none !important;
+  }
+
+  #inputStep2 .ui-product-entry .ui-satuan-control > div {
+    border-radius: 10px !important;
+  }
+
+  #inputStep2 .ui-product-entry > button.ui-add-item-btn {
+    border-radius: 10px !important;
+  }
 }
 </style>
 
