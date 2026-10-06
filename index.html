@@ -3168,37 +3168,23 @@ body{background:
 }
 </style>
 
-<style id="final-pilih-produk-height-only">
+<style id="pilih-produk-width-final">
 /* =========================================================
-   USER REQUEST: PENDEKKAN KOTAK "PILIH PRODUK"
-   CSS ONLY — JAVASCRIPT TIDAK DIUBAH
+   PILIH PRODUK — LEBIH PENDEK KE SAMPING
+   DESKTOP ONLY
+   JAVASCRIPT TIDAK DIUBAH
    ========================================================= */
+@media (min-width: 768px) {
+  #inputStep2 #addItemProduk,
+  #inputStep2 .select2-container {
+    width: 72% !important;
+    max-width: 72% !important;
+  }
 
-/* Select asli */
-#inputStep2 #addItemProduk {
-  height: 36px !important;
-  min-height: 36px !important;
-  padding-top: 6px !important;
-  padding-bottom: 6px !important;
-  box-sizing: border-box !important;
-}
-
-/* Select2 yang tampil di layar */
-#inputStep2 .select2-container .select2-selection--single {
-  height: 36px !important;
-  min-height: 36px !important;
-  box-sizing: border-box !important;
-}
-
-#inputStep2 .select2-container .select2-selection--single .select2-selection__rendered {
-  line-height: 34px !important;
-  height: 34px !important;
-  padding-top: 0 !important;
-  padding-bottom: 0 !important;
-}
-
-#inputStep2 .select2-container .select2-selection--single .select2-selection__arrow {
-  height: 34px !important;
+  #inputStep2 .select2-container .select2-selection--single {
+    width: 100% !important;
+    box-sizing: border-box !important;
+  }
 }
 
 </head>
