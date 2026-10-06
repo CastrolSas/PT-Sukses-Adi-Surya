@@ -6507,7 +6507,26 @@ startAutoRefresh();
             const rows=data.map(function(item,i){return '<tr><td>'+(i+1)+'</td><td>'+escapeHtml(item.nama||'-')+'</td><td style="text-align:right">'+formatRupiah(item.harga||0)+'</td></tr>';}).join('');
             const win=window.open('','_blank');
             if(!win){showModal('Export PDF','Browser memblokir jendela cetak. Izinkan pop-up untuk Export PDF.');return;}
-            win.document.write('<!doctype html><html><head><title>Pricelist Castrol</title><style>body{font-family:Arial,sans-serif;padding:24px;color:#111}h1{font-size:20px;margin:0 0 6px}p{font-size:11px;color:#666;margin:0 0 16px}table{width:100%;border-collapse:collapse;font-size:11px}th,td{border:1px solid #ccc;padding:7px}th{text-align:left;background:#f1f5f9}@media print{body{padding:10px}}</style></head><body><h1>Pricelist Castrol</h1><p>'+escapeHtml(filterText)+'</p><table><thead><tr><th style="width:50px">No</th><th>Produk</th><th style="width:160px;text-align:right">Harga</th></tr></thead><tbody>'+rows+'</tbody></table></body></html>');
+            win.document.write('<!doctype html><html><head><title>Pricelist Castrol</title><style>body{font-family:Arial,sans-serif;padding:24px;color:#111}h1{font-size:20px;margin:0 0 6px}p{font-size:11px;color:#666;margin:0 0 16px}table{width:100%;border-collapse:collapse;font-size:11px}th,td{border:1px solid #ccc;padding:7px}th{text-align:left;background:#f1f5f9}@media print{body{padding:10px}}</style>
+<style id="ui-fix-order-label-v5">
+/* Informasi Order: Outlet label harus berada DI ATAS selector Outlet. */
+#tabInput #inputStep1 > .rounded-xl.bg-slate-50.border.border-slate-200.p-3:first-child > label{
+  order:2 !important;
+  display:block !important;
+  margin:2px 0 6px !important;
+  font-size:10px !important;
+  font-weight:800 !important;
+  color:#475569 !important;
+}
+#tabInput #inputStep1 > .rounded-xl.bg-slate-50.border.border-slate-200.p-3:first-child > #inputOutlet{
+  order:3 !important;
+}
+#tabInput #inputStep1 > .rounded-xl.bg-slate-50.border.border-slate-200.p-3:first-child > .grid.grid-cols-2.gap-2.mt-2{
+  order:4 !important;
+  margin-top:10px !important;
+}
+</style>
+</head><body><h1>Pricelist Castrol</h1><p>'+escapeHtml(filterText)+'</p><table><thead><tr><th style="width:50px">No</th><th>Produk</th><th style="width:160px;text-align:right">Harga</th></tr></thead><tbody>'+rows+'</tbody></table></body></html>');
             win.document.close();win.focus();setTimeout(function(){win.print();},250);
         }
 
