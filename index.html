@@ -2936,6 +2936,41 @@ body{background:
 }
 
 </style>
+
+<style id="premium-login-viewport-fix-v2">
+/* Login/Register: selalu center terhadap viewport desktop sejak pertama render.
+   Visual-only; tidak mengubah struktur atau JavaScript. */
+@media (min-width:768px){
+  #app > .p-4.flex-1.overflow-y-auto:has(#loginPage:not(.hidden)),
+  #app > .p-4.flex-1.overflow-y-auto:has(#registerPage:not(.hidden)){
+    position:fixed!important;
+    inset:68px 0 0 0!important;
+    width:100%!important;
+    height:calc(100dvh - 68px)!important;
+    min-height:0!important;
+    max-height:none!important;
+    margin:0!important;
+    padding:28px!important;
+    display:grid!important;
+    place-items:center!important;
+    align-content:center!important;
+    overflow-y:auto!important;
+    overflow-x:hidden!important;
+    box-sizing:border-box!important;
+    z-index:10!important;
+  }
+
+  #app > .p-4.flex-1.overflow-y-auto:has(#loginPage:not(.hidden)) #loginPage,
+  #app > .p-4.flex-1.overflow-y-auto:has(#registerPage:not(.hidden)) #registerPage{
+    width:min(430px, calc(100vw - 56px))!important;
+    max-width:430px!important;
+    margin:0 auto!important;
+    flex:none!important;
+    align-self:center!important;
+    justify-self:center!important;
+  }
+}
+</style>
 </head>
 <body class="bg-slate-50 font-sans">
 
