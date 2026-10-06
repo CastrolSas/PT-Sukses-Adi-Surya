@@ -2473,6 +2473,24 @@ body{font-family:Inter,ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-ser
   }
 }
 </style>
+
+<style id="desktop-header-marquee-safe">
+/* Desktop: teks berjalan tidak boleh masuk ke area tombol notifikasi/refresh.
+   Hanya layout visual; tidak mengubah HTML atau JavaScript. */
+@media (min-width: 768px){
+  #mainHeader{position:relative!important;overflow:hidden!important;}
+  #mainHeader .pengumuman-main-header-marquee{
+    flex:1 1 auto!important;
+    width:auto!important;
+    min-width:0!important;
+    max-width:calc(100% - 132px)!important;
+    margin-left:8px!important;
+    margin-right:132px!important;
+    overflow:hidden!important;
+  }
+  #mainHeader .pengumuman-marquee-track{max-width:none!important;}
+}
+</style>
 </head>
 <body class="bg-slate-50 font-sans">
 
