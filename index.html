@@ -2094,6 +2094,126 @@ body{font-family:Inter,ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-ser
 }
 </style>
 
+
+<style id="castrol-step2-outlet-one-container">
+/* STEP 2: ringkasan outlet dibuat satu kontainer, mengikuti gaya kartu pada STEP 1 */
+#inputStep2 .step2-outlet-summary{
+  position:relative!important;
+  overflow:hidden!important;
+  padding:18px!important;
+  border:1px solid #d7e7de!important;
+  border-radius:20px!important;
+  background:linear-gradient(180deg,#fbfefd 0%,#f3f9f6 100%)!important;
+  box-shadow:0 6px 20px rgba(0,88,48,.045)!important;
+}
+#inputStep2 .step2-outlet-summary::before{
+  content:''!important;
+  position:absolute!important;
+  inset:0 0 auto 0!important;
+  height:3px!important;
+  background:linear-gradient(90deg,#008a4c,#38b979,#008a4c)!important;
+  opacity:.9!important;
+}
+#inputStep2 .step2-outlet-head{
+  display:flex!important;
+  align-items:center!important;
+  justify-content:space-between!important;
+  gap:12px!important;
+  margin-bottom:9px!important;
+}
+#inputStep2 .step2-outlet-caption{
+  font-size:9px!important;
+  font-weight:900!important;
+  letter-spacing:.10em!important;
+  color:#007d49!important;
+}
+#inputStep2 .step2-outlet-edit{
+  border:0!important;
+  background:transparent!important;
+  color:#008a4c!important;
+  font-size:9px!important;
+  font-weight:800!important;
+  padding:2px 0!important;
+  cursor:pointer!important;
+}
+#inputStep2 .step2-outlet-edit:hover{color:#006b3a!important}
+#inputStep2 .step2-outlet-name{
+  min-height:34px!important;
+  display:flex!important;
+  align-items:center!important;
+  font-size:15px!important;
+  line-height:1.25!important;
+  font-weight:900!important;
+  color:#102a1f!important;
+  letter-spacing:-.015em!important;
+  padding:0 2px!important;
+}
+#inputStep2 .step2-outlet-grid{
+  display:grid!important;
+  grid-template-columns:repeat(2,minmax(0,1fr))!important;
+  gap:10px!important;
+  margin-top:8px!important;
+  padding-top:4px!important;
+}
+#inputStep2 .step2-outlet-field{
+  position:relative!important;
+  min-height:57px!important;
+  padding:9px 12px 8px!important;
+  border:1px solid #d9e6df!important;
+  border-radius:13px!important;
+  background:rgba(255,255,255,.84)!important;
+  box-shadow:0 3px 12px rgba(15,23,42,.025)!important;
+}
+#inputStep2 .step2-outlet-label{
+  font-size:8px!important;
+  font-weight:900!important;
+  letter-spacing:.10em!important;
+  color:#81918a!important;
+}
+#inputStep2 .step2-outlet-value{
+  margin-top:5px!important;
+  padding-right:58px!important;
+  overflow:hidden!important;
+  text-overflow:ellipsis!important;
+  white-space:nowrap!important;
+  font-size:12px!important;
+  line-height:1.25!important;
+  font-weight:900!important;
+  color:#102a1f!important;
+}
+#inputStep2 .step2-outlet-status{
+  position:absolute!important;
+  top:9px!important;
+  right:9px!important;
+  padding:3px 6px!important;
+  border-radius:999px!important;
+  background:#e9f8f1!important;
+  color:#008a4c!important;
+  font-size:6.5px!important;
+  line-height:1!important;
+  font-weight:900!important;
+  letter-spacing:.06em!important;
+}
+#inputStep2 .step2-outlet-meta{
+  display:none!important;
+}
+
+/* Produk tetap menjadi blok berikutnya, tetapi jaraknya lebih menyatu */
+#inputStep2 .step2-outlet-summary + .ui-product-entry{
+  margin-top:0!important;
+  border-radius:18px!important;
+}
+
+@media(max-width:600px){
+  #inputStep2 .step2-outlet-summary{padding:15px!important;border-radius:18px!important}
+  #inputStep2 .step2-outlet-name{font-size:14px!important}
+  #inputStep2 .step2-outlet-grid{gap:8px!important}
+  #inputStep2 .step2-outlet-field{padding:9px 10px 8px!important}
+}
+@media(max-width:380px){
+  #inputStep2 .step2-outlet-grid{grid-template-columns:1fr!important}
+}
+</style>
 </head>
 <body class="bg-slate-50 font-sans">
 
@@ -2424,13 +2544,25 @@ body{font-family:Inter,ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-ser
                                 <button type="button" onclick="kembaliKeInfoOrder()" class="rounded-xl border border-slate-200 bg-white hover:bg-slate-50 text-slate-600 px-3 py-2 text-[10px] font-bold transition">← Kembali ke Informasi Order</button>
                             </div>
 
-                            <div class="rounded-xl bg-emerald-50/60 border border-emerald-200 p-3">
-                                <div class="flex items-center justify-between gap-2 mb-2">
-                                    <div class="text-[9px] font-extrabold uppercase tracking-wider text-emerald-700">Outlet Terpilih</div>
-                                    <button type="button" onclick="kembaliKeInfoOrder()" class="text-[9px] font-bold text-emerald-700 hover:text-emerald-900">Edit informasi</button>
+                            <div class="step2-outlet-summary">
+                                <div class="step2-outlet-head">
+                                    <div class="step2-outlet-caption">OUTLET TERPILIH</div>
+                                    <button type="button" onclick="kembaliKeInfoOrder()" class="step2-outlet-edit">Edit informasi</button>
                                 </div>
-                                <div id="inputStep2Outlet" class="text-xs font-extrabold text-slate-800">-</div>
-                                <div id="inputStep2Meta" class="text-[9px] text-slate-500 mt-1">Cust. Code - · Channel -</div>
+                                <div id="inputStep2Outlet" class="step2-outlet-name">-</div>
+                                <div class="step2-outlet-grid">
+                                    <div class="step2-outlet-field">
+                                        <div class="step2-outlet-label">CUST. CODE</div>
+                                        <div id="inputStep2CustCode" class="step2-outlet-value">-</div>
+                                        <span class="step2-outlet-status">TERPILIH</span>
+                                    </div>
+                                    <div class="step2-outlet-field">
+                                        <div class="step2-outlet-label">CHANNEL</div>
+                                        <div id="inputStep2Channel" class="step2-outlet-value">-</div>
+                                        <span class="step2-outlet-status">TERPILIH</span>
+                                    </div>
+                                </div>
+                                <div id="inputStep2Meta" class="step2-outlet-meta">Cust. Code - · Channel -</div>
                             </div>
 
                             <div class="rounded-xl border border-slate-200 bg-slate-50 p-3 space-y-2 ui-product-entry">
@@ -3385,8 +3517,12 @@ startAutoRefresh();
             if (!tanggal) { showModal('Peringatan', 'Pilih tanggal order terlebih dahulu.'); return; }
             document.getElementById('inputStep1').classList.add('hidden');
             document.getElementById('inputStep2').classList.remove('hidden');
+            const custCodeStep2 = document.getElementById('inputCustCode').value || '-';
+            const channelStep2 = document.getElementById('inputChannel').value || '-';
             document.getElementById('inputStep2Outlet').textContent = outlet;
-            document.getElementById('inputStep2Meta').textContent = 'Cust. Code ' + (document.getElementById('inputCustCode').value || '-') + ' · Channel ' + (document.getElementById('inputChannel').value || '-');
+            document.getElementById('inputStep2CustCode').textContent = custCodeStep2;
+            document.getElementById('inputStep2Channel').textContent = channelStep2;
+            document.getElementById('inputStep2Meta').textContent = 'Cust. Code ' + custCodeStep2 + ' · Channel ' + channelStep2;
             updateInputWizardIndicator(2);
             renderCart();
             window.scrollTo({top: 0, behavior: 'smooth'});
