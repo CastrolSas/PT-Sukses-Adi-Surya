@@ -4019,7 +4019,7 @@ startAutoRefresh();
             }
 
             if (riwayatViewMode === 'chart') {
-                renderRiwayatChart(data);
+                renderRiwayatCards(data);
                 updateViewToggleButtons('riwayat');
                 return;
             }
@@ -6141,7 +6141,7 @@ startAutoRefresh();
             }
 
             if (pencapaianViewMode === 'chart') {
-                renderPencapaianChart(data);
+                renderPencapaianCards(data);
             } else {
                 renderPencapaianTable(data);
             }
@@ -10306,6 +10306,111 @@ button{ -webkit-tap-highlight-color:transparent }
 }
 </style>
 
+
+<script id="card-view-restore-v13">
+/* Chart view: restore the previous card-based presentation without touching the existing chart functions. */
+function renderRiwayatCards(data) {
+    const container = document.getElementById('listRiwayat');
+    if (!container) return;
+    const isAdmin = String(currentUsernameInput || '').toLowerCase() === 'admin';
+    const totalPages = isAdmin ? Math.max(1, Math.ceil(data.length / RIWAYAT_PAGE_SIZE)) : 1;
+    if (riwayatPage > totalPages) riwayatPage = totalPages;
+    const startIndex = isAdmin ? (riwayatPage - 1) * RIWAYAT_PAGE_SIZE : 0;
+    const visibleData = isAdmin ? data.slice(startIndex, startIndex + RIWAYAT_PAGE_SIZE) : data;
+
+    let cards = '';
+    visibleData.forEach(function(item, index) {
+        const status = String(item.status || 'PENDING').toUpperCase();
+        const statusClass = status === 'APPROVE'
+            ? 'text-emerald-700 bg-emerald-50 border-emerald-200'
+            : status === 'DECLINE'
+                ? 'text-red-700 bg-red-50 border-red-200'
+                : 'text-amber-700 bg-amber-50 border-amber-200';
+        const statusDot = status === 'APPROVE' ? 'bg-emerald-500' : status === 'DECLINE' ? 'bg-red-500' : 'bg-amber-500';
+        const products = Array.isArray(item.products) ? item.products.filter(function(p){ return String(p || '').trim() !== ''; }) : [];
+        const productText = products.length ? products.map(function(p){ return escapeHtml(p); }).join('<br>') : '-';
+        const statusCell = isAdmin ? `
+            <select onclick="event.stopPropagation()" class="bulk-status-select w-full border border-slate-300 rounded-lg px-2.5 py-2 text-[10px] font-bold bg-white" data-order-id="${escapeHtml(item.id)}" data-current-status="${escapeHtml(status)}">
+                <option value="">${escapeHtml(status)} / TIDAK DIUBAH</option>
+                <option value="APPROVE" ${selectedRiwayatStatus[String(item.id)] === 'APPROVE' ? 'selected' : ''}>APPROVE</option>
+                <option value="DECLINE" ${selectedRiwayatStatus[String(item.id)] === 'DECLINE' ? 'selected' : ''}>DECLINE</option>
+            </select>` : `
+            <span class="inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-full border text-[9px] font-extrabold ${statusClass}">
+                <span class="w-1.5 h-1.5 rounded-full ${statusDot}"></span>${escapeHtml(status)}
+            </span>`;
+        const selected = selectedRiwayatIds[String(item.id)] ? 'checked' : '';
+        const number = startIndex + index + 1;
+        const valueText = 'Rp ' + Number(item.value || 0).toLocaleString('id-ID');
+        const volumeText = escapeHtml(item.volume || '0') + ' L';
+        cards += `
+            <article class="riwayat-card group">
+                <div class="riwayat-card-top">
+                    <div class="flex items-start gap-2 min-w-0">
+                        <input type="checkbox" class="riwayat-select-checkbox w-4 h-4 mt-0.5 accent-emerald-600 cursor-pointer shrink-0" data-order-id="${escapeHtml(item.id)}" ${selected} onclick="event.stopPropagation()" onchange="toggleRiwayatSelection(this)" title="Pilih transaksi">
+                        <div class="min-w-0">
+                            <div class="flex flex-wrap items-center gap-2"><span class="riwayat-card-number">#${number}</span><span class="text-[10px] text-slate-400 font-medium">${escapeHtml(item.tanggal || '-')}</span></div>
+                            <div class="riwayat-card-outlet mt-1">${escapeHtml(item.outlet || '-')}</div>
+                            ${isAdmin ? `<div class="text-[9px] text-slate-400 mt-0.5">DSR: ${escapeHtml(item.dsr || '-')}</div>` : ''}
+                        </div>
+                    </div>
+                    <div class="shrink-0" onclick="event.stopPropagation()">${statusCell}</div>
+                </div>
+                <div class="riwayat-card-products"><div class="riwayat-card-label">PRODUK</div><div class="riwayat-card-product-text">${productText}</div></div>
+                <div class="riwayat-card-summary">
+                    <div class="riwayat-card-stat"><span class="riwayat-card-label">VOLUME</span><strong>${volumeText}</strong></div>
+                    <div class="riwayat-card-stat"><span class="riwayat-card-label">NILAI</span><strong>${valueText}</strong></div>
+                </div>
+                <div class="riwayat-card-footer" onclick="event.stopPropagation()">
+                    <span class="text-[9px] text-slate-400 font-medium">ID: ${escapeHtml(item.id || '-')}</span>
+                    <div class="flex items-center gap-1.5">
+                        <button type="button" onclick="editRiwayat('${escapeHtml(item.id)}'); return false;" class="riwayat-action riwayat-action-edit" title="Edit order">✏️ EDIT</button>
+                        <button type="button" onclick="kirimUlangWA('${escapeHtml(item.id)}')" class="riwayat-action riwayat-action-wa" title="Kirim ulang WhatsApp">💬 WA</button>
+                        <button type="button" onclick="hapusRiwayat('${escapeHtml(item.id)}')" class="riwayat-action riwayat-action-delete" title="Hapus">🗑️</button>
+                    </div>
+                </div>
+            </article>`;
+    });
+
+    const bulkControls = isAdmin ? `
+        <div class="flex flex-wrap items-center gap-2 p-3 bg-slate-50 border border-slate-200 rounded-xl mb-3">
+            <button type="button" onclick="toggleSelectAllRiwayatVisible(true)" class="px-3 py-1.5 rounded-md bg-white hover:bg-slate-100 text-slate-600 text-[10px] font-bold border border-slate-200">PILIH SEMUA</button>
+            <button type="button" onclick="resetPilihanStatusRiwayat()" class="px-3 py-1.5 rounded-md bg-white hover:bg-slate-100 text-slate-600 text-[10px] font-bold border border-slate-200">RESET</button>
+            <button type="button" onclick="doneBulkStatusRiwayat()" class="px-4 py-1.5 rounded-md bg-slate-800 hover:bg-slate-900 text-white text-[10px] font-extrabold shadow-sm">DONE</button>
+            <span id="bulkStatusInfo" class="text-[10px] text-slate-500 font-semibold ml-auto">Pilih status pada masing-masing card lalu klik DONE.</span>
+        </div>` : '';
+    const pagination = isAdmin && totalPages > 1 ? `
+        <div class="flex items-center justify-between gap-2 mt-3 px-3 py-2 border border-slate-200 rounded-xl bg-slate-50 text-[10px]">
+            <span class="text-slate-500">Menampilkan ${startIndex + 1}-${Math.min(startIndex + RIWAYAT_PAGE_SIZE, data.length)} dari ${data.length} transaksi</span>
+            <div class="flex items-center gap-1"><button type="button" onclick="changeRiwayatPage(-1)" class="px-2.5 py-1.5 rounded-lg border bg-white ${riwayatPage <= 1 ? 'opacity-40 cursor-not-allowed' : 'hover:bg-slate-100'}" ${riwayatPage <= 1 ? 'disabled' : ''}>‹</button><span class="px-2 font-bold">Halaman ${riwayatPage}/${totalPages}</span><button type="button" onclick="changeRiwayatPage(1)" class="px-2.5 py-1.5 rounded-lg border bg-white ${riwayatPage >= totalPages ? 'opacity-40 cursor-not-allowed' : 'hover:bg-slate-100'}" ${riwayatPage >= totalPages ? 'disabled' : ''}>›</button></div>
+        </div>` : '';
+    container.innerHTML = `<div class="riwayat-cards-wrap">${bulkControls}<div class="riwayat-cards-grid">${cards}</div>${pagination}</div>`;
+    updateSelectedRiwayatUI();
+}
+
+function renderPencapaianCards(data) {
+    const container = document.getElementById('pencapaianSalesList');
+    if (!container) return;
+    container.innerHTML = data.map(function(item) {
+        return `
+            <div class="bg-slate-50 border border-slate-200 rounded-2xl p-3">
+                <div class="flex items-center justify-between gap-2 mb-2.5">
+                    <div class="flex items-center gap-2">
+                        <div class="w-9 h-9 rounded-full bg-emerald-100 text-emerald-800 flex items-center justify-center font-extrabold text-xs">${escapeHtml((item.sales || '-').substring(0,2).toUpperCase())}</div>
+                        <div><div class="text-sm font-extrabold text-slate-800">${escapeHtml(item.sales || '-')}</div><div class="text-[9px] text-slate-400">${currentUsernameInput && currentUsernameInput.toLowerCase() === 'admin' ? 'Pencapaian semua Sales · ' : ''}Periode Quartal · Rincian 3 Bulan</div></div>
+                    </div>
+                    <span class="text-[9px] font-bold px-2 py-1 rounded-full bg-white border border-slate-200 text-slate-500">${escapeHtml(item.periode || '')}</span>
+                </div>
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                    ${renderPencapaianCategory('Value', '💰', item.categories && item.categories.value, 'value', item.sales)}
+                    ${renderPencapaianCategory('Volume', '📦', item.categories && item.categories.volume, 'volume', item.sales)}
+                    ${renderPencapaianCategory('Active Outlet', '🏪', item.categories && item.categories.active, 'active', item.sales)}
+                    ${renderPencapaianCategory('Produk Fokus', '🎯', item.categories && item.categories.product, 'product', item.sales)}
+                    ${renderPencapaianCategory('Power Brand', '🏆', item.categories && item.categories.powerBrand, 'powerBrand', item.sales)}
+                </div>
+            </div>`;
+    }).join('');
+}
+</script>
 </body>
 </html>
 <style id="mobile-monitoring-pricelist-bottom-fix">
