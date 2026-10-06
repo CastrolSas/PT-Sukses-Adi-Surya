@@ -2576,6 +2576,58 @@ body{font-family:Inter,ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-ser
   #mainHeader .pengumuman-main-header-marquee{margin-right:112px!important;max-width:calc(100% - 112px)!important;overflow:hidden!important;}
 }
 </style>
+
+<style id="notification-panel-visibility-final">
+/* Notification panel: tampil di atas seluruh halaman tanpa tertutup header/overflow. */
+#mainHeader .notification-header-wrap{
+  z-index:1300!important;
+}
+#mainHeader .notification-panel{
+  z-index:1301!important;
+}
+@media (min-width:768px){
+  /* Hindari transform pada parent yang membuat fixed panel terikat ke header. */
+  #mainHeader .notification-header-wrap{
+    transform:none!important;
+    margin-top:-20px!important;
+  }
+  #mainHeader .notification-panel{
+    position:fixed!important;
+    top:72px!important;
+    right:72px!important;
+    left:auto!important;
+    width:min(390px,calc(100vw - 24px))!important;
+    max-height:min(70vh,520px)!important;
+    overflow:hidden!important;
+  }
+}
+@media (max-width:767px){
+  #mainHeader .notification-header-wrap{
+    transform:none!important;
+    margin-top:-18px!important;
+  }
+  #mainHeader .notification-panel{
+    position:fixed!important;
+    top:66px!important;
+    left:10px!important;
+    right:10px!important;
+    width:auto!important;
+    max-width:none!important;
+    max-height:calc(100dvh - 78px)!important;
+    overflow:hidden!important;
+  }
+}
+#mainHeader .notification-list{
+  min-height:0!important;
+  max-height:calc(min(70vh,520px) - 70px)!important;
+  overflow-y:auto!important;
+}
+@media (max-width:767px){
+  #mainHeader .notification-list{
+    max-height:calc(100dvh - 148px)!important;
+  }
+}
+</style>
 </head>
 <body class="bg-slate-50 font-sans">
 
