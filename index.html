@@ -2460,6 +2460,19 @@ body{font-family:Inter,ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-ser
   #mainHeader .global-last-sync{display:none !important;}
 }
 </style>
+
+<style id="mobile-header-no-title-and-marquee-safe">
+@media (max-width: 767px){
+  /* Mobile: sembunyikan hanya tulisan Castrol, tombol/icon lain tetap. */
+  #mainHeader h1{display:none !important;}
+  /* Sisakan ruang kanan agar marquee tidak tertutup icon notifikasi + refresh. */
+  #mainHeader .pengumuman-main-header-marquee{
+    margin-right:102px !important;
+    padding-right:0 !important;
+    max-width:calc(100% - 102px) !important;
+  }
+}
+</style>
 </head>
 <body class="bg-slate-50 font-sans">
 
@@ -2864,8 +2877,8 @@ body{font-family:Inter,ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-ser
                     </div>
 
                     <div class="flex items-center justify-end gap-1.5 mb-1" role="group" aria-label="Tampilan Riwayat">
-                        <button type="button" id="riwayatViewTableBtn" onclick="setRiwayatView('table')" class="view-toggle-btn is-active">▤ Tabel</button>
-                        <button type="button" id="riwayatViewChartBtn" onclick="setRiwayatView('chart')" class="view-toggle-btn">▥ Chart</button>
+                        <button type="button" id="riwayatViewTableBtn" onclick="setRiwayatView('table')" class="view-toggle-btn">▤ Tabel</button>
+                        <button type="button" id="riwayatViewChartBtn" onclick="setRiwayatView('chart')" class="view-toggle-btn is-active">▥ Chart</button>
                     </div>
 
                     <div id="riwayatFiltersBox" class="bg-white border border-slate-200 rounded-2xl p-3 shadow-sm">
@@ -2943,8 +2956,8 @@ body{font-family:Inter,ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-ser
                         </div>
                     </div>
                     <div class="flex items-center justify-end gap-1.5 mb-1" role="group" aria-label="Tampilan Pencapaian Sales">
-                        <button type="button" id="pencapaianViewTableBtn" onclick="setPencapaianView('table')" class="view-toggle-btn is-active">▤ Tabel</button>
-                        <button type="button" id="pencapaianViewChartBtn" onclick="setPencapaianView('chart')" class="view-toggle-btn">▥ Chart</button>
+                        <button type="button" id="pencapaianViewTableBtn" onclick="setPencapaianView('table')" class="view-toggle-btn">▤ Tabel</button>
+                        <button type="button" id="pencapaianViewChartBtn" onclick="setPencapaianView('chart')" class="view-toggle-btn is-active">▥ Chart</button>
                     </div>
                     <div id="pencapaianLoading" class="bg-white border border-slate-200 rounded-2xl p-6 text-center shadow-sm">
                         <div class="text-sm font-semibold text-slate-600">Memuat pencapaian...</div>
@@ -3489,8 +3502,8 @@ body{font-family:Inter,ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-ser
         let kontrakLoading = false;
         let pencapaianLoading = false;
         // Preferensi tampilan hanya untuk tab Riwayat dan Pencapaian Sales.
-        let riwayatViewMode = 'table';
-        let pencapaianViewMode = 'table';
+        let riwayatViewMode = 'chart';
+        let pencapaianViewMode = 'chart';
         let pencapaianRequestSeq = 0;
         let pencapaianCache = {};
         let pencapaianDetailCache = {};
@@ -6387,9 +6400,12 @@ startAutoRefresh();
             const cats = [{key:'value',label:'Value',type:'value'},{key:'volume',label:'Volume',type:'volume'},{key:'active',label:'Active Outlet',type:'active'},{key:'product',label:'Produk Fokus',type:'product'},{key:'powerBrand',label:'Power Brand',type:'powerBrand'}];
             let rows='';
             data.forEach(function(item){
-                cats.forEach(function(c){
+                cats.forEach(function(c, index){
                     const q=(item.categories&&item.categories[c.key]&&item.categories[c.key].quarter)||{};
-                    rows += '<tr class="border-b border-slate-100 hover:bg-emerald-50/50 cursor-pointer" onclick="openPencapaianDetail(\''+escapeHtml(categoryKeyForDetail(c.type))+'\', \''+escapeHtml(item.sales||'')+'\')"><td class="px-3 py-2.5 font-bold text-slate-700">'+escapeHtml(item.sales||'-')+'</td><td class="px-3 py-2.5">'+escapeHtml(c.label)+'</td><td class="px-3 py-2.5 text-right">'+formatPencapaianValue(q.target,c.type)+'</td><td class="px-3 py-2.5 text-right font-bold">'+formatPencapaianValue(q.actual,c.type)+'</td><td class="px-3 py-2.5 text-right font-bold '+(Number(q.gap||0)>=0?'text-emerald-700':'text-red-600')+'">'+formatPencapaianValue(q.gap||0,c.type)+'</td><td class="px-3 py-2.5 text-right font-extrabold">'+formatPercentID(q.percentage||0)+'</td></tr>';
+                    const salesCell = index === 0
+                        ? '<td class="px-3 py-2.5 font-bold text-slate-700 align-top border-r border-slate-100" rowspan="'+cats.length+'">'+escapeHtml(item.sales||'-')+'</td>'
+                        : '';
+                    rows += '<tr class="border-b border-slate-100 hover:bg-emerald-50/50 cursor-pointer" onclick="openPencapaianDetail(\''+escapeHtml(categoryKeyForDetail(c.type))+'\', \''+escapeHtml(item.sales||'')+'\')">'+salesCell+'<td class="px-3 py-2.5">'+escapeHtml(c.label)+'</td><td class="px-3 py-2.5 text-right">'+formatPencapaianValue(q.target,c.type)+'</td><td class="px-3 py-2.5 text-right font-bold">'+formatPencapaianValue(q.actual,c.type)+'</td><td class="px-3 py-2.5 text-right font-bold '+(Number(q.gap||0)>=0?'text-emerald-700':'text-red-600')+'">'+formatPencapaianValue(q.gap||0,c.type)+'</td><td class="px-3 py-2.5 text-right font-extrabold">'+formatPercentID(q.percentage||0)+'</td></tr>';
                 });
             });
             container.innerHTML='<div class="bg-white border border-slate-200 rounded-2xl shadow-sm overflow-hidden"><div class="overflow-x-auto"><table class="w-full min-w-[820px] text-[10px]"><thead><tr class="bg-slate-50 border-b border-slate-200 text-[9px] uppercase tracking-wide text-slate-500"><th class="px-3 py-2 text-left">Sales</th><th class="px-3 py-2 text-left">Kategori</th><th class="px-3 py-2 text-right">Target</th><th class="px-3 py-2 text-right">Actual</th><th class="px-3 py-2 text-right">Gap</th><th class="px-3 py-2 text-right">%</th></tr></thead><tbody>'+rows+'</tbody></table></div></div>';
