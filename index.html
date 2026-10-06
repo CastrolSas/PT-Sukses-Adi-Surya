@@ -7538,7 +7538,110 @@ startAutoRefresh();
             const rows=data.map(function(item,i){return '<tr><td>'+(i+1)+'</td><td>'+escapeHtml(item.nama||'-')+'</td><td style="text-align:right">'+formatRupiah(item.harga||0)+'</td></tr>';}).join('');
             const win=window.open('','_blank');
             if(!win){showModal('Export PDF','Browser memblokir jendela cetak. Izinkan pop-up untuk Export PDF.');return;}
-            win.document.write('<!doctype html><html><head><title>Pricelist Castrol</title><style>body{font-family:Arial,sans-serif;padding:24px;color:#111}h1{font-size:20px;margin:0 0 6px}p{font-size:11px;color:#666;margin:0 0 16px}table{width:100%;border-collapse:collapse;font-size:11px}th,td{border:1px solid #ccc;padding:7px}th{text-align:left;background:#f1f5f9}@media print{body{padding:10px}}</style></head><body><h1>Pricelist Castrol</h1><p>'+escapeHtml(filterText)+'</p><table><thead><tr><th style="width:50px">No</th><th>Produk</th><th style="width:160px;text-align:right">Harga</th></tr></thead><tbody>'+rows+'</tbody></table></body></html>');
+            win.document.write('<!doctype html><html><head><title>Pricelist Castrol</title><style>body{font-family:Arial,sans-serif;padding:24px;color:#111}h1{font-size:20px;margin:0 0 6px}p{font-size:11px;color:#666;margin:0 0 16px}table{width:100%;border-collapse:collapse;font-size:11px}th,td{border:1px solid #ccc;padding:7px}th{text-align:left;background:#f1f5f9}@media print{body{padding:10px}}</style></head><body><h1>Pricelist Castrol</h1><p>'+escapeHtml(filterText)+'</p><table><thead><tr><th style="width:50px">No</th><th>Produk</th><th style="width:160px;text-align:right">Harga</th></tr></thead><tbody>'+rows+'</tbody></table>
+<style id="final-desktop-layout-only">
+/* =========================================================
+   FINAL USER LAYOUT — CSS ONLY
+   DESKTOP >= 768px:
+   Produk
+   [ SEMUA ] [ MCO ] [ PCO ]
+   [                 Pilih Produk                 ]
+
+   Qty       Satuan              + Tambah Item
+   [ 1 ]     [ Pcs | Dus ]       [ + Tambah Item ]
+
+   PENTING:
+   - Hanya CSS desktop.
+   - Mobile tidak disentuh.
+   - JavaScript tidak diubah.
+   ========================================================= */
+@media (min-width:768px){
+
+  #inputStep2 .ui-product-entry{
+    display:grid !important;
+    grid-template-columns:78px 145px 130px minmax(0,1fr) !important;
+    grid-template-rows:auto auto !important;
+    column-gap:8px !important;
+    row-gap:8px !important;
+    align-items:end !important;
+    width:100% !important;
+    max-width:none !important;
+    box-sizing:border-box !important;
+    overflow:visible !important;
+  }
+
+  /* Produk + filter + dropdown tetap satu baris penuh di atas */
+  #inputStep2 .ui-product-entry > div:first-child{
+    grid-column:1 / -1 !important;
+    grid-row:1 !important;
+    width:100% !important;
+    min-width:0 !important;
+    max-width:none !important;
+    box-sizing:border-box !important;
+  }
+
+  /* Jadikan Qty dan Satuan item grid langsung */
+  #inputStep2 .ui-product-entry > .ui-item-controls{
+    display:contents !important;
+  }
+
+  /* Qty — kolom paling kiri */
+  #inputStep2 .ui-product-entry .ui-qty-control{
+    grid-column:1 !important;
+    grid-row:2 !important;
+    width:78px !important;
+    min-width:78px !important;
+    max-width:78px !important;
+    box-sizing:border-box !important;
+    align-self:end !important;
+  }
+
+  #inputStep2 .ui-product-entry .ui-qty-control #addItemQty{
+    width:78px !important;
+    min-width:78px !important;
+    max-width:78px !important;
+    box-sizing:border-box !important;
+    text-align:center !important;
+  }
+
+  /* Satuan — langsung di sebelah Qty */
+  #inputStep2 .ui-product-entry .ui-satuan-control{
+    grid-column:2 !important;
+    grid-row:2 !important;
+    width:145px !important;
+    min-width:145px !important;
+    max-width:145px !important;
+    box-sizing:border-box !important;
+    align-self:end !important;
+  }
+
+  #inputStep2 .ui-product-entry .ui-satuan-control > div{
+    width:145px !important;
+    min-width:145px !important;
+    max-width:145px !important;
+    box-sizing:border-box !important;
+  }
+
+  /* + Tambah Item — langsung di sebelah Satuan */
+  #inputStep2 .ui-product-entry > .ui-add-item-btn{
+    grid-column:3 !important;
+    grid-row:2 !important;
+    width:130px !important;
+    min-width:130px !important;
+    max-width:130px !important;
+    height:38px !important;
+    min-height:38px !important;
+    margin:0 !important;
+    padding-left:10px !important;
+    padding-right:10px !important;
+    box-sizing:border-box !important;
+    align-self:end !important;
+    white-space:nowrap !important;
+  }
+}
+</style>
+
+</body></html>');
             win.document.close();win.focus();setTimeout(function(){win.print();},250);
         }
 
