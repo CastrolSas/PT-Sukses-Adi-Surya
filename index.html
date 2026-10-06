@@ -2628,6 +2628,24 @@ body{font-family:Inter,ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-ser
   }
 }
 </style>
+
+<style id="desktop-notification-click-visibility-fix">
+/* Desktop only: notification panel must not be clipped by the header.
+   CSS-only fix; JavaScript is intentionally untouched. */
+@media (min-width:768px){
+  #mainHeader{overflow:visible!important;}
+  #mainHeader .notification-header-wrap{z-index:1400!important;}
+  #mainHeader .notification-bell-btn{position:relative!important;z-index:1401!important;}
+  #mainHeader .notification-panel{
+    position:fixed!important;
+    top:72px!important;
+    right:72px!important;
+    left:auto!important;
+    z-index:1402!important;
+    visibility:visible!important;
+  }
+}
+</style>
 </head>
 <body class="bg-slate-50 font-sans">
 
