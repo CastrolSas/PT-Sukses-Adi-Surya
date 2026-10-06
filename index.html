@@ -2971,6 +2971,9 @@ body{background:
   }
 }
 </style>
+
+
+
 </head>
 <body class="bg-slate-50 font-sans">
 
@@ -11051,6 +11054,124 @@ function renderPencapaianCards(data) {
     }).join('');
 }
 </script>
+
+
+<!-- STEP 2 PRODUCT DESKTOP — QTY / SATUAN / TAMBAH ITEM DI BAWAH PRODUK -->
+<style id="step2-product-desktop-row-below-product">
+@media (min-width: 768px) {
+  #inputStep2 .ui-product-entry {
+    display: grid !important;
+    grid-template-columns: 76px 124px 124px !important;
+    grid-template-rows: auto auto !important;
+    column-gap: 10px !important;
+    row-gap: 10px !important;
+    align-items: end !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    box-sizing: border-box !important;
+    position: relative !important;
+  }
+
+  /* Produk berada di atas, selebar container */
+  #inputStep2 .ui-product-entry > div:first-child {
+    grid-column: 1 / 4 !important;
+    grid-row: 1 !important;
+    width: 100% !important;
+    min-width: 0 !important;
+    max-width: none !important;
+    box-sizing: border-box !important;
+  }
+
+  #inputStep2 .ui-product-entry .ui-product-filters {
+    width: 100% !important;
+    box-sizing: border-box !important;
+  }
+
+  #inputStep2 .ui-product-entry #addItemProduk,
+  #inputStep2 .ui-product-entry .select2-container {
+    width: 100% !important;
+    max-width: 100% !important;
+    min-width: 0 !important;
+    box-sizing: border-box !important;
+  }
+
+  /* Lepaskan Qty dan Satuan dari wrapper agar bisa sejajar dengan tombol */
+  #inputStep2 .ui-product-entry > .ui-item-controls {
+    display: contents !important;
+  }
+
+  /* Baris kedua: Qty | Satuan | + Tambah Item */
+  #inputStep2 .ui-product-entry .ui-qty-control {
+    grid-column: 1 !important;
+    grid-row: 2 !important;
+    width: 76px !important;
+    min-width: 76px !important;
+    max-width: 76px !important;
+    box-sizing: border-box !important;
+  }
+
+  #inputStep2 .ui-product-entry .ui-satuan-control {
+    grid-column: 2 !important;
+    grid-row: 2 !important;
+    width: 124px !important;
+    min-width: 124px !important;
+    max-width: 124px !important;
+    box-sizing: border-box !important;
+  }
+
+  #inputStep2 .ui-product-entry .ui-qty-control label,
+  #inputStep2 .ui-product-entry .ui-satuan-control label {
+    display: block !important;
+    height: 15px !important;
+    margin: 0 0 5px !important;
+    line-height: 15px !important;
+    white-space: nowrap !important;
+  }
+
+  #inputStep2 .ui-product-entry #addItemQty {
+    width: 100% !important;
+    height: 38px !important;
+    min-height: 38px !important;
+    max-height: 38px !important;
+    margin: 0 !important;
+    box-sizing: border-box !important;
+    text-align: center !important;
+  }
+
+  #inputStep2 .ui-product-entry .ui-satuan-control > div {
+    display: flex !important;
+    width: 100% !important;
+    height: 38px !important;
+    min-height: 38px !important;
+    max-height: 38px !important;
+    margin: 0 !important;
+    box-sizing: border-box !important;
+  }
+
+  #inputStep2 .ui-product-entry .ui-satuan-control button {
+    min-width: 0 !important;
+    height: 100% !important;
+    line-height: 1 !important;
+    white-space: nowrap !important;
+  }
+
+  #inputStep2 .ui-product-entry > button.ui-add-item-btn {
+    grid-column: 3 !important;
+    grid-row: 2 !important;
+    width: 124px !important;
+    min-width: 124px !important;
+    max-width: 124px !important;
+    height: 38px !important;
+    min-height: 38px !important;
+    max-height: 38px !important;
+    margin: 0 !important;
+    padding: 0 10px !important;
+    align-self: end !important;
+    box-sizing: border-box !important;
+    white-space: nowrap !important;
+  }
+}
+</style>
 </body>
 </html>
 <style id="mobile-monitoring-pricelist-bottom-fix">
