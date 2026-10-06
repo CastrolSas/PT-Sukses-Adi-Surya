@@ -2423,6 +2423,10 @@ body{font-family:Inter,ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-ser
 #listRiwayat table th,#listRiwayat table td,#pencapaianSalesList table th,#pencapaianSalesList table td{vertical-align:middle}
 @media(max-width:640px){.view-toggle-btn{min-height:30px;padding:5px 9px;font-size:9px}}
 </style>
+<style id="pencapaian-detail-no-actions">
+/* Hanya Detail pada Pencapaian Sales: tanpa tombol OK/Batal */
+#customModal .modern-modal-card.pencapaian-detail-modal-card .modern-modal-footer{display:none !important;}
+</style>
 </head>
 <body class="bg-slate-50 font-sans">
 
@@ -3350,7 +3354,7 @@ body{font-family:Inter,ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-ser
             clearDetailModalNoFooter();
             document.getElementById('customModal').style.display = 'none';
             const modalCard = document.getElementById('customModal').querySelector('.modern-modal-card');
-            if (modalCard) modalCard.classList.remove('bws-detail-modal-card');
+            if (modalCard) { modalCard.classList.remove('bws-detail-modal-card'); modalCard.classList.remove('pencapaian-detail-modal-card'); }
             document.getElementById('modalOkBtn').textContent = 'OK';
             if (modalCallback && typeof modalCallback === 'function') {
                 modalCallback(isOk);
@@ -6329,7 +6333,7 @@ startAutoRefresh();
 
             const modal = document.getElementById('customModal');
             const card = modal ? modal.querySelector('.modern-modal-card') : null;
-            if (card) card.classList.add('bws-detail-modal-card');
+            if (card) { card.classList.add('bws-detail-modal-card'); card.classList.add('pencapaian-detail-modal-card'); }
 
             const body = document.getElementById('modalBody');
             if (body) {
