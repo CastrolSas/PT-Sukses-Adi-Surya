@@ -3107,6 +3107,66 @@ body{background:
 }
 </style>
 
+
+<style id="ui-product-controls-final-v8">
+/* FINAL DESKTOP PRODUCT CONTROLS - visual only */
+@media (min-width:768px){
+  #inputStep2 .ui-product-entry{
+    display:grid !important;
+    grid-template-columns:minmax(0,1fr) auto auto !important;
+    grid-template-rows:auto auto !important;
+    column-gap:8px !important;
+    row-gap:6px !important;
+    align-items:end !important;
+    overflow:visible !important;
+  }
+  #inputStep2 .ui-product-entry > div:first-child{
+    grid-column:1 / -1 !important;
+    grid-row:1 !important;
+    width:100% !important;
+  }
+  #inputStep2 .ui-product-entry > .ui-item-controls{
+    display:flex !important;
+    flex-direction:row !important;
+    align-items:flex-end !important;
+    gap:8px !important;
+    grid-column:1 / -1 !important;
+    grid-row:2 !important;
+    width:auto !important;
+    margin:0 !important;
+  }
+  #inputStep2 .ui-product-entry .ui-qty-control{
+    width:72px !important; flex:0 0 72px !important;
+  }
+  #inputStep2 .ui-product-entry .ui-satuan-control{
+    width:108px !important; flex:0 0 108px !important;
+  }
+  #inputStep2 .ui-product-entry > .ui-add-item-btn{
+    grid-column:3 !important; grid-row:2 !important;
+    width:112px !important; min-width:112px !important; max-width:112px !important;
+    height:34px !important; min-height:34px !important; max-height:34px !important;
+    margin:0 !important; padding:0 10px !important;
+    align-self:end !important; position:relative !important; z-index:20 !important;
+    white-space:nowrap !important; line-height:34px !important;
+    box-sizing:border-box !important;
+  }
+  #inputStep2 .ui-product-entry .ui-qty-control #addItemQty{
+    width:72px !important; min-width:72px !important; max-width:72px !important;
+    height:34px !important; min-height:34px !important; max-height:34px !important;
+    box-sizing:border-box !important; text-align:center !important;
+    padding:0 8px !important;
+  }
+  #inputStep2 .ui-product-entry .ui-satuan-control > div{
+    width:108px !important; min-width:108px !important; max-width:108px !important;
+    height:34px !important; min-height:34px !important; max-height:34px !important;
+    box-sizing:border-box !important;
+  }
+  #inputStep2 .ui-product-entry .ui-satuan-control button{
+    height:34px !important; min-height:34px !important;
+    padding:0 10px !important;
+  }
+}
+</style>
 </head>
 <body class="bg-slate-50 font-sans">
 
@@ -7478,110 +7538,7 @@ startAutoRefresh();
             const rows=data.map(function(item,i){return '<tr><td>'+(i+1)+'</td><td>'+escapeHtml(item.nama||'-')+'</td><td style="text-align:right">'+formatRupiah(item.harga||0)+'</td></tr>';}).join('');
             const win=window.open('','_blank');
             if(!win){showModal('Export PDF','Browser memblokir jendela cetak. Izinkan pop-up untuk Export PDF.');return;}
-            win.document.write('<!doctype html><html><head><title>Pricelist Castrol</title><style>body{font-family:Arial,sans-serif;padding:24px;color:#111}h1{font-size:20px;margin:0 0 6px}p{font-size:11px;color:#666;margin:0 0 16px}table{width:100%;border-collapse:collapse;font-size:11px}th,td{border:1px solid #ccc;padding:7px}th{text-align:left;background:#f1f5f9}@media print{body{padding:10px}}</style>
-<style id="ui-product-controls-final-v7">
-/* FINAL DESKTOP FIX ONLY
-   Qty + Satuan + Tambah Item dibuat satu baris, compact,
-   dan tinggi kontrol disamakan dengan tombol SEMUA/MCO/PCO.
-   Tidak mengubah mobile atau JavaScript. */
-@media (min-width:768px){
-  #inputStep2 .ui-product-entry{
-    display:flex !important;
-    flex-direction:column !important;
-    gap:8px !important;
-    overflow:visible !important;
-  }
-
-  #inputStep2 .ui-product-entry > div:first-child{
-    width:100% !important;
-    flex:0 0 auto !important;
-  }
-
-  #inputStep2 .ui-product-entry > .ui-item-controls{
-    display:flex !important;
-    flex-direction:row !important;
-    align-items:flex-end !important;
-    justify-content:flex-start !important;
-    gap:8px !important;
-    width:auto !important;
-    flex:0 0 auto !important;
-    order:2 !important;
-  }
-
-  #inputStep2 .ui-product-entry .ui-qty-control,
-  #inputStep2 .ui-product-entry .ui-satuan-control{
-    flex:0 0 auto !important;
-    width:auto !important;
-    min-width:0 !important;
-    max-width:none !important;
-  }
-
-  #inputStep2 .ui-product-entry .ui-qty-control{
-    width:72px !important;
-  }
-
-  #inputStep2 .ui-product-entry .ui-satuan-control{
-    width:108px !important;
-  }
-
-  #inputStep2 .ui-product-entry .ui-qty-control #addItemQty,
-  #inputStep2 .ui-product-entry .ui-satuan-control > div,
-  #inputStep2 .ui-product-entry > .ui-add-item-btn{
-    height:34px !important;
-    min-height:34px !important;
-    max-height:34px !important;
-    box-sizing:border-box !important;
-    border-radius:9px !important;
-  }
-
-  #inputStep2 .ui-product-entry .ui-qty-control #addItemQty{
-    width:72px !important;
-    min-width:72px !important;
-    max-width:72px !important;
-    padding:0 8px !important;
-    text-align:center !important;
-    font-size:10px !important;
-  }
-
-  #inputStep2 .ui-product-entry .ui-satuan-control > div{
-    width:108px !important;
-    min-width:108px !important;
-    max-width:108px !important;
-    overflow:hidden !important;
-  }
-
-  #inputStep2 .ui-product-entry .ui-satuan-control button{
-    height:34px !important;
-    min-height:34px !important;
-    padding:0 10px !important;
-    font-size:10px !important;
-  }
-
-  #inputStep2 .ui-product-entry > .ui-add-item-btn{
-    order:3 !important;
-    width:112px !important;
-    min-width:112px !important;
-    max-width:112px !important;
-    flex:0 0 112px !important;
-    margin:0 !important;
-    padding:0 10px !important;
-    font-size:10px !important;
-    line-height:34px !important;
-    white-space:nowrap !important;
-    align-self:flex-end !important;
-    position:relative !important;
-    z-index:10 !important;
-  }
-
-  #inputStep2 .ui-product-entry .ui-qty-control label,
-  #inputStep2 .ui-product-entry .ui-satuan-control label{
-    height:12px !important;
-    margin:0 0 4px !important;
-    line-height:12px !important;
-  }
-}
-</style>
-</head><body><h1>Pricelist Castrol</h1><p>'+escapeHtml(filterText)+'</p><table><thead><tr><th style="width:50px">No</th><th>Produk</th><th style="width:160px;text-align:right">Harga</th></tr></thead><tbody>'+rows+'</tbody></table></body></html>');
+            win.document.write('<!doctype html><html><head><title>Pricelist Castrol</title><style>body{font-family:Arial,sans-serif;padding:24px;color:#111}h1{font-size:20px;margin:0 0 6px}p{font-size:11px;color:#666;margin:0 0 16px}table{width:100%;border-collapse:collapse;font-size:11px}th,td{border:1px solid #ccc;padding:7px}th{text-align:left;background:#f1f5f9}@media print{body{padding:10px}}</style></head><body><h1>Pricelist Castrol</h1><p>'+escapeHtml(filterText)+'</p><table><thead><tr><th style="width:50px">No</th><th>Produk</th><th style="width:160px;text-align:right">Harga</th></tr></thead><tbody>'+rows+'</tbody></table></body></html>');
             win.document.close();win.focus();setTimeout(function(){win.print();},250);
         }
 
