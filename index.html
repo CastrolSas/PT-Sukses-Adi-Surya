@@ -2448,6 +2448,18 @@ body{font-family:Inter,ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-ser
   #mainHeader .global-refresh-btn svg{width:15px!important;height:15px!important;}
 }
 </style>
+
+<style id="mobile-header-actions-final">
+/* Header actions: tetap di pojok kanan, mobile hanya icon tanpa label sync. */
+#mainHeader{position:relative;}
+#mainHeader .notification-header-wrap{position:absolute;right:104px;top:50%;transform:translateY(-50%);margin:0;z-index:1100;}
+#mainHeader .header-refresh-wrap{position:absolute;right:16px;top:50%;transform:translateY(-50%);margin:0;z-index:1100;}
+@media (max-width: 767px){
+  #mainHeader .notification-header-wrap{right:56px;}
+  #mainHeader .header-refresh-wrap{right:14px;}
+  #mainHeader .global-last-sync{display:none !important;}
+}
+</style>
 </head>
 <body class="bg-slate-50 font-sans">
 
