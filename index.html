@@ -5167,14 +5167,23 @@ startAutoRefresh();
                 if(opts.indexOf(currentDay)!==-1)dayVisitSelect.value=currentDay;
             }
             let filtered = dataArray.filter(item => {
-                const outletName = String(item && item.outlet != null ? item.outlet : '').trim().toLowerCase();
-                const outletMatch = !keyword || outletName.indexOf(keyword) !== -1;
-                const dayMatch = !selectedDayVisit ||
-                    String(item && item.dayVisit != null ? item.dayVisit : '').trim().toUpperCase() === selectedDayVisit;
-                const salesMatch = !selectedSales ||
-                    String(item && item.dsr != null ? item.dsr : '').trim().toUpperCase() === selectedSales;
-                return outletMatch && dayMatch && salesMatch;
-            });
+    const outletName = String(item && item.outlet != null ? item.outlet : '').trim().toLowerCase();
+    const outletMatch = !keyword || outletName.indexOf(keyword) !== -1;
+
+    const dayMatch = !selectedDayVisit ||
+        String(item && item.dayVisit != null ? item.dayVisit : '').trim().toUpperCase() === selectedDayVisit;
+
+    const salesMatch = !selectedSales ||
+        String(item && item.dsr != null ? item.dsr : '').trim().toUpperCase() === selectedSales;
+
+    // NON-ADMIN: hanya tampilkan DSR yang sama persis dengan akun yang login
+    const loginDsr = String(currentUser || '').trim().toUpperCase();
+    const itemDsr = String(item && item.dsr != null ? item.dsr : '').trim().toUpperCase();
+    const loginDsrMatch = isMonitoringAdmin || itemDsr === loginDsr;
+
+    return outletMatch && dayMatch && salesMatch && loginDsrMatch;
+});
+            
             filtered.sort(function(a,b){
     const actualA = Number(a.totalQuarterVol || 0);
     const actualB = Number(b.totalQuarterVol || 0);
