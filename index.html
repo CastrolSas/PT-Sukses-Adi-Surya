@@ -5176,10 +5176,10 @@ startAutoRefresh();
                 return outletMatch && dayMatch && salesMatch;
             });
             filtered.sort(function(a,b){
-                const aa=dayVisitOrder[String(a.dayVisit||'').trim().toUpperCase()]||99;
-                const bb=dayVisitOrder[String(b.dayVisit||'').trim().toUpperCase()]||99;
-                return aa-bb||String(a.dayVisit||'').localeCompare(String(b.dayVisit||''))||String(a.outlet||'').localeCompare(String(b.outlet||''));
-            });
+    const actualA = Number(a.totalQuarterVol || 0);
+    const actualB = Number(b.totalQuarterVol || 0);
+    return actualB - actualA;
+});
             countBadge.textContent = `${filtered.length} outlet`;
 
             updateQuarterMonthHeaderLabels(selectedQuarter);
