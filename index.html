@@ -2980,73 +2980,6 @@ body{background:
 #globalRefreshBtn.is-refreshing svg,#globalRefreshIcon.is-refreshing{animation:castrolRefreshSpin .8s linear infinite!important;transform-origin:50% 50%;}
 @keyframes castrolRefreshSpin{from{transform:rotate(0deg)}to{transform:rotate(360deg)}}
 </style>
-
-<style id="login-page-modern-style">
-/* LOGIN ONLY — visual redesign; authentication logic unchanged */
-#loginPage.login-page-modern {
-    flex: 1;
-    min-height: 100%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    padding: 28px 18px 36px;
-}
-#loginPage .login-card-modern {
-    width: min(100%, 420px);
-    background: rgba(255,255,255,.94);
-    border: 1px solid rgba(226,232,240,.9);
-    border-radius: 26px;
-    padding: 34px 32px 26px;
-    box-shadow: 0 22px 55px rgba(15,23,42,.10), 0 4px 14px rgba(15,23,42,.05);
-    backdrop-filter: blur(10px);
-}
-#loginPage .login-brand-modern { text-align:center; margin-bottom:28px; }
-#loginPage .login-logo-modern {
-    width:64px; height:64px; margin:0 auto 17px; border-radius:18px;
-    display:flex; align-items:center; justify-content:center;
-    background:#fff; border:1px solid #d1fae5;
-    box-shadow:0 10px 24px rgba(5,150,105,.10); overflow:hidden;
-}
-#loginPage .login-logo-modern img { width:46px; height:46px; object-fit:contain; }
-#loginPage .login-eyebrow-modern { font-size:10px; font-weight:800; letter-spacing:.16em; color:#059669; margin-bottom:7px; }
-#loginPage .login-brand-modern h2 { margin:0; color:#0f172a; font-size:26px; line-height:1.15; font-weight:800; letter-spacing:-.025em; }
-#loginPage .login-brand-modern p { margin:8px 0 0; color:#94a3b8; font-size:12px; }
-#loginPage .login-form-modern { display:flex; flex-direction:column; gap:17px; }
-#loginPage .login-field-modern label { display:block; margin:0 0 7px; color:#334155; font-size:11px; font-weight:700; }
-#loginPage .login-label-row-modern { display:flex; justify-content:space-between; align-items:center; }
-#loginPage .login-input-wrap-modern { position:relative; }
-#loginPage .login-input-wrap-modern svg {
-    position:absolute; left:14px; top:50%; transform:translateY(-50%); width:18px; height:18px;
-    fill:none; stroke:#94a3b8; stroke-width:1.8; stroke-linecap:round; stroke-linejoin:round; pointer-events:none;
-}
-#loginPage .login-input-wrap-modern input {
-    width:100%; box-sizing:border-box; height:48px; border:1px solid #e2e8f0; border-radius:14px;
-    background:#f8fafc; color:#0f172a; padding:0 14px 0 43px; font-size:13px; outline:none; transition:.18s ease;
-}
-#loginPage .login-input-wrap-modern input::placeholder { color:#a8b3c2; }
-#loginPage .login-input-wrap-modern input:focus {
-    background:#fff; border-color:#34d399; box-shadow:0 0 0 4px rgba(16,185,129,.10);
-}
-#loginPage .login-help-modern { text-align:right; margin-top:-6px; }
-#loginPage .login-help-modern a { color:#059669; font-size:11px; font-weight:700; text-decoration:none; }
-#loginPage .login-help-modern a:hover { color:#047857; text-decoration:underline; }
-#loginPage .login-button-modern {
-    width:100%; height:48px; border:0; border-radius:14px; background:#047857; color:#fff;
-    font-size:13px; font-weight:800; cursor:pointer; box-shadow:0 9px 20px rgba(4,120,87,.18); transition:.18s ease;
-    display:flex; align-items:center; justify-content:center; gap:9px;
-}
-#loginPage .login-button-modern:hover { background:#065f46; transform:translateY(-1px); box-shadow:0 12px 24px rgba(4,120,87,.22); }
-#loginPage .login-button-modern:active { transform:translateY(0); }
-#loginPage .login-register-modern { margin-top:22px; padding-top:20px; border-top:1px solid #f1f5f9; text-align:center; color:#94a3b8; font-size:11px; }
-#loginPage .login-register-modern button { border:0; background:none; padding:0; margin-left:3px; color:#059669; font-size:11px; font-weight:800; cursor:pointer; }
-#loginPage .login-register-modern button:hover { color:#047857; text-decoration:underline; }
-@media (max-width:480px) {
-    #loginPage.login-page-modern { padding:20px 12px 28px; }
-    #loginPage .login-card-modern { padding:28px 22px 23px; border-radius:22px; }
-    #loginPage .login-brand-modern h2 { font-size:23px; }
-}
-</style>
-
 </head>
 <body class="bg-slate-50 font-sans">
 
@@ -3244,47 +3177,29 @@ body{background:
         <div class="p-4 flex-1 overflow-y-auto space-y-4">
             
             <!-- LOGIN -->
-            <div id="loginPage" class="login-page-modern">
-                <div class="login-card-modern">
-                    <div class="login-brand-modern">
-                        <div class="login-logo-modern">
-                            <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQjbF9zjGOOADFZIb2DyNfdj-3wi3z5cqLroA&s" alt="Logo Castrol">
-                        </div>
-                        <div class="login-eyebrow-modern">PT SUKSES ADI SURYA</div>
-                        <h2>Selamat Datang</h2>
-                        <p>Masuk untuk melanjutkan ke aplikasi.</p>
+            <div id="loginPage" class="p-6 flex-1 flex flex-col justify-center">
+                <div class="text-center mb-6">
+                    <div class="inline-block bg-white p-2.5 rounded-full shadow-md mb-3 border border-emerald-100">
+                        <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQjbF9zjGOOADFZIb2DyNfdj-3wi3z5cqLroA&s" alt="Logo Castrol" class="h-10 object-contain mx-auto">
                     </div>
-
-                    <form onsubmit="handleLogin(event)" class="login-form-modern">
-                        <div class="login-field-modern">
-                            <label for="loginUser">Username</label>
-                            <div class="login-input-wrap-modern">
-                                <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 21a8 8 0 1 0-6 0M12 13a4 4 0 1 0 0-8 4 4 0 0 0 0 8Z"/></svg>
-                                <input type="text" id="loginUser" required autocomplete="username" placeholder="Masukkan username">
-                            </div>
-                        </div>
-
-                        <div class="login-field-modern">
-                            <div class="login-label-row-modern">
-                                <label for="loginPass">Password</label>
-                            </div>
-                            <div class="login-input-wrap-modern">
-                                <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 10V7a5 5 0 0 1 10 0v3M6 10h12v10H6V10Z"/></svg>
-                                <input type="password" id="loginPass" required autocomplete="current-password" placeholder="Masukkan password">
-                            </div>
-                        </div>
-
-                        <div class="login-help-modern">
-                            <a href="https://wa.me/6285161199592" target="_blank" rel="noopener noreferrer">Lupa password? Hubungi saya.</a>
-                        </div>
-
-                        <button type="submit" class="login-button-modern">Masuk <span aria-hidden="true">→</span></button>
-                    </form>
-
-                    <div class="login-register-modern">
-                        Belum punya akun?
-                        <button type="button" onclick="toggleAuthMode('register')">Daftar sekarang</button>
+                    <h2 class="text-2xl font-bold text-slate-800">Castrol PT Sukses Adi Surya</h2>
+                </div>
+                <form onsubmit="handleLogin(event)" class="space-y-4">
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-600 mb-1">Username</label>
+                        <input type="text" id="loginUser" required class="w-full border rounded-lg p-2.5 text-sm focus:ring-2 focus:ring-emerald-600 focus:outline-none">
                     </div>
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-600 mb-1">Password</label>
+                        <input type="password" id="loginPass" required class="w-full border rounded-lg p-2.5 text-sm focus:ring-2 focus:ring-emerald-600 focus:outline-none">
+                    </div>
+                    <div class="-mt-1 mb-1 text-right text-xs">
+                        <a href="https://wa.me/6285161199592" target="_blank" rel="noopener noreferrer" class="text-emerald-700 hover:text-emerald-800 font-semibold hover:underline">Lupa pasword? Hubungi saya.</a>
+                    </div>
+                    <button type="submit" class="w-full bg-emerald-700 hover:bg-emerald-800 text-white font-semibold py-2.5 rounded-lg shadow transition">Masuk</button>
+                </form>
+                <div class="mt-6 text-center text-sm">
+                    Belum punya akun? <button type="button" onclick="toggleAuthMode('register')" class="text-emerald-700 font-semibold">Daftar</button>
                 </div>
             </div>
 
@@ -5260,10 +5175,11 @@ startAutoRefresh();
                     String(item && item.dsr != null ? item.dsr : '').trim().toUpperCase() === selectedSales;
                 return outletMatch && dayMatch && salesMatch;
             });
+            // Monitoring diurutkan berdasarkan Actual: tertinggi ke terendah.
             filtered.sort(function(a,b){
-                const aa=dayVisitOrder[String(a.dayVisit||'').trim().toUpperCase()]||99;
-                const bb=dayVisitOrder[String(b.dayVisit||'').trim().toUpperCase()]||99;
-                return aa-bb||String(a.dayVisit||'').localeCompare(String(b.dayVisit||''))||String(a.outlet||'').localeCompare(String(b.outlet||''));
+                const actualA = Number(a.totalQuarterVol || 0);
+                const actualB = Number(b.totalQuarterVol || 0);
+                return actualB - actualA;
             });
             countBadge.textContent = `${filtered.length} outlet`;
 
@@ -5276,6 +5192,12 @@ startAutoRefresh();
 
             let html = "";
             filtered.forEach((item, index) => {
+                // Untuk user biasa, tampilkan DSR sesuai akun yang login.
+                // Data outlet tidak difilter ulang di sini, sehingga outlet seperti
+                // "INDRA, NURHASAN" tetap tampil untuk login INDRA.
+                const displayItem = (!isMonitoringAdmin)
+                    ? Object.assign({}, item, { dsr: String(currentUser || item.dsr || '').trim() })
+                    : item;
                 let rowBg = index % 2 === 0 ? 'bg-white' : 'bg-slate-50/50';
                 
                 let target = Number(item.targetQuarter || 0);
@@ -5284,7 +5206,7 @@ startAutoRefresh();
 
                 let dataString = encodeURIComponent(JSON.stringify({
                     outlet: item.outlet,
-                    dsr: item.dsr || '',
+                    dsr: displayItem.dsr || '',
                     custCode: item.custCode || '',
                     quarter: selectedQuarter,
                     total: actual,
@@ -5301,7 +5223,7 @@ startAutoRefresh();
                 let achClass = achievement >= 100 ? 'text-emerald-700' : (achievement >= 80 ? 'text-amber-600' : 'text-red-600');
                 html += `
                     <tr class="${rowBg} border-b border-slate-100 hover:bg-emerald-50/60 cursor-pointer transition" onclick="tampilkanDetailMonitoring('${dataString}')">
-                        <td class="p-2.5 font-semibold text-slate-700 text-center align-middle whitespace-nowrap">${escapeHtml(item.dsr || '-')}</td>
+                        <td class="p-2.5 font-semibold text-slate-700 text-center align-middle whitespace-nowrap">${escapeHtml(displayItem.dsr || '-')}</td>
                         <td class="p-2.5 font-semibold text-slate-800 text-left align-middle whitespace-nowrap overflow-hidden text-ellipsis">${escapeHtml(item.outlet || '')}</td>
                         <td class="p-2.5 font-semibold text-slate-700 text-left align-middle whitespace-nowrap">${escapeHtml(item.custCode || '-')}</td>
                         <td class="p-2.5 text-center align-middle whitespace-nowrap text-slate-600 font-medium">${target.toFixed(1)} dus</td>
