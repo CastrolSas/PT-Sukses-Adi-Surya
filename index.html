@@ -5441,7 +5441,7 @@ startAutoRefresh();
             const target = document.getElementById('monitoringDetailHistoryChart');
             if (!target) return;
             const custKey = String(data && data.custCode || '').trim().toUpperCase().replace(/\s+/g, ' ');
-            const cacheKey = 'MONITORING_HISTORY_' + custKey;
+            const cacheKey = 'MONITORING_HISTORY_V2_' + custKey;
             const cached = appLocalCacheGet(cacheKey);
 
             if (cached && typeof cached === 'object' && Array.isArray(cached.history)) {
