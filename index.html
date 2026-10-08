@@ -1738,6 +1738,11 @@ html{scroll-behavior:auto!important}
 @media(max-width:900px){.home-metrics{grid-template-columns:1fr}.home-banner-viewport{aspect-ratio:16/7;min-height:170px}}
 @media(max-width:640px){.home-page-wrap{padding-bottom:16px}.home-banner-section,.home-section-card{border-radius:16px}.home-banner-viewport{aspect-ratio:16/8.5;min-height:150px}.home-banner-arrow{width:34px;height:34px;font-size:21px}.home-banner-arrow.prev{left:8px}.home-banner-arrow.next{right:8px}.home-section-head{padding:13px 14px}.home-metrics{padding:12px 14px;gap:9px}.home-outlet-wrap,.home-notification-list{padding-left:14px;padding-right:14px}.home-metric{min-height:118px;padding:13px}.home-metric-value{font-size:23px}.home-outlet-table{min-width:620px}.home-outlet-wrap{overflow-x:auto}.home-banner-lightbox-hint{max-width:calc(100vw - 30px);overflow:hidden;text-overflow:ellipsis}}
 </style>
+<style id="home-tab-isolation-fix">
+/* Beranda dan tab lain harus benar-benar saling eksklusif. */
+#mainPage .tab-content.hidden{display:none!important;}
+#mainPage .tab-content:not(.hidden){display:block;}
+</style>
 <style id="pengumuman-minimal-css">
 #announcementPage.pengumuman-page{position:fixed;inset:0;z-index:9998;overflow:auto;background:radial-gradient(circle at 15% 10%,rgba(16,185,129,.13),transparent 35%),radial-gradient(circle at 85% 85%,rgba(132,204,22,.10),transparent 35%),#f6faf8;padding:28px;box-sizing:border-box}
 .pengumuman-shell{width:min(1120px,100%);min-height:calc(100dvh - 56px);margin:auto;display:flex;align-items:center;justify-content:center}
@@ -3362,7 +3367,7 @@ body{background:
                 </div>
 
                 <!-- TAB INPUT : MODERN 2-STEP WIZARD -->
-                <div id="tabInput" class="tab-content space-y-4">
+                <div id="tabInput" class="tab-content hidden space-y-4">
                     <div class="bg-white border border-slate-200 rounded-2xl shadow-sm overflow-hidden">
                         <div class="px-4 pt-4 pb-3 border-b border-slate-100">
                             <div class="flex items-center justify-between gap-3 ui-input-order-title">
