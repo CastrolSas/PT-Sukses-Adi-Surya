@@ -8268,6 +8268,10 @@ startAutoRefresh();
             const img=document.getElementById('homeRebuildLightboxImg');
             if(!img)return;
             homeLightboxScale=Math.max(1,Math.min(5,Number(homeLightboxScale)||1));
+            if (window.matchMedia('(min-width:641px)').matches) {
+                img.style.transform='translate3d('+homeLightboxX+'px,'+homeLightboxY+'px,0) scale('+homeLightboxScale+')';
+                return;
+            }
             const rect=img.getBoundingClientRect();
             const baseW=rect.width/Math.max(1,homeLightboxScale);
             const baseH=rect.height/Math.max(1,homeLightboxScale);
@@ -8285,6 +8289,26 @@ startAutoRefresh();
             o.addEventListener('click',function(e){if(e.target===o||e.target.classList.contains('close'))closeHomeRebuildImage();});
             img.addEventListener('wheel',function(e){e.preventDefault();homeLightboxScale=Math.max(1,Math.min(5,homeLightboxScale+(e.deltaY<0?.25:-.25)));applyHomeRebuildZoom();},{passive:false});
             img.addEventListener('dblclick',function(e){e.preventDefault();homeLightboxScale=homeLightboxScale>1?1:2.5;homeLightboxX=0;homeLightboxY=0;applyHomeRebuildZoom();});
+            img.addEventListener('mousedown',function(e){
+                if (!window.matchMedia('(min-width:641px)').matches || e.button!==0) return;
+                e.preventDefault();
+                homeLightboxDragging=true;
+                homeLightboxStartX=e.clientX;homeLightboxStartY=e.clientY;
+                homeLightboxDragX=homeLightboxX;homeLightboxDragY=homeLightboxY;
+                img.style.cursor='grabbing';
+            });
+            window.addEventListener('mousemove',function(e){
+                if (!window.matchMedia('(min-width:641px)').matches || !homeLightboxDragging) return;
+                e.preventDefault();
+                homeLightboxX=homeLightboxDragX+(e.clientX-homeLightboxStartX);
+                homeLightboxY=homeLightboxDragY+(e.clientY-homeLightboxStartY);
+                applyHomeRebuildZoom();
+            });
+            window.addEventListener('mouseup',function(){
+                if (!window.matchMedia('(min-width:641px)').matches) return;
+                homeLightboxDragging=false;
+                img.style.cursor='grab';
+            });
             img.addEventListener('touchstart',function(e){
                 e.preventDefault();
                 if(e.touches.length===2){
