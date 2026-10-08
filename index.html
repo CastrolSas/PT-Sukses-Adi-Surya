@@ -5394,6 +5394,11 @@ startAutoRefresh();
             const initialGap = initialActual - initialTarget;
             const initialAch = initialTarget > 0 ? (initialActual / initialTarget) * 100 : 0;
 
+            const detailProductsCacheKey = 'MONITORING_PRODUCTS_V2_' +
+                String(data && data.custCode || '').trim().toUpperCase().replace(/\s+/g, ' ') + '|' +
+                String(data && data.quarter || '').trim().toUpperCase();
+            const cachedDetailProducts = appLocalCacheGet(detailProductsCacheKey);
+
             document.getElementById('modalBody').innerHTML = `
                 <div class="modal-detail-summary">
                     <div class="modal-stat-card">
@@ -5417,7 +5422,7 @@ startAutoRefresh();
                     <div class="text-[10px] font-extrabold text-slate-700">History Pengambilan</div>
                     <div class="text-[9px] text-slate-400 mt-1">Memuat...</div>
                 </div>
-                <div id="monitoringDetailProducts" class="text-xs text-slate-400 text-center py-6">${initialMsg}</div>
+                <div id="monitoringDetailProducts" class="text-xs text-slate-400 text-center py-6">${cachedDetailProducts && cachedDetailProducts.html ? cachedDetailProducts.html : initialMsg}</div>
             `;
             const monitoringModal = document.getElementById('customModal');
             const monitoringCard = monitoringModal ? monitoringModal.querySelector('.modern-modal-card') : null;
@@ -5507,6 +5512,7 @@ startAutoRefresh();
 
                     // Data Target / Actual / Gap / Ach tetap menggunakan perhitungan yang sama.
                     // Hanya area Transaksi yang diperbarui agar History tidak perlu menunggu transaksi selesai.
+                    appLocalCacheSet(detailProductsCacheKey, { html: produkHtml });
                     const productsTarget = document.getElementById('monitoringDetailProducts');
                     if (productsTarget) {
                         productsTarget.innerHTML = produkHtml;
