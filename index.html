@@ -5454,6 +5454,9 @@ startAutoRefresh();
                 grid += `<text x="${padLeft-9}" y="${(y+3.5).toFixed(1)}" text-anchor="end" font-size="9" fill="#94a3b8">${value.toLocaleString('id-ID',{maximumFractionDigits:0})}</text>`;
             }
 
+            const yearColors = {};
+            const yearPalette = ['#059669','#2563eb','#d97706','#7c3aed','#db2777','#0891b2','#65a30d','#dc2626'];
+            let yearColorIndex = 0;
             let bars = '';
             history.forEach(function(item, i) {
                 const value = Number(item.volume) || 0;
@@ -5462,6 +5465,13 @@ startAutoRefresh();
                 const y = padTop + chartH - barH;
                 const x = xCenter - barW / 2;
                 const label = escapeHtml(item.label || '');
+                const parts = String(item.label || '').trim().split(/\s+/);
+                const year = parts.length > 1 ? parts.slice(1).join(' ') : '';
+                if (!yearColors[year]) {
+                    yearColors[year] = yearPalette[yearColorIndex % yearPalette.length];
+                    yearColorIndex++;
+                }
+                const barColor = yearColors[year] || '#059669';
                 const tx = Number(item.transactions || 0);
                 bars += `
                     <g class="monitor-history-point" tabindex="0"
@@ -5471,7 +5481,7 @@ startAutoRefresh();
                        data-transactions="${tx.toLocaleString('id-ID')}"
                        data-x="${xCenter.toFixed(1)}"
                        data-y="${y.toFixed(1)}">
-                        <rect x="${x.toFixed(1)}" y="${y.toFixed(1)}" width="${barW.toFixed(1)}" height="${Math.max(barH, 1).toFixed(1)}" rx="5" fill="#059669" opacity="${value > 0 ? '0.88' : '0.18'}"></rect>
+                        <rect x="${x.toFixed(1)}" y="${y.toFixed(1)}" width="${barW.toFixed(1)}" height="${Math.max(barH, 1).toFixed(1)}" rx="5" fill="${barColor}" opacity="${value > 0 ? '0.88' : '0.18'}"></rect>
                     </g>
                 `;
             });
