@@ -2980,6 +2980,26 @@ body{background:
 #globalRefreshBtn.is-refreshing svg,#globalRefreshIcon.is-refreshing{animation:castrolRefreshSpin .8s linear infinite!important;transform-origin:50% 50%;}
 @keyframes castrolRefreshSpin{from{transform:rotate(0deg)}to{transform:rotate(360deg)}}
 </style>
+<style id="login-button-loading-style">
+.login-btn-loading {
+    display: inline-flex !important;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    cursor: wait !important;
+}
+.login-btn-spinner {
+    width: 16px;
+    height: 16px;
+    border: 2px solid rgba(255,255,255,.45);
+    border-top-color: #ffffff;
+    border-radius: 50%;
+    animation: loginBtnSpin .7s linear infinite;
+}
+@keyframes loginBtnSpin {
+    to { transform: rotate(360deg); }
+}
+</style>
 </head>
 <body class="bg-slate-50 font-sans">
 
@@ -3196,7 +3216,7 @@ body{background:
                     <div class="-mt-1 mb-1 text-right text-xs">
                         <a href="https://wa.me/6285161199592" target="_blank" rel="noopener noreferrer" class="text-emerald-700 hover:text-emerald-800 font-semibold hover:underline">Lupa pasword? Hubungi saya.</a>
                     </div>
-                    <button type="submit" class="w-full bg-emerald-700 hover:bg-emerald-800 text-white font-semibold py-2.5 rounded-lg shadow transition">Masuk</button>
+                    <button type="submit" id="loginSubmitBtn" class="w-full bg-emerald-700 hover:bg-emerald-800 text-white font-semibold py-2.5 rounded-lg shadow transition">Masuk</button>
                 </form>
                 <div class="mt-6 text-center text-sm">
                     Belum punya akun? <button type="button" onclick="toggleAuthMode('register')" class="text-emerald-700 font-semibold">Daftar</button>
@@ -4278,43 +4298,68 @@ startAutoRefresh();
             }).prosesRegister($('#regSalesName').val(), document.getElementById('regUser').value, document.getElementById('regPass').value);
         }
 
-        function handleLogin(e) {
+        
+
+function setLoginButtonLoading(active) {
+    const btn = document.getElementById('loginSubmitBtn');
+    if (!btn) return;
+    if (active) {
+        if (!btn.dataset.originalHtml) btn.dataset.originalHtml = btn.innerHTML;
+        btn.disabled = true;
+        btn.classList.add('login-btn-loading');
+        btn.innerHTML = '<span class="login-btn-spinner" aria-hidden="true"></span><span>Memproses...</span>';
+    } else {
+        btn.disabled = false;
+        btn.classList.remove('login-btn-loading');
+        btn.innerHTML = btn.dataset.originalHtml || 'Masuk';
+    }
+}
+
+function handleLogin(e) {
             e.preventDefault();
             currentUsernameInput = document.getElementById('loginUser').value.trim();
-            showLoading(true);
+            setLoginButtonLoading(true);
+
             google.script.run.withSuccessHandler(function(res) {
-                showLoading(false);
-                if (res.success) {
-                    currentUser = res.sales;
-                    document.getElementById('loginPage').classList.add('hidden');
-                    document.getElementById('registerPage').classList.add('hidden');
-                    document.getElementById('mainPage').classList.remove('hidden');
-                    document.getElementById('mainHeader').classList.remove('hidden');
-                    document.getElementById('leftNav').classList.remove('hidden');
-                    setSidebarState(false);
-                    // Cek pengumuman segera setelah login berhasil, sebelum request data lain.
-                    checkActivePengumuman();
-                    const isAdminLogin = currentUsernameInput.toLowerCase() === 'admin';
-                    applyRoleVisibility();
-                    document.getElementById('userBadge').textContent = isAdminLogin ? "Admin" : currentUser;
-                    document.getElementById('userBadge').classList.remove('hidden');
-                    loadNotifications(true);
-                    const adminTools = document.getElementById('riwayatAdminTools');
-                    if (adminTools) adminTools.classList.toggle('hidden', !isAdminLogin);
-                    saveAuthState();
-                    loadOutletForSales(currentUser, currentUsernameInput);
-                    if (isAdminLogin) loadPencapaianSalesFilter();
-                    loadRiwayat(true, true);
-                    loadInputMasterData();
-                    preloadAppDataInBackground();
-                    if (isAdminLogin) switchTab('riwayat');
-                } else {
-                    showModal("Login Gagal", res.message);
+                if (!res || !res.success) {
+                    setLoginButtonLoading(false);
+                    showModal("Login Gagal", res && res.message ? res.message : 'Login gagal.');
+                    return;
                 }
+
+                currentUser = res.sales;
+                const isAdminLogin = currentUsernameInput.toLowerCase() === 'admin';
+
+                // Tetap di halaman login selama seluruh data utama dipanaskan.
+                // Halaman Pengumuman dan Menu Utama baru ditampilkan setelah preload selesai.
+                applyRoleVisibility();
+                document.getElementById('userBadge').textContent = isAdminLogin ? "Admin" : currentUser;
+                document.getElementById('userBadge').classList.remove('hidden');
+                const adminTools = document.getElementById('riwayatAdminTools');
+                if (adminTools) adminTools.classList.toggle('hidden', !isAdminLogin);
+                saveAuthState();
+
+                loadOutletForSales(currentUser, currentUsernameInput, function() {});
+                preloadAppDataInBackground(function() {
+                    // Setelah data utama selesai diproses, ambil pengumuman lalu masuk ke aplikasi.
+                    checkActivePengumuman(function() {
+                        document.getElementById('loginPage').classList.add('hidden');
+                        document.getElementById('registerPage').classList.add('hidden');
+                        document.getElementById('mainPage').classList.remove('hidden');
+                        document.getElementById('mainHeader').classList.remove('hidden');
+                        document.getElementById('leftNav').classList.remove('hidden');
+                        setSidebarState(false);
+                        setLoginButtonLoading(false);
+                        if (isAdminLogin) switchTab('riwayat');
+                    });
+                });
+            }).withFailureHandler(function(err) {
+                setLoginButtonLoading(false);
+                showModal("Error Sistem", err && err.message ? err.message : "Terjadi kesalahan saat login.");
             }).prosesLogin(currentUsernameInput, document.getElementById('loginPass').value);
         }
 
-        function loadOutletForSales(sales, usernameInput) {
+        function loadOutletForSales(sales, usernameInput, onDone) {
             if (usernameInput && usernameInput.toLowerCase() === 'admin') {
                 google.script.run.withSuccessHandler(function(outlets) {
                     const allOutlets = outlets || [];
@@ -4336,6 +4381,7 @@ startAutoRefresh();
                         refreshSelect2('#filterInputSales');
                     }
                     renderInputOutletOptions();
+                    if (typeof onDone === 'function') onDone();
                 }).getAllOutlets();
             } else {
                 google.script.run.withSuccessHandler(function(outlets) {
@@ -4346,6 +4392,7 @@ startAutoRefresh();
                         select.append(new Option(o.outlet, o.outlet));
                     });
                     refreshSelect2('#inputOutlet');
+                    if (typeof onDone === 'function') onDone();
                 }).getOutletsBySales(sales);
             }
         }
@@ -8314,32 +8361,66 @@ startAutoRefresh();
         }
 
         let appBackgroundPreloadStarted = false;
-        function preloadAppDataInBackground() {
-            if (appBackgroundPreloadStarted) return;
+        function preloadAppDataInBackground(onReady) {
+            if (appBackgroundPreloadStarted) {
+                if (typeof onReady === 'function') {
+                    waitForAppPreloadReady(onReady);
+                }
+                return;
+            }
             appBackgroundPreloadStarted = true;
             restoreFastTabCaches();
 
-            // Semua data utama dipanaskan setelah login. Tidak memakai overlay/loading modal.
-            // Saat user pindah tab, data sudah berada di cache client dan langsung dirender.
-            const run = function(fn, delay) { setTimeout(function(){ try { fn(); } catch(e) { console.warn('Background preload:', e); } }, delay || 0); };
+            // Saat login, seluruh data utama diproses paralel sebelum halaman aplikasi dibuka.
+            const run = function(fn) { setTimeout(function(){ try { fn(); } catch(e) { console.warn('Preload:', e); } }, 0); };
             const isAdmin = String(currentUsernameInput || '').trim().toLowerCase() === 'admin';
 
-            run(function(){ loadRiwayat(false, true); }, 0);
-            run(function(){ loadMonitoring(false, true); }, 80);
-            run(function(){ loadOutletKontrak(false, true); }, 160);
-            run(function(){ loadPricelist(false, true); }, 240);
-            run(function(){ loadTambahCustomer(false, true); }, 320);
-            run(function(){ loadPesananOutlet(false, true); }, 400);
-            run(function(){ loadPencapaianSalesFilter(); }, 480);
-            run(function(){ loadPencapaianSales(false, true); }, 560);
+            run(function(){ loadRiwayat(false, true); });
+            run(function(){ loadMonitoring(false, true); });
+            run(function(){ loadOutletKontrak(false, true); });
+            run(function(){ loadPricelist(false, true); });
+            run(function(){ loadTambahCustomer(false, true); });
+            run(function(){ loadPesananOutlet(false, true); });
+            run(function(){ loadPencapaianSalesFilter(); });
+            run(function(){ loadPencapaianSales(false, true); });
+            run(function(){ loadNotifications(true); });
 
             if (isAdmin) {
-                run(function(){ loadOutletBWSAdmin(false, true); }, 640);
-                run(function(){ loadOutletBWSFormMaster(); }, 760);
-                run(function(){ loadInputMasterData(); }, 840);
+                run(function(){ loadOutletBWSAdmin(false, true); });
+                run(function(){ loadOutletBWSFormMaster(); });
+                run(function(){ loadInputMasterData(); });
             } else {
-                run(function(){ loadInputMasterData(); }, 640);
+                run(function(){ loadInputMasterData(); });
             }
+
+            if (typeof onReady === 'function') waitForAppPreloadReady(onReady);
+        }
+
+        let appPreloadWaitTimer = null;
+        function waitForAppPreloadReady(onReady) {
+            if (typeof onReady !== 'function') return;
+            if (appPreloadWaitTimer) clearTimeout(appPreloadWaitTimer);
+
+            const startedAt = Date.now();
+            const check = function() {
+                const loading = !!(riwayatLoading || monitoringLoading || kontrakLoading || pencapaianLoading || outletBWSLoading || inputMasterLoading || tambahCustomerLoading || pricelistLoading || pesananOutletLoading || notificationLoading);
+                const elapsed = Date.now() - startedAt;
+
+                // Beri sedikit waktu tambahan setelah flag loading selesai agar render/cache selesai ditulis.
+                if (loading && elapsed < 60000) {
+                    appPreloadWaitTimer = setTimeout(check, 80);
+                    return;
+                }
+
+                if (elapsed < 500) {
+                    appPreloadWaitTimer = setTimeout(check, 80);
+                    return;
+                }
+
+                appPreloadWaitTimer = null;
+                onReady();
+            };
+            check();
         }
 
         function switchTab(tab) {
@@ -9221,13 +9302,18 @@ function closeAnnouncementPage(fromLogout) {
     if (app && document.getElementById('mainPage') && !document.getElementById('mainPage').classList.contains('hidden')) app.classList.remove('hidden');
 }
 
-function checkActivePengumuman() {
-    if (announcementDismissedThisSession) return;
+function checkActivePengumuman(onDone) {
+    if (announcementDismissedThisSession) {
+        if (typeof onDone === 'function') onDone();
+        return;
+    }
     google.script.run.withSuccessHandler(function(res) {
         var data = res && res.success ? res.data : [];
         showAnnouncementPage(Array.isArray(data) ? data : []);
+        if (typeof onDone === 'function') onDone();
     }).withFailureHandler(function(err) {
         console.warn('Gagal memuat pengumuman:', err && err.message ? err.message : err);
+        if (typeof onDone === 'function') onDone();
     }).getPengumumanAktif();
 }
 
