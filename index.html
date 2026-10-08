@@ -1690,7 +1690,7 @@ html{scroll-behavior:auto!important}
 .home-page-wrap{max-width:1500px;margin:0 auto;padding:2px 0 24px}
 .home-banner-section{position:relative;display:none;background:#fff;border:1px solid #e2e8f0;border-radius:20px;overflow:hidden;box-shadow:0 8px 28px rgba(15,23,42,.07)}
 .home-banner-section.is-visible{display:block}
-.home-banner-viewport{position:relative;width:100%;aspect-ratio:16/5;min-height:190px;overflow:hidden;background:#0f172a}
+.home-banner-viewport{position:relative;width:100%;aspect-ratio:16/3.6;min-height:135px;max-height:290px;overflow:hidden;background:#0f172a}
 .home-banner-track{height:100%;display:flex;transition:transform .45s ease;will-change:transform;touch-action:pan-y}
 .home-banner-slide{min-width:100%;height:100%;position:relative;display:flex;align-items:center;justify-content:center;cursor:zoom-in;user-select:none;-webkit-user-select:none}
 .home-banner-slide img{width:100%;height:100%;object-fit:cover;display:block;pointer-events:none}
@@ -1735,8 +1735,8 @@ html{scroll-behavior:auto!important}
 .home-banner-lightbox-img.is-dragging{cursor:grabbing}
 .home-banner-lightbox-close{position:absolute;top:14px;right:14px;z-index:4;width:42px;height:42px;border:0;border-radius:50%;background:rgba(255,255,255,.14);color:#fff;font-size:27px;line-height:1;cursor:pointer}
 .home-banner-lightbox-hint{position:absolute;left:50%;bottom:16px;transform:translateX(-50%);z-index:4;color:rgba(255,255,255,.72);font-size:10px;background:rgba(15,23,42,.55);padding:7px 10px;border-radius:999px;white-space:nowrap;pointer-events:none}
-@media(max-width:900px){.home-metrics{grid-template-columns:1fr}.home-banner-viewport{aspect-ratio:16/7;min-height:170px}}
-@media(max-width:640px){.home-page-wrap{padding-bottom:16px}.home-banner-section,.home-section-card{border-radius:16px}.home-banner-viewport{aspect-ratio:16/8.5;min-height:150px}.home-banner-arrow{width:34px;height:34px;font-size:21px}.home-banner-arrow.prev{left:8px}.home-banner-arrow.next{right:8px}.home-section-head{padding:13px 14px}.home-metrics{padding:12px 14px;gap:9px}.home-outlet-wrap,.home-notification-list{padding-left:14px;padding-right:14px}.home-metric{min-height:118px;padding:13px}.home-metric-value{font-size:23px}.home-outlet-table{min-width:620px}.home-outlet-wrap{overflow-x:auto}.home-banner-lightbox-hint{max-width:calc(100vw - 30px);overflow:hidden;text-overflow:ellipsis}}
+@media(max-width:900px){.home-metrics{grid-template-columns:1fr}.home-banner-viewport{aspect-ratio:16/5;min-height:130px;max-height:230px}}
+@media(max-width:640px){.home-page-wrap{padding-bottom:16px}.home-banner-section,.home-section-card{border-radius:16px}.home-banner-viewport{aspect-ratio:16/5.5;min-height:120px;max-height:190px}.home-banner-arrow{width:34px;height:34px;font-size:21px}.home-banner-arrow.prev{left:8px}.home-banner-arrow.next{right:8px}.home-section-head{padding:13px 14px}.home-metrics{padding:12px 14px;gap:9px}.home-outlet-wrap,.home-notification-list{padding-left:14px;padding-right:14px}.home-metric{min-height:118px;padding:13px}.home-metric-value{font-size:23px}.home-outlet-table{min-width:620px}.home-outlet-wrap{overflow-x:auto}.home-banner-lightbox-hint{max-width:calc(100vw - 30px);overflow:hidden;text-overflow:ellipsis}}
 </style>
 <style id="home-tab-isolation-fix">
 /* Beranda dan tab lain harus benar-benar saling eksklusif. */
