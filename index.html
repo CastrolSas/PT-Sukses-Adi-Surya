@@ -8267,7 +8267,7 @@ startAutoRefresh();
         function applyHomeRebuildZoom(){
             const img=document.getElementById('homeRebuildLightboxImg');
             if(!img)return;
-            homeLightboxScale=Math.max(1,Math.min(5,Number(homeLightboxScale)||1));
+            homeLightboxScale=window.matchMedia('(min-width:641px)').matches?Math.max(.25,Math.min(5,Number(homeLightboxScale)||1)):Math.max(1,Math.min(5,Number(homeLightboxScale)||1));
             if (window.matchMedia('(min-width:641px)').matches) {
                 img.style.transform='translate3d('+homeLightboxX+'px,'+homeLightboxY+'px,0) scale('+homeLightboxScale+')';
                 return;
@@ -8287,7 +8287,7 @@ startAutoRefresh();
             const img=document.getElementById('homeRebuildLightboxImg');
             if(!img)return;
             o.addEventListener('click',function(e){if(e.target===o||e.target.classList.contains('close'))closeHomeRebuildImage();});
-            img.addEventListener('wheel',function(e){e.preventDefault();homeLightboxScale=Math.max(1,Math.min(5,homeLightboxScale+(e.deltaY<0?.25:-.25)));applyHomeRebuildZoom();},{passive:false});
+            img.addEventListener('wheel',function(e){e.preventDefault();if(window.matchMedia('(min-width:641px)').matches){homeLightboxScale=Math.max(.25,Math.min(5,homeLightboxScale+(e.deltaY<0?.25:-.25)));}else{homeLightboxScale=Math.max(1,Math.min(5,homeLightboxScale+(e.deltaY<0?.25:-.25)));}applyHomeRebuildZoom();},{passive:false});
             img.addEventListener('dblclick',function(e){e.preventDefault();homeLightboxScale=homeLightboxScale>1?1:2.5;homeLightboxX=0;homeLightboxY=0;applyHomeRebuildZoom();});
             img.addEventListener('mousedown',function(e){
                 if (!window.matchMedia('(min-width:641px)').matches || e.button!==0) return;
