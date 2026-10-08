@@ -3967,6 +3967,168 @@ body{background:
             if (penc && typeof penc === 'object') Object.assign(pencapaianCache, penc);
         }
 
+        // =========================================================
+        // PRELOAD DETAIL MONITORING
+        // Semua data yang dibutuhkan saat membuka Detail Monitoring
+        // dipanaskan saat proses login, sehingga modal Detail tidak
+        // perlu meminta data lagi ketika user membukanya.
+        // =========================================================
+        let monitoringDetailHistoryCache = {};
+        let monitoringDetailProductsCache = {};
+        let monitoringDetailPreloadLoading = false;
+        let monitoringDetailPreloadStarted = false;
+
+        function monitoringDetailHistoryKey(custCode) {
+            return String(custCode || '').trim().toUpperCase().replace(/\s+/g, ' ');
+        }
+
+        function monitoringDetailProductsKey(outlet, quarter, custCode) {
+            return [
+                String(outlet || '').trim().toUpperCase().replace(/\s+/g, ' '),
+                String(quarter || '').trim().toUpperCase().replace(/\s+/g, ' '),
+                String(custCode || '').trim().toUpperCase().replace(/\s+/g, ' ')
+            ].join('||');
+        }
+
+        function preloadAllMonitoringDetails(onDone) {
+            if (monitoringDetailPreloadStarted) {
+                if (typeof onDone === 'function') {
+                    if (!monitoringDetailPreloadLoading) onDone();
+                    else {
+                        const wait = function() {
+                            if (!monitoringDetailPreloadLoading) onDone();
+                            else setTimeout(wait, 100);
+                        };
+                        wait();
+                    }
+                }
+                return;
+            }
+
+            monitoringDetailPreloadStarted = true;
+            monitoringDetailPreloadLoading = true;
+
+            const requests = [];
+            const historyCustMap = {};
+
+            // Ambil semua baris Monitoring dari seluruh quarter yang sudah
+            // diterima saat login. History cukup sekali per CUST.CODE.
+            Object.keys(rawMonitoringDataObject || {}).forEach(function(quarter) {
+                const outletMap = rawMonitoringDataObject[quarter] || {};
+                Object.keys(outletMap).forEach(function(key) {
+                    const item = outletMap[key];
+                    if (!item) return;
+
+                    const cust = String(item.custCode || '').trim();
+                    if (cust) historyCustMap[monitoringDetailHistoryKey(cust)] = cust;
+
+                    requests.push({
+                        outlet: item.outlet || '',
+                        quarter: quarter,
+                        custCode: cust
+                    });
+                });
+            });
+
+            const historyRequests = Object.keys(historyCustMap).map(function(key) {
+                return historyCustMap[key];
+            });
+
+            // Hindari request produk yang identik.
+            const productMap = {};
+            requests.forEach(function(req) {
+                const key = monitoringDetailProductsKey(req.outlet, req.quarter, req.custCode);
+                if (req.outlet && req.quarter && key && !productMap[key]) {
+                    productMap[key] = req;
+                }
+            });
+            const productRequests = Object.keys(productMap).map(function(key) {
+                return productMap[key];
+            });
+
+            let pending = historyRequests.length + productRequests.length;
+
+            function finishOne() {
+                pending--;
+                if (pending <= 0) {
+                    monitoringDetailPreloadLoading = false;
+                    if (typeof onDone === 'function') onDone();
+                }
+            }
+
+            if (pending === 0) {
+                monitoringDetailPreloadLoading = false;
+                if (typeof onDone === 'function') onDone();
+                return;
+            }
+
+            // Batasi paralel request agar browser/Apps Script tidak dibanjiri
+            // sekaligus, tetapi tetap diproses selama login.
+            const jobs = [];
+
+            historyRequests.forEach(function(custCode) {
+                jobs.push({
+                    type: 'history',
+                    data: custCode
+                });
+            });
+
+            productRequests.forEach(function(req) {
+                jobs.push({
+                    type: 'products',
+                    data: req
+                });
+            });
+
+            let cursor = 0;
+            const concurrency = 6;
+
+            function runNext() {
+                while (cursor < jobs.length) {
+                    const job = jobs[cursor++];
+                    if (job.type === 'history') {
+                        google.script.run
+                            .withSuccessHandler(function(result) {
+                                monitoringDetailHistoryCache[monitoringDetailHistoryKey(job.data)] =
+                                    result && typeof result === 'object'
+                                        ? result
+                                        : {history: [], lastOrder: null};
+                                finishOne();
+                                runNext();
+                            })
+                            .withFailureHandler(function(err) {
+                                console.warn('Preload Detail History gagal:', err);
+                                finishOne();
+                                runNext();
+                            })
+                            .getMonitoringOutletHistory(job.data);
+                    } else {
+                        const req = job.data;
+                        const cacheKey = monitoringDetailProductsKey(req.outlet, req.quarter, req.custCode);
+
+                        google.script.run
+                            .withSuccessHandler(function(result) {
+                                monitoringDetailProductsCache[cacheKey] = Array.isArray(result) ? result : [];
+                                finishOne();
+                                runNext();
+                            })
+                            .withFailureHandler(function(err) {
+                                console.warn('Preload Detail Transaksi gagal:', err);
+                                finishOne();
+                                runNext();
+                            })
+                            .getProdukDibeliOutletQuarter(
+                                req.outlet,
+                                req.quarter,
+                                req.custCode || ''
+                            );
+                    }
+                }
+            }
+
+            for (let i = 0; i < concurrency; i++) runNext();
+        }
+
         function setDetailModalNoFooter() {
             const modal = document.getElementById('customModal');
             if (!modal) return;
@@ -5124,6 +5286,7 @@ function handleLogin(e) {
                     quarters.forEach(function(q){ let opt=document.createElement('option'); opt.value=q; opt.textContent=q; selectQ.appendChild(opt); });
                     if (selectQ && quarters.length) selectQ.value = quarters.indexOf(previousQuarter) !== -1 ? previousQuarter : quarters[0];
                     renderMonitoringList();
+                    preloadAllMonitoringDetails();
                 }).withFailureHandler(function(err) {
                     monitoringLoading = false;
                     console.warn('Refresh Monitoring gagal:', err && err.message ? err.message : err);
@@ -5157,6 +5320,7 @@ function handleLogin(e) {
                 quarters.forEach(function(q){ let opt=document.createElement('option'); opt.value=q; opt.textContent=q; selectQ.appendChild(opt); });
                 if (selectQ) selectQ.value = quarters.indexOf(previousQuarter) !== -1 ? previousQuarter : quarters[0];
                 renderMonitoringList();
+                preloadAllMonitoringDetails();
             }).withFailureHandler(function(err) {
                 monitoringLoading = false;
                 if (!silentRefresh) showLoading(false);
@@ -5393,90 +5557,23 @@ function handleLogin(e) {
             // Jalankan History langsung setelah modal tampil, tanpa menunggu Transaksi.
             loadMonitoringHistoryChart(data);
 
+            const detailProductsKey = monitoringDetailProductsKey(
+                data.outlet,
+                data.quarter,
+                data.custCode || ''
+            );
+
+            if (Object.prototype.hasOwnProperty.call(monitoringDetailProductsCache, detailProductsKey)) {
+                const produkList = monitoringDetailProductsCache[detailProductsKey] || [];
+                renderMonitoringDetailProducts(produkList);
+                return;
+            }
+
             google.script.run
                 .withSuccessHandler(function(produkList) {
-                    let produkHtml = "";
-                    if (!produkList || produkList.length === 0) {
-                        produkHtml = `<p class="text-slate-400 text-xs py-2 italic">Tidak ada transaksi pada periode ini.</p>`;
-                    } else {
-                        // Grouping rincian berdasarkan tanggal.
-                        // Setiap tanggal ditampilkan sebagai header grup, lalu produk-produk di bawahnya.
-                        let grouped = {};
-                        produkList.forEach(function(p) {
-                            let tglValue = p.tanggal !== undefined && p.tanggal !== null && String(p.tanggal).trim()
-                                ? String(p.tanggal).trim() : '-';
-                            if (!grouped[tglValue]) grouped[tglValue] = [];
-                            grouped[tglValue].push(p);
-                        });
-
-                        let groupedDates = Object.keys(grouped).sort(function(a, b) {
-                            if (a === '-') return 1;
-                            if (b === '-') return -1;
-                            return new Date(b).getTime() - new Date(a).getTime();
-                        });
-
-                        produkHtml = `
-                            <div class="modal-table-wrap">
-                                <table class="modal-detail-table">
-                                    <thead>
-                                        <tr>
-                                            <th style="width:55px; text-align:center;">No</th>
-                                            <th style="text-align:left;">Produk</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                        `;
-
-                        let nomor = 1;
-                        groupedDates.forEach(function(tgl) {
-                            let dateLabel = tgl;
-                            if (tgl !== '-') {
-                                let parsed = new Date(tgl);
-                                if (!isNaN(parsed.getTime())) {
-                                    dateLabel = parsed.toLocaleDateString('id-ID', {
-                                        day: '2-digit', month: 'long', year: 'numeric'
-                                    });
-                                }
-                            }
-
-                            produkHtml += `
-                                <tr class="monitor-date-group-row">
-                                    <td colspan="2" class="monitor-date-group-cell">
-                                        <div class="monitor-date-group-label">
-                                            <span class="monitor-date-group-icon">📅</span>
-                                            <span>${escapeHtml(dateLabel)}</span>
-                                            <span class="monitor-date-group-count">${grouped[tgl].length} produk</span>
-                                        </div>
-                                    </td>
-                                </tr>
-                            `;
-
-                            grouped[tgl].forEach(function(p) {
-                                let produkValue = p.produk !== undefined && p.produk !== null ? String(p.produk) : '-';
-                                produkHtml += `
-                                    <tr>
-                                        <td class="p-2.5 text-center text-slate-400 font-bold">${nomor++}</td>
-                                        <td class="modal-product-name">${escapeHtml(produkValue)}</td>
-                                    </tr>
-                                `;
-                            });
-                        });
-
-                        produkHtml += `
-                                    </tbody>
-                                </table>
-                            </div>
-                        `;
-                    }
-
-                    // Data Target / Actual / Gap / Ach tetap menggunakan perhitungan yang sama.
-                    // Hanya area Transaksi yang diperbarui agar History tidak perlu menunggu transaksi selesai.
-                    const productsTarget = document.getElementById('monitoringDetailProducts');
-                    if (productsTarget) {
-                        productsTarget.innerHTML = produkHtml;
-                    }
-                    const monitoringBodyEl = document.getElementById('modalBody');
-                    if (monitoringBodyEl) monitoringBodyEl.scrollTop = 0;
+                    monitoringDetailProductsCache[detailProductsKey] = Array.isArray(produkList) ? produkList : [];
+                    renderMonitoringDetailProducts(monitoringDetailProductsCache[detailProductsKey]);
+                    return;
                 })
                 .withFailureHandler(function(err) {
                     const productsTarget = document.getElementById('monitoringDetailProducts');
@@ -5489,17 +5586,103 @@ function handleLogin(e) {
                     }
                 })
                 .getProdukDibeliOutletQuarter(data.outlet, data.quarter, data.custCode || '');
+
+            return;
         }
 
+        function renderMonitoringDetailProducts(produkList) {
+            let produkHtml = "";
+            if (!produkList || produkList.length === 0) {
+                produkHtml = `<p class="text-slate-400 text-xs py-2 italic">Tidak ada transaksi pada periode ini.</p>`;
+            } else {
+                let grouped = {};
+                produkList.forEach(function(p) {
+                    let tglValue = p.tanggal !== undefined && p.tanggal !== null && String(p.tanggal).trim()
+                        ? String(p.tanggal).trim() : '-';
+                    if (!grouped[tglValue]) grouped[tglValue] = [];
+                    grouped[tglValue].push(p);
+                });
+
+                let groupedDates = Object.keys(grouped).sort(function(a, b) {
+                    if (a === '-') return 1;
+                    if (b === '-') return -1;
+                    return new Date(b).getTime() - new Date(a).getTime();
+                });
+
+                produkHtml = `
+                    <div class="modal-table-wrap">
+                        <table class="modal-detail-table">
+                            <thead>
+                                <tr>
+                                    <th style="width:55px; text-align:center;">No</th>
+                                    <th style="text-align:left;">Produk</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                `;
+
+                let nomor = 1;
+                groupedDates.forEach(function(tgl) {
+                    let dateLabel = tgl;
+                    if (tgl !== '-') {
+                        let parsed = new Date(tgl);
+                        if (!isNaN(parsed.getTime())) {
+                            dateLabel = parsed.toLocaleDateString('id-ID', {
+                                day: '2-digit', month: 'long', year: 'numeric'
+                            });
+                        }
+                    }
+
+                    produkHtml += `
+                        <tr class="monitor-date-group-row">
+                            <td colspan="2" class="monitor-date-group-cell">
+                                <div class="monitor-date-group-label">
+                                    <span class="monitor-date-group-icon">📅</span>
+                                    <span>${escapeHtml(dateLabel)}</span>
+                                    <span class="monitor-date-group-count">${grouped[tgl].length} produk</span>
+                                </div>
+                            </td>
+                        </tr>
+                    `;
+
+                    grouped[tgl].forEach(function(p) {
+                        let produkValue = p.produk !== undefined && p.produk !== null ? String(p.produk) : '-';
+                        produkHtml += `
+                            <tr>
+                                <td class="p-2.5 text-center text-slate-400 font-bold">${nomor++}</td>
+                                <td class="modal-product-name">${escapeHtml(produkValue)}</td>
+                            </tr>
+                        `;
+                    });
+                });
+
+                produkHtml += `
+                            </tbody>
+                        </table>
+                    </div>
+                `;
+            }
+
+            const productsTarget = document.getElementById('monitoringDetailProducts');
+            if (productsTarget) productsTarget.innerHTML = produkHtml;
+
+            const monitoringBodyEl = document.getElementById('modalBody');
+            if (monitoringBodyEl) monitoringBodyEl.scrollTop = 0;
+        }
 
         function loadMonitoringHistoryChart(data) {
             const target = document.getElementById('monitoringDetailHistoryChart');
             if (!target) return;
             const custKey = String(data && data.custCode || '').trim().toUpperCase().replace(/\s+/g, ' ');
-            const cacheKey = 'MONITORING_HISTORY_V2_' + custKey;
-            const cached = appLocalCacheGet(cacheKey);
+            const cacheKey = 'MONITORING_HISTORY_V4_' + custKey;
+            const memoryKey = monitoringDetailHistoryKey(data && data.custCode);
+            const preloaded = monitoringDetailHistoryCache[memoryKey];
+            const cached = preloaded || appLocalCacheGet(cacheKey);
 
-            if (cached && typeof cached === 'object' && Array.isArray(cached.history)) {
+            if (preloaded && typeof preloaded === 'object' && Array.isArray(preloaded.history)) {
+                renderMonitoringHistoryChart(preloaded.history, preloaded.lastOrder || null);
+                return;
+            } else if (cached && typeof cached === 'object' && Array.isArray(cached.history)) {
                 renderMonitoringHistoryChart(cached.history, cached.lastOrder || null);
             } else if (Array.isArray(cached)) {
                 // Kompatibilitas cache lama.
@@ -6905,6 +7088,7 @@ function handleLogin(e) {
         }
 
         function renderPencapaianSales(data) {
+            pencapaianLastRenderedData = Array.isArray(data) ? data : [];
             const container = document.getElementById('pencapaianSalesList');
             const loading = document.getElementById('pencapaianLoading');
             if (loading) loading.classList.add('hidden');
@@ -7278,6 +7462,90 @@ function handleLogin(e) {
             }).getListSalesOptions();
         }
 
+        // PRELOAD SEMUA DETAIL PENCAPAIAN SAAT LOGIN
+        let pencapaianDetailPreloadLoading = false;
+        let pencapaianDetailPreloadStarted = false;
+        let pencapaianLastRenderedData = [];
+
+        function preloadAllPencapaianDetails() {
+            if (pencapaianDetailPreloadStarted) return;
+            pencapaianDetailPreloadStarted = true;
+            pencapaianDetailPreloadLoading = true;
+
+            const periodEl = document.getElementById('pencapaianPeriodSelect');
+            const period = periodEl ? String(periodEl.value || '') : String(selectedPeriod || '');
+            const rows = Array.isArray(pencapaianLastRenderedData) ? pencapaianLastRenderedData : [];
+
+            const salesMap = {};
+            rows.forEach(function(item) {
+                const sales = String(item && item.sales || '').trim();
+                if (sales) salesMap[sales.toUpperCase()] = sales;
+            });
+
+            const activeSales = String(
+                String(currentUsernameInput || '').trim().toLowerCase() === 'admin'
+                    ? ''
+                    : (currentUser || currentUsernameInput || '')
+            ).trim();
+            if (activeSales) salesMap[activeSales.toUpperCase()] = activeSales;
+
+            const salesList = Object.keys(salesMap).map(function(k) { return salesMap[k]; });
+            const categories = ['value', 'volume', 'active', 'product', 'powerbrand'];
+
+            if (!period || !salesList.length) {
+                pencapaianDetailPreloadLoading = false;
+                return;
+            }
+
+            const jobs = [];
+            salesList.forEach(function(sales) {
+                categories.forEach(function(category) {
+                    const key = String(currentUsernameInput || '').toLowerCase() + '|' +
+                        String(sales || '').toUpperCase() + '|' +
+                        String(period || '') + '|' +
+                        String(category || '').toLowerCase();
+                    if (!pencapaianDetailCache[key]) {
+                        jobs.push({key:key, sales:sales, category:category});
+                    }
+                });
+            });
+
+            if (!jobs.length) {
+                pencapaianDetailPreloadLoading = false;
+                return;
+            }
+
+            let cursor = 0;
+            let pending = jobs.length;
+            const concurrency = 5;
+
+            function finishJob() {
+                pending--;
+                if (pending <= 0) pencapaianDetailPreloadLoading = false;
+            }
+
+            function runNext() {
+                while (cursor < jobs.length) {
+                    const job = jobs[cursor++];
+                    google.script.run
+                        .withSuccessHandler(function(res) {
+                            pencapaianDetailCache[job.key] = res || {};
+                            finishJob();
+                            runNext();
+                        })
+                        .withFailureHandler(function(err) {
+                            console.warn('Preload Detail Pencapaian gagal:', err && err.message ? err.message : err);
+                            pencapaianDetailCache[job.key] = {success:false, data:[]};
+                            finishJob();
+                            runNext();
+                        })
+                        .getPencapaianSalesDetail(job.sales, currentUsernameInput, period, job.category);
+                }
+            }
+
+            for (let i = 0; i < concurrency; i++) runNext();
+        }
+
         function prefetchPencapaianDetailData(sales, period) {
             if (!sales || !period) return;
             const cats = ['value','volume','active','product','powerbrand'];
@@ -7309,6 +7577,7 @@ function handleLogin(e) {
                     periodSelect.value = res.selectedPeriod || selectedPeriod || res.periods[0].value;
                 }
                 renderPencapaianSales(res.data || []);
+                preloadAllPencapaianDetails();
                 prefetchPencapaianDetailData(isAdminLogin ? selectedSales : currentUser, res.selectedPeriod || selectedPeriod);
                 return;
             }
@@ -8353,11 +8622,9 @@ function handleLogin(e) {
 
         function startAutoRefresh() {
             if (autoRefreshTimer) clearInterval(autoRefreshTimer);
-            // Jalankan setiap 5 detik.
-            autoRefreshTimer = setInterval(function() {
-                autoRefreshActiveTab();
-                loadNotifications(true);
-            }, 5000);
+            // Tidak ada reload berkala saat user berada di tab.
+            // Semua data utama dan detail dipreload saat login.
+            autoRefreshTimer = null;
         }
 
         let appBackgroundPreloadStarted = false;
@@ -8371,7 +8638,7 @@ function handleLogin(e) {
             appBackgroundPreloadStarted = true;
             restoreFastTabCaches();
 
-            // Saat login, seluruh data utama diproses paralel sebelum halaman aplikasi dibuka.
+            // Saat login, seluruh data utama dan detail yang dapat dibuka dari tab utama diproses sebelum halaman aplikasi dibuka.
             const run = function(fn) { setTimeout(function(){ try { fn(); } catch(e) { console.warn('Preload:', e); } }, 0); };
             const isAdmin = String(currentUsernameInput || '').trim().toLowerCase() === 'admin';
 
@@ -8403,7 +8670,7 @@ function handleLogin(e) {
 
             const startedAt = Date.now();
             const check = function() {
-                const loading = !!(riwayatLoading || monitoringLoading || kontrakLoading || pencapaianLoading || outletBWSLoading || inputMasterLoading || tambahCustomerLoading || pricelistLoading || pesananOutletLoading || notificationLoading);
+                const loading = !!(riwayatLoading || monitoringLoading || monitoringDetailPreloadLoading || pencapaianDetailPreloadLoading || kontrakLoading || pencapaianLoading || outletBWSLoading || inputMasterLoading || tambahCustomerLoading || pricelistLoading || pesananOutletLoading || notificationLoading);
                 const elapsed = Date.now() - startedAt;
 
                 // Beri sedikit waktu tambahan setelah flag loading selesai agar render/cache selesai ditulis.
@@ -8457,14 +8724,7 @@ function handleLogin(e) {
                 });
             }
             setSidebarState(true);
-if(tab==='riwayat')loadRiwayat(false, true);
-            if(tab==='pencapaian')loadPencapaianSales(false, true);
-            if(tab==='monitoring')loadMonitoring(false, true);
-            if(tab==='outletkontrak')loadOutletKontrak(false, true);
-            if(tab==='outletbws')loadOutletBWSAdmin(false, true);
-            if(tab==='tambahcustomer')loadTambahCustomer(false, true);
-            if(tab==='pricelist')loadPricelist(false, true);
-            if(tab==='pesananoutlet')loadPesananOutlet(false, true);
+            // Semua tab utama sudah dipreload saat login. Tidak ada load ulang saat berpindah tab.
             if(tab==='pengumumanadmin')loadPengumumanAdmin();
         }
 
