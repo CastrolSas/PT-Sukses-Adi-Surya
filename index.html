@@ -8212,7 +8212,7 @@ startAutoRefresh();
             const box=document.getElementById('homeRebuildNotificationHistory'); if(!box)return;
             const list=Array.isArray(notificationData)?notificationData.slice(0,8):[];
             if(!list.length){box.innerHTML='<div class="home-rebuild-empty">Belum ada notifikasi.</div>';return;}
-            box.innerHTML=list.map(function(n){const id=escapeHtml(String(n.id||''));const title=escapeHtml(String(n.judul||'Notifikasi'));const msg=escapeHtml(String(n.pesan||''));const time=escapeHtml(formatNotificationTime(n.waktu));return '<button type="button" class="home-rebuild-notif-item" data-notif-id="'+id+'" onclick="openNotificationItem(this.dataset.notifId)"><span class="home-rebuild-notif-dot'+(n.unread?' unread':'')+'"></span><span><span class="home-rebuild-notif-title block">'+title+'</span><span class="home-rebuild-notif-msg block">'+msg+'</span><span class="home-rebuild-notif-time block">'+time+'</span></span></button>';}).join('');
+            box.innerHTML=list.map(function(n){const id=escapeHtml(String(n.id||''));const title=escapeHtml(String(n.judul||'Notifikasi'));const msg=escapeHtml(formatNotificationMessageForDisplay(n));const time=escapeHtml(formatNotificationTime(n.waktu));return '<button type="button" class="home-rebuild-notif-item" data-notif-id="'+id+'" onclick="openNotificationItem(this.dataset.notifId)"><span class="home-rebuild-notif-dot'+(n.unread?' unread':'')+'"></span><span><span class="home-rebuild-notif-title block">'+title+'</span><span class="home-rebuild-notif-msg block">'+msg+'</span><span class="home-rebuild-notif-time block">'+time+'</span></span></button>';}).join('');
         }
         function renderHomeRebuildDashboard(res){
             res=res||{};
@@ -8338,6 +8338,34 @@ startAutoRefresh();
             img.addEventListener('touchcancel',endTouch,{passive:false});
         }
 
+        function formatNotificationMessageForDisplay(n) {
+            let message = String(n && n.pesan || '').trim();
+            const type = String(n && n.tipe || '').trim().toUpperCase();
+
+            // TRANSAKSI: tampilkan nama outlet saja tanpa ID INPUT.
+            if (type === 'TRANSAKSI') {
+                let outlet = '';
+                let match = message.match(/\buntuk\s+outlet\s+(.+?)\s*\.?$/i);
+                if (match) outlet = String(match[1] || '').trim();
+                if (!outlet) {
+                    match = message.match(/\bOutlet\s*:\s*(.+?)\s*\.?$/i);
+                    if (match) outlet = String(match[1] || '').trim();
+                }
+                if (outlet) return outlet.replace(/[.\s]+$/, '') + ' Berhasil di Input.';
+            }
+
+            // Semua tipe: hilangkan bagian ID INPUT / nomor transaksi dari teks notifikasi.
+            message = message
+                .replace(/\s*\|\s*Transaksi\s*[:#-]?\s*[^|.]+(?=\s*\||\s*\.?$)/i, '')
+                .replace(/\bID\s*INPUT\s*[:#-]?\s*[A-Za-z0-9][A-Za-z0-9._\/-]*/gi, '')
+                .replace(/\bTransaksi\s*[:#-]?\s*[A-Za-z0-9][A-Za-z0-9._\/-]*\s*/i, 'Transaksi ')
+                .replace(/\s{2,}/g, ' ')
+                .replace(/\s+\./g, '.')
+                .trim();
+
+            return message;
+        }
+
         function renderNotifications() {
             const list = document.getElementById('notificationList');
             const badge = document.getElementById('notificationBadge');
@@ -8361,7 +8389,7 @@ startAutoRefresh();
             list.innerHTML = notificationData.map(function(n) {
                 const id = escapeHtml(String(n.id || ''));
                 const title = escapeHtml(String(n.judul || 'Notifikasi'));
-                const message = escapeHtml(String(n.pesan || ''));
+                const message = escapeHtml(formatNotificationMessageForDisplay(n));
                 const time = escapeHtml(formatNotificationTime(n.waktu));
                 const type = escapeHtml(notificationTypeLabel(n.tipe));
                 const unreadClass = n.unread ? ' unread' : '';
