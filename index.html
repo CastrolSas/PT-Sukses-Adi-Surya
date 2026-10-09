@@ -3024,6 +3024,13 @@ body{background:
 @keyframes castrolRefreshSpin{from{transform:rotate(0deg)}to{transform:rotate(360deg)}}
 </style>
 
+
+<style id="castrol-sidebar-logo-replacement">
+#leftNav .sidebar-label.castrol-sidebar-logo{display:flex!important;align-items:center!important;justify-content:center!important;min-height:46px!important;padding:5px 8px!important;font-size:0!important;letter-spacing:0!important;}
+#leftNav .sidebar-label.castrol-sidebar-logo img{display:block;width:100%;max-width:112px;height:34px;object-fit:contain;}
+.home-rebuild-metric .home-rebuild-icon{display:none!important;}
+</style>
+
 </head>
 <body class="bg-slate-50 font-sans">
 
@@ -3136,7 +3143,7 @@ body{background:
         <!-- Navigasi Menu Sidebar Kiri -->
         <nav id="leftNav" class="app-sidebar hidden" aria-label="Navigasi utama">
             <div class="sidebar-inner">
-                <div class="sidebar-label">MENU</div>
+                <div class="sidebar-label castrol-sidebar-logo"><img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQjbF9zjGOOADFZIb2DyNfdj-3wi3z5cqLroA&s" alt="Logo Castrol"></div>
                 
 
                 <button type="button" onclick="switchTab('home')" id="navHome"
@@ -3299,11 +3306,11 @@ body{background:
                             <div id="homeRebuildDots" class="home-rebuild-dots"></div>
                         </section>
                         <section class="home-rebuild-card">
-                            <div class="home-rebuild-head"><div><div class="home-rebuild-title">📈 Perkembangan Hari Ini</div><div class="home-rebuild-sub">Semua transaksi hari ini, tanpa filter APPROVE.</div></div><div id="homeRebuildDate" class="home-rebuild-date">-</div></div>
+                            <div class="home-rebuild-head"><div><div class="home-rebuild-title">Perkembangan Hari Ini</div><div class="home-rebuild-sub">Semua transaksi hari ini, tanpa filter APPROVE.</div></div><div id="homeRebuildDate" class="home-rebuild-date">-</div></div>
                             <div class="home-rebuild-metrics">
-                                <div class="home-rebuild-metric"><div class="home-rebuild-icon">💧</div><div class="home-rebuild-label">Volume</div><div id="homeRebuildVolume" class="home-rebuild-value">0,0</div><div class="home-rebuild-unit">Liter</div><div class="home-rebuild-compare"><span id="homeRebuildPerfVolumeYesterday" class="home-rebuild-performance-yesterday">Kemarin 0,0 L</span><span id="homeRebuildPerfVolumeChange" class="home-rebuild-performance-change same">—</span></div><span id="homeRebuildPerfVolumeToday" class="home-rebuild-performance-today" aria-hidden="true"></span></div>
-                                <div class="home-rebuild-metric"><div class="home-rebuild-icon">🧾</div><div class="home-rebuild-label">Transaksi</div><div id="homeRebuildTransaction" class="home-rebuild-value">0</div><div class="home-rebuild-unit">Transaksi</div><div class="home-rebuild-compare"><span id="homeRebuildPerfTransactionYesterday" class="home-rebuild-performance-yesterday">Kemarin 0</span><span id="homeRebuildPerfTransactionChange" class="home-rebuild-performance-change same">—</span></div><span id="homeRebuildPerfTransactionToday" class="home-rebuild-performance-today" aria-hidden="true"></span></div>
-                                <div class="home-rebuild-metric"><div class="home-rebuild-icon">💰</div><div class="home-rebuild-label">Value</div><div id="homeRebuildValue" class="home-rebuild-value">Rp 0</div><div class="home-rebuild-unit">Rupiah</div><div class="home-rebuild-compare"><span id="homeRebuildPerfValueYesterday" class="home-rebuild-performance-yesterday">Kemarin Rp 0</span><span id="homeRebuildPerfValueChange" class="home-rebuild-performance-change same">—</span></div><span id="homeRebuildPerfValueToday" class="home-rebuild-performance-today" aria-hidden="true"></span></div>
+                                <div class="home-rebuild-metric"><div class="home-rebuild-label">Volume</div><div id="homeRebuildVolume" class="home-rebuild-value">0,0</div><div class="home-rebuild-unit">Liter</div><div class="home-rebuild-compare"><span id="homeRebuildPerfVolumeYesterday" class="home-rebuild-performance-yesterday">Kemarin 0,0 L</span><span id="homeRebuildPerfVolumeChange" class="home-rebuild-performance-change same">—</span></div><span id="homeRebuildPerfVolumeToday" class="home-rebuild-performance-today" aria-hidden="true"></span></div>
+                                <div class="home-rebuild-metric"><div class="home-rebuild-label">Transaksi</div><div id="homeRebuildTransaction" class="home-rebuild-value">0</div><div class="home-rebuild-unit">Transaksi</div><div class="home-rebuild-compare"><span id="homeRebuildPerfTransactionYesterday" class="home-rebuild-performance-yesterday">Kemarin 0</span><span id="homeRebuildPerfTransactionChange" class="home-rebuild-performance-change same">—</span></div><span id="homeRebuildPerfTransactionToday" class="home-rebuild-performance-today" aria-hidden="true"></span></div>
+                                <div class="home-rebuild-metric"><div class="home-rebuild-label">Value</div><div id="homeRebuildValue" class="home-rebuild-value">Rp 0</div><div class="home-rebuild-unit">Rupiah</div><div class="home-rebuild-compare"><span id="homeRebuildPerfValueYesterday" class="home-rebuild-performance-yesterday">Kemarin Rp 0</span><span id="homeRebuildPerfValueChange" class="home-rebuild-performance-change same">—</span></div><span id="homeRebuildPerfValueToday" class="home-rebuild-performance-today" aria-hidden="true"></span></div>
                             </div>
                             <div class="home-rebuild-outlets"><div class="flex items-center justify-between gap-2 mb-2"><div class="text-[9px] font-extrabold text-slate-700">Outlet yang Bertransaksi Hari Ini</div><div class="flex items-center gap-2"><div id="homeRebuildOutletCount" class="text-[8px] font-bold text-emerald-700">0 transaksi</div><button type="button" onclick="switchTab('input')" class="home-rebuild-input-order-btn">＋ Input Order</button></div></div><div class="home-rebuild-table-wrap"><table class="home-rebuild-outlet-table"><thead><tr><th>Outlet</th><th>Volume</th><th>Value</th><th>Status</th></tr></thead><tbody id="homeRebuildOutletTableBody"><tr><td colspan="4" class="home-rebuild-empty">Memuat...</td></tr></tbody></table></div></div>
                         </section>
@@ -3676,7 +3683,6 @@ body{background:
                     <div class="flex flex-wrap justify-between items-center gap-2 border-b border-slate-200 pb-2">
                         <div>
                             <h2 class="text-base font-bold text-slate-800">Outlet BWS</h2>
-                            <p class="text-[10px] text-slate-400 mt-0.5">Data Outlet BWS sesuai Sales login</p>
                         </div>
                         <div class="flex items-center gap-2">
                             <span id="outletBWSCount" class="text-[11px] font-bold text-emerald-700 bg-emerald-50 px-2.5 py-1 rounded-full border border-emerald-200">0 outlet</span>
