@@ -7117,11 +7117,31 @@ startAutoRefresh();
             let rows='';
             data.forEach(function(item){
                 cats.forEach(function(c, index){
-                    const q=(item.categories&&item.categories[c.key]&&item.categories[c.key].quarter)||{};
+                    const category = (item.categories && item.categories[c.key]) || {};
+                    const q = category.quarter || {};
+                    const months = Array.isArray(category.months) ? category.months : [];
+                    const rowCount = months.length + 1;
                     const salesCell = index === 0
-                        ? '<td class="px-3 py-2.5 font-bold text-slate-700 align-top border-r border-slate-100" rowspan="'+cats.length+'">'+escapeHtml(item.sales||'-')+'</td>'
+                        ? '<td class="px-2 py-1.5 font-bold text-slate-700 align-top border-r border-slate-100" rowspan="'+(cats.length * rowCount)+'">'+escapeHtml(item.sales||'-')+'</td>'
                         : '';
-                    rows += '<tr class="border-b border-slate-100 hover:bg-emerald-50/50 cursor-pointer" onclick="openPencapaianDetail(\''+escapeHtml(categoryKeyForDetail(c.type))+'\', \''+escapeHtml(item.sales||'')+'\')">'+salesCell+'<td class="px-3 py-2.5">'+escapeHtml(c.label)+'</td><td class="px-3 py-2.5 text-right">'+formatPencapaianValue(q.target,c.type)+'</td><td class="px-3 py-2.5 text-right font-bold">'+formatPencapaianValue(q.actual,c.type)+'</td><td class="px-3 py-2.5 text-right font-bold '+(Number(q.gap||0)>=0?'text-emerald-700':'text-red-600')+'">'+formatPencapaianValue(q.gap||0,c.type)+'</td><td class="px-3 py-2.5 text-right font-extrabold">'+formatPercentID(q.percentage||0)+'</td></tr>';
+                    rows += '<tr class="bg-emerald-50/60 border-b border-slate-200 hover:bg-emerald-50 cursor-pointer" onclick="openPencapaianDetail(\''+escapeHtml(categoryKeyForDetail(c.type))+'\', \''+escapeHtml(item.sales||'')+'\')">' +
+                        (index === 0 ? salesCell : '') +
+                        '<td class="px-2 py-1.5 font-semibold text-slate-700 align-top border-r border-slate-100" rowspan="'+rowCount+'">'+escapeHtml(c.label)+'</td>' +
+                        '<td class="px-2 py-1.5 text-slate-600 font-extrabold whitespace-nowrap">TOTAL QUARTAL</td>' +
+                        '<td class="px-2 py-1.5 text-right whitespace-nowrap">'+formatPencapaianValue(q.target,c.type)+'</td>' +
+                        '<td class="px-2 py-1.5 text-right font-bold whitespace-nowrap">'+formatPencapaianValue(q.actual,c.type)+'</td>' +
+                        '<td class="px-2 py-1.5 text-right font-bold whitespace-nowrap '+(Number(q.gap||0)>=0?'text-emerald-700':'text-red-600')+'">'+formatPencapaianValue(q.gap||0,c.type)+'</td>' +
+                        '<td class="px-2 py-1.5 text-right font-extrabold whitespace-nowrap">'+formatPercentID(q.percentage||0)+'</td></tr>';
+                    months.forEach(function(m, monthIndex) {
+                        const gap = Number(m.gap !== undefined ? m.gap : Number(m.actual||0)-Number(m.target||0));
+                        rows += '<tr class="border-b border-slate-100 hover:bg-emerald-50/40 cursor-pointer" onclick="openPencapaianDetail(\''+escapeHtml(categoryKeyForDetail(c.type))+'\', \''+escapeHtml(item.sales||'')+'\')">' +
+                            (index === 0 ? '' : '') +
+                            '<td class="px-2 py-1 text-slate-500 whitespace-nowrap">'+escapeHtml(m.period || ('Bulan '+(monthIndex+1)))+'</td>' +
+                            '<td class="px-2 py-1 text-right text-slate-600 whitespace-nowrap">'+formatPencapaianValue(m.target,c.type)+'</td>' +
+                            '<td class="px-2 py-1 text-right font-semibold text-slate-700 whitespace-nowrap">'+formatPencapaianValue(m.actual,c.type)+'</td>' +
+                            '<td class="px-2 py-1 text-right font-semibold whitespace-nowrap '+(gap>=0?'text-emerald-700':'text-red-600')+'">'+formatPencapaianValue(gap,c.type)+'</td>' +
+                            '<td class="px-2 py-1 text-right font-bold text-slate-600 whitespace-nowrap">'+formatPercentID(m.percentage||0)+'</td></tr>';
+                    });
                 });
             });
             let totalSummaryHtml = '';
@@ -7150,7 +7170,7 @@ startAutoRefresh();
                 }).join('');
                 totalSummaryHtml = '<div class="mb-3"><div class="text-[10px] font-extrabold uppercase tracking-wider text-slate-600 mb-2">Total Pencapaian Semua Sales</div><div class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-2">' + totalCards + '</div></div>';
             }
-            container.innerHTML=totalSummaryHtml+'<div class="bg-white border border-slate-200 rounded-2xl shadow-sm overflow-hidden"><div class="overflow-x-auto"><table class="w-full min-w-[820px] text-[10px]"><thead><tr class="bg-slate-50 border-b border-slate-200 text-[9px] uppercase tracking-wide text-slate-500"><th class="px-3 py-2 text-left">Sales</th><th class="px-3 py-2 text-left">Kategori</th><th class="px-3 py-2 text-right">Target</th><th class="px-3 py-2 text-right">Actual</th><th class="px-3 py-2 text-right">Gap</th><th class="px-3 py-2 text-right">%</th></tr></thead><tbody>'+rows+'</tbody></table></div></div>';
+            container.innerHTML = totalSummaryHtml + '<div class="bg-white border border-slate-200 rounded-2xl shadow-sm overflow-hidden"><div class="overflow-x-auto"><table class="w-full min-w-[900px] text-[10px] border-collapse"><thead><tr class="bg-slate-50 border-b border-slate-200 text-[9px] uppercase tracking-wide text-slate-500"><th class="px-2 py-2 text-left">Sales</th><th class="px-2 py-2 text-left">Kategori</th><th class="px-2 py-2 text-left">Bulan / Periode</th><th class="px-2 py-2 text-right">Target</th><th class="px-2 py-2 text-right">Actual</th><th class="px-2 py-2 text-right">Gap</th><th class="px-2 py-2 text-right">%</th></tr></thead><tbody>' + rows + '</tbody></table></div></div>';
         }
 
         function renderPencapaianChart(data) {
