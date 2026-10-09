@@ -4101,6 +4101,7 @@ body{background:
         let currentUser = "";
         let currentUsernameInput = "";
         let produkDataList = [];
+        let cashbackDataList = [];
         let shoppingCart = [];
         let outletDataList = [];
         let globalRiwayatData = [];
@@ -4326,12 +4327,8 @@ startAutoRefresh();
             }).getListProduk();
 
             google.script.run.withSuccessHandler(function(cashbackList) {
-                let selectCB = $('#cashbackSelect');
-                if (selectCB && selectCB.length) {
-                    selectCB.empty().append('<option value="">-- Pilih Cashback --</option>');
-                    (cashbackList || []).forEach(cb => selectCB.append(new Option(cb, cb)));
-                    refreshSelect2('#cashbackSelect');
-                }
+                cashbackDataList = Array.isArray(cashbackList) ? cashbackList.slice() : [];
+                renderCashbackOptionsForInputChannel();
                 finish();
             }).withFailureHandler(function(err){ console.warn('Gagal memuat cashback:', err); finish(); }).getListCashback();
         }
@@ -4529,6 +4526,31 @@ startAutoRefresh();
             window.scrollTo({top: 0, behavior: 'smooth'});
         }
 
+        function renderCashbackOptionsForInputChannel() {
+            const selectCB = $('#cashbackSelect');
+            if (!selectCB || !selectCB.length) return;
+
+            const channel = String(document.getElementById('inputChannel')?.value || '').trim().toUpperCase();
+            let allowedTerms = null;
+            if (channel === 'PCO') allowedTerms = ['PCO', 'CAS'];
+            else if (channel === 'MCO-4T') allowedTerms = ['MCO-4T', 'BP'];
+
+            const currentValue = String(selectCB.val() || '');
+            const filteredCashbacks = allowedTerms
+                ? cashbackDataList.filter(function(item) {
+                    const label = String(item == null ? '' : item).trim().toUpperCase();
+                    return allowedTerms.some(function(term) { return label.includes(term); });
+                })
+                : cashbackDataList;
+
+            selectCB.empty().append(new Option('-- Pilih Cashback --', ''));
+            filteredCashbacks.forEach(function(item) {
+                selectCB.append(new Option(item, item));
+            });
+            selectCB.val(filteredCashbacks.some(function(item) { return String(item) === currentValue; }) ? currentValue : '');
+            refreshSelect2('#cashbackSelect');
+        }
+
         function onOutletChange() {
             let val = $('#inputOutlet').val();
             let found = outletDataList.find(o => o.outlet === val);
@@ -4539,6 +4561,7 @@ startAutoRefresh();
                 document.getElementById('inputCustCode').value = "";
                 document.getElementById('inputChannel').value = "";
             }
+            renderCashbackOptionsForInputChannel();
         }
 
         function tambahKeKeranjang() {
