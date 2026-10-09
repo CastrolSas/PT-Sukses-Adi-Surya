@@ -3031,6 +3031,19 @@ body{background:
 .home-rebuild-metric .home-rebuild-icon{display:none!important;}
 </style>
 
+<style id="home-mobile-value-fit-fix">
+/* Khusus nilai Value di Beranda mobile: tampilkan angka utuh tanpa ellipsis. */
+@media (max-width: 640px) {
+  #homeRebuildValue {
+    font-size: clamp(10px, 3.2vw, 13px) !important;
+    letter-spacing: -0.035em !important;
+    white-space: nowrap !important;
+    overflow: visible !important;
+    text-overflow: clip !important;
+    max-width: 100% !important;
+  }
+}
+</style>
 </head>
 <body class="bg-slate-50 font-sans">
 
