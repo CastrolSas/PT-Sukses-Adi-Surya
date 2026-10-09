@@ -4584,8 +4584,11 @@ startAutoRefresh();
             let hargaSatuan = prodObj ? prodObj.harga : 0;
             let literSatuan = prodObj ? prodObj.liter : 0;
 
+            // Gunakan data isi per dus dari master produk; nama produk tidak selalu memuat pola '12 x'.
             let packMatch = produkNama.match(/(\d+)\s*x/i);
-            let packValue = packMatch ? parseInt(packMatch[1]) : 1;
+            let packValue = prodObj && Number(prodObj.pack) > 0
+                ? Number(prodObj.pack)
+                : (packMatch ? parseInt(packMatch[1], 10) : 1);
 
             shoppingCart.push({ 
                 produk: produkNama, 
