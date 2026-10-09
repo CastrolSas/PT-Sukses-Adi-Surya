@@ -7113,52 +7113,27 @@ startAutoRefresh();
         function renderPencapaianTable(data) {
             const container = document.getElementById('pencapaianSalesList');
             if (!container) return;
-            const cats = [{key:'value',label:'Value',type:'value'},{key:'volume',label:'Volume',type:'volume'},{key:'active',label:'Active Outlet',type:'active'},{key:'product',label:'Produk Fokus',type:'product'},{key:'powerBrand',label:'Power Brand',type:'powerBrand'}];
-            let rows='';
-            data.forEach(function(item){
-                cats.forEach(function(c, index){
-                    const category = (item.categories && item.categories[c.key]) || {};
-                    const q = category.quarter || {};
-                    const months = Array.isArray(category.months) ? category.months : [];
-                    const rowCount = months.length + 1;
-                    const salesCell = index === 0
-                        ? '<td class="px-2 py-1.5 font-bold text-slate-700 align-top border-r border-slate-100" rowspan="'+(cats.length * rowCount)+'">'+escapeHtml(item.sales||'-')+'</td>'
-                        : '';
-                    rows += '<tr class="bg-emerald-50/60 border-b border-slate-200 hover:bg-emerald-50 cursor-pointer" onclick="openPencapaianDetail(\''+escapeHtml(categoryKeyForDetail(c.type))+'\', \''+escapeHtml(item.sales||'')+'\')">' +
-                        (index === 0 ? salesCell : '') +
-                        '<td class="px-2 py-1.5 font-semibold text-slate-700 align-top border-r border-slate-100" rowspan="'+rowCount+'">'+escapeHtml(c.label)+'</td>' +
-                        '<td class="px-2 py-1.5 text-slate-600 font-extrabold whitespace-nowrap">TOTAL QUARTAL</td>' +
-                        '<td class="px-2 py-1.5 text-right whitespace-nowrap">'+formatPencapaianValue(q.target,c.type)+'</td>' +
-                        '<td class="px-2 py-1.5 text-right font-bold whitespace-nowrap">'+formatPencapaianValue(q.actual,c.type)+'</td>' +
-                        '<td class="px-2 py-1.5 text-right font-bold whitespace-nowrap '+(Number(q.gap||0)>=0?'text-emerald-700':'text-red-600')+'">'+formatPencapaianValue(q.gap||0,c.type)+'</td>' +
-                        '<td class="px-2 py-1.5 text-right font-extrabold whitespace-nowrap">'+formatPercentID(q.percentage||0)+'</td></tr>';
-                    months.forEach(function(m, monthIndex) {
-                        const gap = Number(m.gap !== undefined ? m.gap : Number(m.actual||0)-Number(m.target||0));
-                        rows += '<tr class="border-b border-slate-100 hover:bg-emerald-50/40 cursor-pointer" onclick="openPencapaianDetail(\''+escapeHtml(categoryKeyForDetail(c.type))+'\', \''+escapeHtml(item.sales||'')+'\')">' +
-                            (index === 0 ? '' : '') +
-                            '<td class="px-2 py-1 text-slate-500 whitespace-nowrap">'+escapeHtml(m.period || ('Bulan '+(monthIndex+1)))+'</td>' +
-                            '<td class="px-2 py-1 text-right text-slate-600 whitespace-nowrap">'+formatPencapaianValue(m.target,c.type)+'</td>' +
-                            '<td class="px-2 py-1 text-right font-semibold text-slate-700 whitespace-nowrap">'+formatPencapaianValue(m.actual,c.type)+'</td>' +
-                            '<td class="px-2 py-1 text-right font-semibold whitespace-nowrap '+(gap>=0?'text-emerald-700':'text-red-600')+'">'+formatPencapaianValue(gap,c.type)+'</td>' +
-                            '<td class="px-2 py-1 text-right font-bold text-slate-600 whitespace-nowrap">'+formatPercentID(m.percentage||0)+'</td></tr>';
-                    });
-                });
-            });
-            let totalSummaryHtml = '';
+            const cats = [
+                {key:'value',label:'Value',type:'value'},
+                {key:'volume',label:'Volume',type:'volume'},
+                {key:'active',label:'Active Outlet',type:'active'},
+                {key:'product',label:'Produk Fokus',type:'product'},
+                {key:'powerBrand',label:'Power Brand',type:'powerBrand'}
+            ];
             const salesFilter = document.getElementById('pencapaianSalesFilter');
             const isAdminLogin = String(currentUsernameInput || '').trim().toLowerCase() === 'admin';
             const showTotals = isAdminLogin && !(salesFilter && String(salesFilter.value || '').trim());
+            let totalSummaryHtml = '';
             if (showTotals) {
                 const totalCards = cats.map(function(c) {
-                    let totalTarget = 0;
-                    let totalActual = 0;
+                    let totalTarget = 0, totalActual = 0;
                     data.forEach(function(item) {
                         const q = (item.categories && item.categories[c.key] && item.categories[c.key].quarter) || {};
                         totalTarget += Number(q.target || 0);
                         totalActual += Number(q.actual || 0);
                     });
                     const totalGap = totalActual - totalTarget;
-                    const totalAch = totalTarget !== 0 ? (totalActual / totalTarget) * 100 : 0;
+                    const totalAch = totalTarget !== 0 ? totalActual / totalTarget * 100 : 0;
                     return '<div class="rounded-xl border border-slate-200 bg-white p-3 shadow-sm min-w-0">' +
                         '<div class="text-[9px] font-extrabold uppercase tracking-wide text-slate-500 mb-2">' + escapeHtml(c.label) + '</div>' +
                         '<div class="grid grid-cols-2 gap-x-3 gap-y-2 text-[10px]">' +
@@ -7168,9 +7143,49 @@ startAutoRefresh();
                         '<div><div class="text-slate-400">Total Ach%</div><div class="font-extrabold text-slate-800">' + formatPercentID(totalAch) + '</div></div>' +
                         '</div></div>';
                 }).join('');
-                totalSummaryHtml = '<div class="mb-3"><div class="text-[10px] font-extrabold uppercase tracking-wider text-slate-600 mb-2">Total Pencapaian Semua Sales</div><div class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-2">' + totalCards + '</div></div>';
+                totalSummaryHtml = '<div class="mb-4"><div class="flex items-center gap-2 mb-2"><span class="inline-block w-1 h-4 rounded-full bg-indigo-600"></span><div class="text-[11px] font-extrabold uppercase tracking-wider text-slate-700">Total Pencapaian Semua Sales</div></div><div class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-2">' + totalCards + '</div></div>';
             }
-            container.innerHTML = totalSummaryHtml + '<div class="bg-white border border-slate-200 rounded-2xl shadow-sm overflow-hidden"><div class="overflow-x-auto"><table class="w-full min-w-[900px] text-[10px] border-collapse"><thead><tr class="bg-slate-50 border-b border-slate-200 text-[9px] uppercase tracking-wide text-slate-500"><th class="px-2 py-2 text-left">Sales</th><th class="px-2 py-2 text-left">Kategori</th><th class="px-2 py-2 text-left">Bulan / Periode</th><th class="px-2 py-2 text-right">Target</th><th class="px-2 py-2 text-right">Actual</th><th class="px-2 py-2 text-right">Gap</th><th class="px-2 py-2 text-right">%</th></tr></thead><tbody>' + rows + '</tbody></table></div></div>';
+
+            let rows = '';
+            data.forEach(function(item, itemIndex) {
+                const totalSalesRows = cats.reduce(function(total, c) {
+                    const category = (item.categories && item.categories[c.key]) || {};
+                    return total + 1 + (Array.isArray(category.months) ? category.months.length : 0);
+                }, 0);
+                cats.forEach(function(c) {
+                    const category = (item.categories && item.categories[c.key]) || {};
+                    const q = category.quarter || {};
+                    const months = Array.isArray(category.months) ? category.months : [];
+                    const safeSales = String(item.sales || '').replace(/\\/g, '\\\\').replace(/'/g, "\\'");
+                    const detailCategory = String(categoryKeyForDetail(c.type) || '').replace(/\\/g, '\\\\').replace(/'/g, "\\'");
+                    const rowSpan = Math.max(1, months.length + 1);
+                    const salesCell = '<td class="px-3 py-2.5 align-top border-r border-slate-100 font-extrabold text-slate-800 bg-white" rowspan="' + totalSalesRows + '"><div class="sticky top-0">' + escapeHtml(item.sales || '-') + '</div></td>';
+                    const categoryCell = '<td class="px-3 py-2.5 align-top border-r border-slate-100 font-bold text-slate-700 bg-slate-50/70" rowspan="' + rowSpan + '">' + escapeHtml(c.label) + '</td>';
+                    const qGap = Number(q.gap || 0);
+                    const qPct = Number(q.percentage || 0);
+                    rows += '<tr class="border-b border-slate-200 bg-indigo-50/70 hover:bg-indigo-50 cursor-pointer" onclick="openPencapaianDetail(\'' + detailCategory + '\', \'' + safeSales + '\')">' +
+                        (c.key === cats[0].key ? salesCell : '') + categoryCell +
+                        '<td class="px-3 py-2 text-left whitespace-nowrap"><span class="inline-flex items-center rounded-md bg-indigo-100 text-indigo-800 px-2 py-1 text-[9px] font-extrabold">TOTAL QUARTAL</span></td>' +
+                        '<td class="px-3 py-2 text-right whitespace-nowrap font-semibold text-slate-700">' + formatPencapaianValue(q.target, c.type) + '</td>' +
+                        '<td class="px-3 py-2 text-right whitespace-nowrap font-extrabold text-slate-900">' + formatPencapaianValue(q.actual, c.type) + '</td>' +
+                        '<td class="px-3 py-2 text-right whitespace-nowrap font-extrabold ' + (qGap >= 0 ? 'text-emerald-700' : 'text-red-600') + '">' + formatPencapaianValue(qGap, c.type) + '</td>' +
+                        '<td class="px-3 py-2 text-right whitespace-nowrap font-extrabold text-slate-800">' + formatPercentID(qPct) + '</td></tr>';
+                    months.forEach(function(m, mi) {
+                        const gap = Number(m.gap || 0);
+                        rows += '<tr class="border-b border-slate-100 hover:bg-slate-50 cursor-pointer" onclick="openPencapaianDetail(\'' + detailCategory + '\', \'' + safeSales + '\')">' +
+                            (mi === 0 && c.key === cats[0].key ? '' : '') +
+                            (mi === 0 ? '' : '') +
+                            '<td class="px-3 py-2 text-left whitespace-nowrap text-slate-500">' + escapeHtml(m.period || ('Bulan ' + (m.monthNo || mi + 1))) + '</td>' +
+                            '<td class="px-3 py-2 text-right whitespace-nowrap text-slate-600">' + formatPencapaianValue(m.target, c.type) + '</td>' +
+                            '<td class="px-3 py-2 text-right whitespace-nowrap font-semibold text-slate-700">' + formatPencapaianValue(m.actual, c.type) + '</td>' +
+                            '<td class="px-3 py-2 text-right whitespace-nowrap font-bold ' + (gap >= 0 ? 'text-emerald-700' : 'text-red-600') + '">' + formatPencapaianValue(gap, c.type) + '</td>' +
+                            '<td class="px-3 py-2 text-right whitespace-nowrap font-semibold text-slate-700">' + formatPercentID(m.percentage || 0) + '</td></tr>';
+                    });
+                });
+            });
+            container.innerHTML = totalSummaryHtml +
+                '<div class="mb-2 flex items-center justify-between gap-2"><div class="flex items-center gap-2"><span class="inline-block w-1 h-4 rounded-full bg-slate-800"></span><div class="text-[11px] font-extrabold uppercase tracking-wider text-slate-700">Rincian Pencapaian Sales</div></div><div class="text-[9px] text-slate-400">Total kuartal dan rincian bulanan</div></div>' +
+                '<div class="bg-white border border-slate-200 rounded-xl shadow-sm overflow-hidden"><div class="overflow-x-auto"><table class="w-full min-w-[900px] text-[10px] border-collapse"><thead><tr class="bg-slate-900 text-white text-[9px] uppercase tracking-wider"><th class="px-3 py-3 text-left font-extrabold">Sales</th><th class="px-3 py-3 text-left font-extrabold">Kategori</th><th class="px-3 py-3 text-left font-extrabold">Periode</th><th class="px-3 py-3 text-right font-extrabold">Target</th><th class="px-3 py-3 text-right font-extrabold">Actual</th><th class="px-3 py-3 text-right font-extrabold">Gap</th><th class="px-3 py-3 text-right font-extrabold">Ach%</th></tr></thead><tbody>' + rows + '</tbody></table></div></div>';
         }
 
         function renderPencapaianChart(data) {
