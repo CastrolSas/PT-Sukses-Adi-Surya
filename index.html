@@ -4586,9 +4586,12 @@ startAutoRefresh();
 
             // Gunakan data isi per dus dari master produk; nama produk tidak selalu memuat pola '12 x'.
             let packMatch = produkNama.match(/(\d+)\s*x/i);
+            // Prioritaskan isi dus dari master; untuk Activ Matic 10w-30 0.8 CTM,
+            // master saat ini tidak mengirim field pack sehingga gunakan isi dus yang sudah dikonfirmasi: 12 Pcs.
+            let knownPackFallback = /activ\s*matic\s*10w-30\s*0[.,]8\s*ctm/i.test(produkNama) ? 12 : 1;
             let packValue = prodObj && Number(prodObj.pack) > 0
                 ? Number(prodObj.pack)
-                : (packMatch ? parseInt(packMatch[1], 10) : 1);
+                : (packMatch ? parseInt(packMatch[1], 10) : knownPackFallback);
 
             shoppingCart.push({ 
                 produk: produkNama, 
