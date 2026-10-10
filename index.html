@@ -6004,29 +6004,34 @@ startAutoRefresh();
                 });
             }
 
-            // Tooltip tetap terlihat saat pointer berpindah dari titik ke area chart lain,
-            // dan baru ditutup ketika pointer benar-benar keluar dari area chart.
+            // Samakan perilaku tooltip dengan chart Beranda:
+            // tampil saat titik diarahkan/diklik, bertahan selama pointer di area chart,
+            // dan hilang saat pointer keluar atau pengguna klik di luar chart.
             const historyChartArea = svg.parentElement;
-            if (historyChartArea) historyChartArea.addEventListener('mouseleave', hideHistoryTooltip_);
+            if (historyChartArea) {
+                historyChartArea.addEventListener('mouseleave', hideHistoryTooltip_);
+            }
+            if (!window.__monitorHistoryOutsideClickBound) {
+                window.__monitorHistoryOutsideClickBound = true;
+                document.addEventListener('click', function(ev) {
+                    const chart = document.getElementById('monitoringHistorySvg');
+                    const tip = document.getElementById('monitorHistoryTooltip');
+                    const area = chart && chart.parentElement;
+                    if (area && tip && !area.contains(ev.target)) {
+                        hideHistoryTooltip_();
+                    }
+                }, true);
+            }
 
             svg.querySelectorAll('.monitor-history-point').forEach(function(group) {
                 group.addEventListener('mouseenter', function() { showHistoryTooltip_(group); });
                 group.addEventListener('focus', function() { showHistoryTooltip_(group); });
-                group.addEventListener('blur', hideHistoryTooltip_);
                 group.addEventListener('click', function(e) {
                     e.preventDefault();
-                    const wasVisible = tooltip.style.display === 'block';
-                    const currentLabel = tooltipLabel.textContent;
                     showHistoryTooltip_(group);
-                    if (wasVisible && currentLabel === (group.getAttribute('data-label') || '')) {
-                        setTimeout(hideHistoryTooltip_, 1800);
-                    }
                 });
                 group.addEventListener('touchstart', function() {
                     showHistoryTooltip_(group);
-                    setTimeout(function(){
-                        if (tooltip.style.display === 'block') hideHistoryTooltip_();
-                    }, 2600);
                 }, {passive:true});
             });
         }
