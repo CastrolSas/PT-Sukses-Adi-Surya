@@ -1,3 +1,111 @@
+
+
+Code(20261010-022126).gs
+File
+
+Index(20261010-022126).txt
+Dokumen
+Bantu saya modifikasi dan fokus pada perintah saya dulu. Jangan sentuh yg lain nya.
+Siap. Saya akan fokus hanya pada perintah yang Anda berikan, tanpa menyentuh bagian lain.
+
+Saya akan menggunakan dua file yang Anda kirim sebagai dasar modifikasi:
+
+Index(20261010-022126).txt
+
+Code(20261010-022126).gs
+
+Prinsip pengerjaan saya:
+
+Hanya mengubah bagian yang Anda perintahkan.
+
+Tidak mengubah fitur, tampilan, perhitungan, atau fungsi lain yang sudah benar.
+
+Tidak melakukan perombakan ulang atau optimasi tambahan di luar permintaan.
+
+Mempertahankan fungsi desktop dan mobile yang sudah benar, kecuali jika Anda meminta perubahan pada bagian tersebut.
+
+Setelah modifikasi, saya akan memberikan file hasil perubahan untuk Anda periksa.
+
+Silakan sampaikan perubahan pertama yang ingin Anda lakukan. Saya akan fokus pada perintah tersebut saja.
+
+pada tabel Monitoring kolom Status, untuk perhitungan transaksi 6 bulan terakhir harus dengan nilai APPROVE.
+Ilustrasi:
+Jika Cust.Code tersebut ada transaksi Volume minimal 9,6 dan nilai DAMEN AB adalah APPROVE maka Aktif.
+Jika Cust.Code tersebut tidak ada transaksi Volume minimal 9,6 dan nilai DAMEN AB adalah APPROVE maka Reaktivasi.
+
+Jangan sentuh yg lain
+
+Memproses selama 38s
+Sudah saya modifikasi khusus perhitungan kolom Status pada tabel Monitoring. Bagian lain tidak saya ubah.
+
+Perubahan yang diterapkan:
+
+Aktif: CUST.CODE memiliki transaksi dalam 6 bulan kalender terakhir, nilai DAMEN AB adalah APPROVE, dan total Volume dalam transaksi tersebut minimal 9,6.
+
+Reaktivasi: tidak ada transaksi yang memenuhi seluruh ketentuan tersebut.
+
+Jika satu transaksi terdiri dari beberapa baris produk, Volume dijumlahkan berdasarkan ID INPUT agar total transaksinya diperhitungkan dengan benar.
+
+Contoh hasil:
+
+Kondisi transaksi
+
+Status
+
+Volume 9,6 dan APPROVE
+
+Aktif
+
+Volume 12 dan APPROVE
+
+Aktif
+
+Volume 8 dan APPROVE
+
+Reaktivasi*
+
+Volume 15 tetapi bukan APPROVE
+
+Reaktivasi*
+
+Transaksi memenuhi syarat, tetapi lebih dari 6 bulan terakhir
+
+Reaktivasi*
+
+*Dengan asumsi tidak ada transaksi lain untuk CUST.CODE tersebut yang memenuhi seluruh syarat.
+
+File Code.gs yang sudah dimodifikasi:
+
+Unduh Code_MONITORING_STATUS_APPROVE_VOLUME_9_6.gs
+
+Saya juga sudah memeriksa sintaks JavaScript dan tidak ditemukan kesalahan sintaks. File Index tidak diubah karena perubahan ini cukup dilakukan pada perhitungan di sisi server.
+
+oke sudah benar dan jangan ubah lagi.
+Sekarang di halaman Riwayat, saat saya edit dan menambahkan produk dan saya telah mengisi produk lalu saya klik tambah produk lagi, produk yg sebelum nya saya isi me reset. tolong di perbaiki.
+
+Memproses selama 21s
+Sudah saya perbaiki khusus pada halaman Riwayat → Edit → Tambah Produk.
+
+Perubahan yang dilakukan:
+
+Produk yang sudah dipilih tidak akan reset saat Anda klik + Tambah Produk.
+
+Qty dan satuan produk sebelumnya tetap dipertahankan.
+
+Saat menghapus salah satu produk, isian produk lainnya juga tetap tersimpan.
+
+Saya hanya mengubah mekanisme penyimpanan isian sementara pada form edit Riwayat. Bagian lain tidak diubah.
+
+Unduh file Index yang sudah diperbaiki
+
+Pemeriksaan sintaks JavaScript sudah berhasil. Silakan ganti file Index dengan file ini, lalu uji kembali fitur Edit di halaman Riwayat.
+
+
+Index_RIWAYAT_EDIT_TAMBAH_PRODUK_FIX.txt
+Dokumen
+
+
+
 <!DOCTYPE html>
 <html lang="id">
 <head>
@@ -5749,7 +5857,7 @@ startAutoRefresh();
                         <div id="monitorHistoryTooltip" style="display:none;position:absolute;z-index:10;min-width:150px;pointer-events:none;padding:9px 11px;border-radius:12px;background:rgba(15,23,42,.96);box-shadow:0 8px 22px rgba(15,23,42,.18);color:#fff;font-size:10px;line-height:1.45;transform:translate(-50%,-112%);">
                             <div id="monitorHistoryTooltipLabel" style="font-weight:800;font-size:10px;"></div>
                             <div style="margin-top:3px;color:#d1fae5;">Order: <strong id="monitorHistoryTooltipVolume"></strong> Karton</div>
-                            <div style="color:#e2e8f0;">Transaksi: <strong id="monitorHistoryTooltipTransactions"></strong></div>
+                            <div style="color:#e2e8f0;">Produk Terbeli: <strong id="monitorHistoryTooltipTransactions"></strong></div>
                         </div>
                     </div>
                 </div>
@@ -6003,7 +6111,24 @@ startAutoRefresh();
         function getEditOutletOptions(selected){let html='<option value="">-- Pilih Outlet --</option>',seen={};(outletDataList||[]).forEach(function(o){let n=String(o.outlet||'').trim();if(n&&!seen[n]){seen[n]=1;html+='<option value="'+escapeHtml(n)+'" '+(n===String(selected||'')?'selected':'')+'>'+escapeHtml(n)+'</option>';}});if(selected&&!seen[String(selected)])html='<option value="'+escapeHtml(selected)+'" selected>'+escapeHtml(selected)+'</option>'+html.slice(html.indexOf('</option>')+9);return html;}
         function getEditProductOptions(selected,selectedKode){let html='<option value="">-- Pilih Produk --</option>';let selectedText=String(selected||'').trim();let selectedCode=String(selectedKode||'').trim();let found=false;(produkDataList||[]).forEach(function(p){let n=String(p.nama||'').trim();if(!n)return;let kode=String(p.kode||'').trim();let isSelected=(selectedText&&n===selectedText)||(selectedCode&&kode===selectedCode);if(isSelected)found=true;html+='<option value="'+escapeHtml(n)+'" '+(isSelected?'selected':'')+'>'+escapeHtml(n)+' ('+Number(p.liter||0)+'L | Rp '+Number(p.harga||0).toLocaleString('id-ID')+')</option>';});if(selectedText&&!found){html+='<option value="'+escapeHtml(selectedText)+'" selected>'+escapeHtml(selectedText)+' (Produk saat ini)</option>';}return html;}
         function renderEditOrderProducts(){let b=document.getElementById('editProducts');if(!b)return;if(!editOrderItems.length){b.innerHTML='<div class="text-xs text-slate-400 text-center py-3">Belum ada produk.</div>';return;}b.innerHTML=editOrderItems.map(function(it,i){return '<div class="border border-slate-200 rounded-lg p-2 mb-2 bg-slate-50"><div class="grid grid-cols-1 sm:grid-cols-12 gap-2 items-center"><select id="editProd'+i+'" class="sm:col-span-7 w-full border rounded p-2 bg-white text-xs">'+getEditProductOptions(it.produk,it.kode)+'</select><input id="editQty'+i+'" type="number" min="1" value="'+Number(it.qty||1)+'" class="sm:col-span-2 w-full border rounded p-2 text-xs"><select id="editUnit'+i+'" class="sm:col-span-2 w-full border rounded p-2 bg-white text-xs"><option value="Pcs" '+(String(it.satuan).toUpperCase()==='PCS'?'selected':'')+'>Pcs</option><option value="Dus" '+(String(it.satuan).toUpperCase()==='DUS'?'selected':'')+'>Dus</option></select><button type="button" onclick="removeEditProduct('+i+')" class="sm:col-span-1 text-red-600 bg-red-50 border border-red-200 rounded p-2">✕</button></div></div>';}).join('');}
+        // Simpan nilai yang sedang diketik pada form sebelum daftar produk dirender ulang.
+        function syncEditOrderProductsFromForm(){
+            if(!Array.isArray(editOrderItems)) editOrderItems=[];
+            for(let i=0;i<editOrderItems.length;i++){
+                const p=document.getElementById('editProd'+i);
+                const q=document.getElementById('editQty'+i);
+                const u=document.getElementById('editUnit'+i);
+                if(!editOrderItems[i]) editOrderItems[i]={produk:'',qty:1,satuan:'Pcs'};
+                if(p) editOrderItems[i].produk=p.value;
+                if(q) editOrderItems[i].qty=Number(q.value)||1;
+                if(u) editOrderItems[i].satuan=u.value;
+                const selected=(produkDataList||[]).find(function(x){return String(x.nama||'').trim()===String(editOrderItems[i].produk||'').trim();});
+                if(selected&&selected.kode) editOrderItems[i].kode=String(selected.kode).trim();
+            }
+        }
         function addEditProduct(){
+            // Ambil dahulu isian produk sebelumnya agar tidak hilang saat render ulang.
+            syncEditOrderProductsFromForm();
             if(Array.isArray(produkDataList)&&produkDataList.length){editOrderItems.push({produk:'',qty:1,satuan:'Pcs'});renderEditOrderProducts();return;}
             google.script.run.withSuccessHandler(function(list){
                 produkDataList=Array.isArray(list)?list:[];
@@ -6013,7 +6138,7 @@ startAutoRefresh();
                 showModal('Gagal','Master produk tidak dapat dimuat.');
             }).getListProduk();
         }
-        function removeEditProduct(i){editOrderItems.splice(i,1);renderEditOrderProducts();}
+        function removeEditProduct(i){syncEditOrderProductsFromForm();editOrderItems.splice(i,1);renderEditOrderProducts();}
         function renderEditOrderForm(o){
             var discValue = o && o.disc != null ? String(o.disc).trim() : '0%';
             // Nilai DISC dari sheet tersimpan sebagai desimal persen (2% = 0.02).
