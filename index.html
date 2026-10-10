@@ -4138,8 +4138,22 @@ body{background:
                 return obj && obj.v != null ? obj.v : null;
             } catch(e) { return null; }
         }
+        // Cache dianggap segar selama 60 detik agar perpindahan tab tidak terus meminta data ke server.
+        function appLocalCacheIsFresh(key, maxAgeMs) {
+            try {
+                const raw = localStorage.getItem('CASTROL_FAST_' + key);
+                if (!raw) return false;
+                const obj = JSON.parse(raw);
+                return !!(obj && obj.t && (Date.now() - Number(obj.t) < (maxAgeMs || 60000)));
+            } catch(e) { return false; }
+        }
         function restoreFastTabCaches() {
-            const mon = appLocalCacheGet('MONITORING_V9_' + String(currentUsernameInput||'').toUpperCase());
+            const usernameKey = String(currentUsernameInput||'').toUpperCase();
+            const riwayat = appLocalCacheGet('RIWAYAT_' + usernameKey);
+            if (Array.isArray(riwayat)) globalRiwayatData = riwayat;
+            const pricelist = appLocalCacheGet('PRICELIST_' + usernameKey);
+            if (Array.isArray(pricelist)) globalPricelistData = pricelist;
+            const mon = appLocalCacheGet('MONITORING_V9_' + usernameKey);
             if (mon && typeof mon === 'object') rawMonitoringDataObject = mon;
             const kontrak = appLocalCacheGet('KONTRAK_' + String(currentUsernameInput||'').toUpperCase());
             if (Array.isArray(kontrak)) globalOutletKontrakData = kontrak;
@@ -5008,12 +5022,14 @@ startAutoRefresh();
 
         function loadRiwayat(forceReload, silentRefresh) {
             if (forceReload && !silentRefresh) riwayatPage = 1;
+            const riwayatCacheKey = 'RIWAYAT_' + String(currentUsernameInput||'').toUpperCase();
             const hasCached = Array.isArray(globalRiwayatData) && globalRiwayatData.length > 0;
             if (!forceReload && hasCached) {
                 if (currentUsernameInput && currentUsernameInput.toLowerCase() === 'admin') { populateRiwayatDsrFilter(); populateRiwayatStatusFilter(); }
                 populateRiwayatYearFilter(globalRiwayatData);
                 filterRiwayat();
-                return;
+                if (appLocalCacheIsFresh(riwayatCacheKey, 60000)) return;
+                silentRefresh = true;
             }
             if (riwayatLoading) return;
             riwayatLoading = true;
@@ -5027,6 +5043,7 @@ startAutoRefresh();
                 riwayatLoading = false;
                 if (!silentRefresh) showLoading(false);
                 globalRiwayatData = Array.isArray(data) ? data : [];
+                appLocalCacheSet(riwayatCacheKey, globalRiwayatData);
                 if (currentUsernameInput && currentUsernameInput.toLowerCase() === 'admin') { populateRiwayatDsrFilter(); populateRiwayatStatusFilter(); }
                 populateRiwayatYearFilter(globalRiwayatData);
                 filterRiwayat();
@@ -5401,6 +5418,8 @@ startAutoRefresh();
             // Server tetap diperbarui di belakang layar tanpa mengganggu tampilan.
             if (!forceReload && hasCached) {
                 renderMonitoringList();
+                const monitoringCacheKey = 'MONITORING_V9_' + String(currentUsernameInput||'').toUpperCase();
+                if (appLocalCacheIsFresh(monitoringCacheKey, 60000)) return;
                 if (monitoringLoading) return;
                 monitoringLoading = true;
                 google.script.run.withSuccessHandler(function(dataObj) {
@@ -7746,12 +7765,14 @@ startAutoRefresh();
             const tbody = document.getElementById('listPricelistTableBody');
             if (!tbody) return;
 
-            // Jika data sudah pernah dimuat, langsung tampilkan dari cache browser.
+            // Tampilkan cache browser terlebih dahulu; minta data baru hanya jika cache sudah usang.
+            const pricelistCacheKey = 'PRICELIST_' + String(currentUsernameInput||'').toUpperCase();
             if (!forceRefresh && Array.isArray(globalPricelistData) && globalPricelistData.length > 0) {
                 populatePricelistSegmentFilter(globalPricelistData);
                 populatePricelistUpdateFilter(globalPricelistData);
                 filterPricelist();
-                return;
+                if (appLocalCacheIsFresh(pricelistCacheKey, 60000)) return;
+                silentRefresh = true;
             }
 
             const hasCached = Array.isArray(globalPricelistData) && globalPricelistData.length > 0;
@@ -7771,6 +7792,7 @@ startAutoRefresh();
                         return;
                     }
                     globalPricelistData = Array.isArray(res.data) ? res.data : [];
+                    appLocalCacheSet(pricelistCacheKey, globalPricelistData);
                     populatePricelistSegmentFilter(globalPricelistData);
                     populatePricelistUpdateFilter(globalPricelistData);
                     filterPricelist();
@@ -8949,21 +8971,24 @@ startAutoRefresh();
             const run = function(fn, delay) { setTimeout(function(){ try { fn(); } catch(e) { console.warn('Background preload:', e); } }, delay || 0); };
             const isAdmin = String(currentUsernameInput || '').trim().toLowerCase() === 'admin';
 
+            // Prioritaskan halaman utama yang sering dibuka; cache akan membuatnya langsung tampil.
             run(function(){ loadRiwayat(false, true); }, 0);
-            run(function(){ loadMonitoring(false, true); }, 80);
-            run(function(){ loadOutletKontrak(false, true); }, 160);
-            run(function(){ loadPricelist(false, true); }, 240);
-            run(function(){ loadTambahCustomer(false, true); }, 320);
-            run(function(){ loadPesananOutlet(false, true); }, 400);
-            run(function(){ loadPencapaianSalesFilter(); }, 480);
-            run(function(){ loadPencapaianSales(false, true); }, 560);
+            run(function(){ loadMonitoring(false, true); }, 100);
+            run(function(){ loadPricelist(false, true); }, 200);
+
+            // Halaman lain dimuat setelah jeda agar tidak berebut server pada saat login.
+            run(function(){ loadOutletKontrak(false, true); }, 900);
+            run(function(){ loadTambahCustomer(false, true); }, 1200);
+            run(function(){ loadPesananOutlet(false, true); }, 1500);
+            run(function(){ loadPencapaianSalesFilter(); }, 1800);
+            run(function(){ loadPencapaianSales(false, true); }, 2100);
 
             if (isAdmin) {
-                run(function(){ loadOutletBWSAdmin(false, true); }, 640);
-                run(function(){ loadOutletBWSFormMaster(); }, 760);
-                run(function(){ loadInputMasterData(); }, 840);
+                run(function(){ loadOutletBWSAdmin(false, true); }, 2400);
+                run(function(){ loadOutletBWSFormMaster(); }, 2700);
+                run(function(){ loadInputMasterData(); }, 3000);
             } else {
-                run(function(){ loadInputMasterData(); }, 640);
+                run(function(){ loadInputMasterData(); }, 2400);
             }
         }
 
