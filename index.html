@@ -5960,7 +5960,8 @@ startAutoRefresh();
                         <div id="monitorHistoryTooltip" style="display:none;position:absolute;z-index:10;min-width:150px;pointer-events:none;padding:9px 11px;border-radius:12px;background:rgba(15,23,42,.96);box-shadow:0 8px 22px rgba(15,23,42,.18);color:#fff;font-size:10px;line-height:1.45;transform:translate(-50%,-112%);">
                             <div id="monitorHistoryTooltipLabel" style="font-weight:800;font-size:10px;"></div>
                             <div style="margin-top:3px;color:#d1fae5;">Order: <strong id="monitorHistoryTooltipVolume"></strong> Karton</div>
-                            <div style="color:#e2e8f0;">Transaksi: <strong id="monitorHistoryTooltipTransactions"></strong></div>
+                            <div style="color:#e2e8f0;">Rincian Transaksi:</div>
+                            <div id="monitorHistoryTooltipDetails" style="margin-top:4px;max-height:150px;overflow-y:auto;white-space:normal;color:#f1f5f9;"></div>
                         </div>
                     </div>
                 </div>
@@ -5971,17 +5972,23 @@ startAutoRefresh();
             const tooltip = document.getElementById('monitorHistoryTooltip');
             const tooltipLabel = document.getElementById('monitorHistoryTooltipLabel');
             const tooltipVolume = document.getElementById('monitorHistoryTooltipVolume');
-            const tooltipTransactions = document.getElementById('monitorHistoryTooltipTransactions');
+            const tooltipDetails = document.getElementById('monitorHistoryTooltipDetails');
             if (!svg || !tooltip) return;
 
             function showHistoryTooltip_(group) {
                 const idx = Number(group.getAttribute('data-index') || 0);
                 const label = group.getAttribute('data-label') || '';
                 const value = group.getAttribute('data-volume') || '0';
-                const tx = group.getAttribute('data-transactions') || '0';
                 tooltipLabel.textContent = label;
                 tooltipVolume.textContent = value;
-                tooltipTransactions.textContent = tx;
+                const monthDetails = history[idx] && Array.isArray(history[idx].details) ? history[idx].details : [];
+                if (tooltipDetails) {
+                    tooltipDetails.innerHTML = monthDetails.length
+                        ? monthDetails.map(function(detail) {
+                            return '<div style="padding:3px 0;border-top:1px solid rgba(255,255,255,.12)"><div style="font-weight:700;color:#d1fae5">' + escapeHtml(detail.date || '-') + '</div><div>' + escapeHtml(detail.product || '-') + '</div></div>';
+                          }).join('')
+                        : '<div style="padding:3px 0;color:#cbd5e1">Tidak ada transaksi pada bulan ini.</div>';
+                }
 
                 const x = Number(group.getAttribute('data-x') || 0);
                 const y = Number(group.getAttribute('data-y') || 0);
