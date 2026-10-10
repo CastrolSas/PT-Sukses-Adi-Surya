@@ -5957,11 +5957,11 @@ startAutoRefresh();
                             ${bars}
                             ${labels}
                         </svg>
-                        <div id="monitorHistoryTooltip" style="display:none;position:absolute;z-index:10;width:210px;max-width:calc(100vw - 32px);pointer-events:auto;padding:9px 11px;border-radius:12px;background:rgba(15,23,42,.96);box-shadow:0 8px 22px rgba(15,23,42,.18);color:#fff;font-size:10px;line-height:1.45;transform:translate(-50%,-112%);">
+                        <div id="monitorHistoryTooltip" style="display:none;position:fixed;z-index:10050;width:240px;max-width:calc(100vw - 24px);max-height:calc(100vh - 24px);overflow:hidden;box-sizing:border-box;pointer-events:auto;padding:9px 11px;border-radius:12px;background:rgba(15,23,42,.97);box-shadow:0 8px 22px rgba(15,23,42,.28);color:#fff;font-size:10px;line-height:1.45;transform:none;">
                             <div id="monitorHistoryTooltipLabel" style="font-weight:800;font-size:10px;"></div>
                             <div style="margin-top:3px;color:#d1fae5;">Order: <strong id="monitorHistoryTooltipVolume"></strong> Karton</div>
                             <div style="color:#e2e8f0;">Rincian Transaksi:</div>
-                            <div id="monitorHistoryTooltipDetails" style="margin-top:4px;max-height:180px;overflow-y:auto;overscroll-behavior:contain;-webkit-overflow-scrolling:touch;touch-action:pan-y;scrollbar-width:thin;white-space:normal;color:#f1f5f9;"></div>
+                            <div id="monitorHistoryTooltipDetails" style="margin-top:4px;max-height:180px;overflow-y:auto;overscroll-behavior:contain;-webkit-overflow-scrolling:touch;touch-action:pan-y;scrollbar-width:thin;white-space:normal;overflow-wrap:anywhere;color:#f1f5f9;"></div>
                         </div>
                     </div>
                 </div>
@@ -5974,6 +5974,10 @@ startAutoRefresh();
             const tooltipVolume = document.getElementById('monitorHistoryTooltipVolume');
             const tooltipDetails = document.getElementById('monitorHistoryTooltipDetails');
             if (!svg || !tooltip) return;
+
+            // Letakkan tooltip di body agar tidak terpotong oleh pembungkus chart
+            // yang memakai overflow horizontal.
+            if (tooltip.parentElement !== document.body) document.body.appendChild(tooltip);
 
             function showHistoryTooltip_(group) {
                 const idx = Number(group.getAttribute('data-index') || 0);
@@ -6015,14 +6019,30 @@ startAutoRefresh();
                     }
                 }
 
-                const x = Number(group.getAttribute('data-x') || 0);
-                const y = Number(group.getAttribute('data-y') || 0);
-                const tooltipWidth = 150;
-                const safeX = Math.max(tooltipWidth / 2 + 8, Math.min(width - tooltipWidth / 2 - 8, x));
-                tooltip.style.left = safeX + 'px';
-                tooltip.style.top = (y < 92 ? y + 14 : y) + 'px';
-                tooltip.style.transform = y < 92 ? 'translate(-50%, 0)' : 'translate(-50%, -112%)';
+                // Posisi berdasarkan titik aktual pada layar, bukan koordinat SVG:
+                // ini menjaga tooltip tetap di dalam viewport walau chart di-scroll horizontal.
+                const pointRect = group.getBoundingClientRect();
+                const pointX = pointRect.left + pointRect.width / 2;
+                const pointY = pointRect.top + pointRect.height / 2;
+                const margin = 8;
+                const tipWidth = Math.min(240, window.innerWidth - 24);
+                tooltip.style.width = tipWidth + 'px';
+                tooltip.style.maxHeight = Math.max(120, window.innerHeight - 24) + 'px';
+                tooltip.style.left = Math.max(margin, Math.min(window.innerWidth - tipWidth - margin, pointX - tipWidth / 2)) + 'px';
+                tooltip.style.top = margin + 'px';
                 tooltip.style.display = 'block';
+                tooltip.style.visibility = 'hidden';
+                tooltip.style.left = Math.max(margin, Math.min(window.innerWidth - tipWidth - margin, pointX - tipWidth / 2)) + 'px';
+                const tipRect = tooltip.getBoundingClientRect();
+                let top = pointY - tipRect.height - 12;
+                if (top < margin) top = pointY + 12;
+                if (top + tipRect.height > window.innerHeight - margin) top = Math.max(margin, window.innerHeight - tipRect.height - margin);
+                tooltip.style.top = top + 'px';
+                tooltip.style.visibility = 'visible';
+                if (tooltipDetails) {
+                    const fixedPartsHeight = tooltip.scrollHeight - tooltipDetails.clientHeight;
+                    tooltipDetails.style.maxHeight = Math.max(70, Math.min(260, window.innerHeight - fixedPartsHeight - 32)) + 'px';
+                }
 
                 svg.querySelectorAll('.monitor-history-point rect').forEach(function(rect, n) {
                     rect.setAttribute('opacity', n === idx ? '1' : (Number(history[n] && history[n].volume) > 0 ? '0.88' : '0.18'));
@@ -6041,15 +6061,22 @@ startAutoRefresh();
             // dan hilang saat pointer keluar atau pengguna klik di luar chart.
             const historyChartArea = svg.parentElement;
             if (historyChartArea) {
-                historyChartArea.addEventListener('mouseleave', hideHistoryTooltip_);
+                historyChartArea.addEventListener('mouseleave', function(ev) {
+                    if (ev.relatedTarget && tooltip.contains(ev.relatedTarget)) return;
+                    hideHistoryTooltip_();
+                });
             }
+            tooltip.addEventListener('mouseleave', function(ev) {
+                if (ev.relatedTarget && historyChartArea && historyChartArea.contains(ev.relatedTarget)) return;
+                hideHistoryTooltip_();
+            });
             if (!window.__monitorHistoryOutsideClickBound) {
                 window.__monitorHistoryOutsideClickBound = true;
                 document.addEventListener('click', function(ev) {
                     const chart = document.getElementById('monitoringHistorySvg');
                     const tip = document.getElementById('monitorHistoryTooltip');
                     const area = chart && chart.parentElement;
-                    if (area && tip && !area.contains(ev.target)) {
+                    if (area && tip && !area.contains(ev.target) && !tip.contains(ev.target)) {
                         hideHistoryTooltip_();
                     }
                 }, true);
